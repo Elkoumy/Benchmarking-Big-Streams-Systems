@@ -1,25 +1,25 @@
 #! /usr/bin/env bash
-sudo apt-get upgrade
-sudo apt-get update
-sudo apt-get install git
+sudo yum upgrade
+sudo yum update
+sudo yum install git
 sudo add-apt-repository ppa:webupd8team/java
-sudo apt-get update
-sudo apt-get install oracle-java8-installer
-sudo apt-get install maven
+sudo yum update
+sudo yum install oracle-java8-installer
+sudo yum install maven
 sudo update-alternatives --config java
 
 
-source /etc/environment
-echo $JAVA_HOME
+#source /etc/environment
+echo $JAVA_HOME >> /etc/environment
 
-sudo apt-get install make
-sudo apt-get install gcc
-sudo apt-get install tcl
-sudo apt-get install build-essential
+sudo yum install make
+sudo yum install gcc
+sudo yum install tcl
+sudo yum install build-essential
 
 sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt-get update
-sudo apt-get install python2.7
+sudo yum update
+sudo yum install python2.7
 
 wget -O- https://raw.githubusercontent.com/nicolargo/glancesautoinstall/master/install.sh | sudo /bin/bash
 
