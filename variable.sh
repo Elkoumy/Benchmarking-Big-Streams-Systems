@@ -22,16 +22,18 @@ HERON_DIR="heron-$HERON_VERSION"
 SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 HAZELCAST_DIR="hazelcast-jet-$HAZELCAST_VERSION"
 
-#Get one of the closet apache mirrors
-APACHE_MIRROR=$(curl 'https://www.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
 
-ZK_HOST="localhost"
+#Get one of the closet apache mirrors
+#APACHE_MIRROR=$(curl 'https://archive.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
+APACHE_MIRROR="http://archive.apache.org/dist"
+ZK_HOST="zookeeper-node-01"
 ZK_PORT="2181"
 ZK_CONNECTIONS="$ZK_HOST:$ZK_PORT"
     TOPIC=${TOPIC:-"ad-events"}
 PARTITIONS=${PARTITIONS:-1}
 
-CONF_FILE=./conf/localConf.yaml
+#CONF_FILE=./conf/localConf.yaml
+CONF_FILE=./conf/benchmarkConf.yaml
 
 TPS=${TPS:-1000}
 TEST_TIME=${TEST_TIME:-60}

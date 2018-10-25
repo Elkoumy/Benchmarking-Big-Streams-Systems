@@ -3,55 +3,66 @@
 
 ./stream-bench.sh SETUP
 
+KAFKA_STREAM_VERSION=${KAFKA_STREAM_VERSION:-"1.1.0"}
+KAFKA_VERSION=${KAFKA_VERSION:-"0.11.0.2"}
+REDIS_VERSION=${REDIS_VERSION:-"4.0.8"}
+SCALA_BIN_VERSION=${SCALA_BIN_VERSION:-"2.11"}
+SCALA_SUB_VERSION=${SCALA_SUB_VERSION:-"11"}
+STORM_VERSION=${STORM_VERSION:-"1.2.1"}
+JSTORM_VERSION=${JSTORM_VERSION:-"2.4.0"}
+FLINK_VERSION=${FLINK_VERSION:-"1.6.0"}
+SPARK_VERSION=${SPARK_VERSION:-"2.3.0"}
+HERON_VERSION=${HERON_VERSION:-"0.17.8"}
+HAZELCAST_VERSION=${HAZELCAST_VERSION:-"0.6"}
 #FLINK SETUP
-sed -i 's/taskmanager.heap.mb: 1024/taskmanager.heap.mb: 6144/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
-sed -i 's/taskmanager.numberOfTaskSlots: 1/taskmanager.numberOfTaskSlots: 4/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
-sed -i 's/jobmanager.rpc.address: localhost/jobmanager.rpc.address: stream-node01/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
+sed -i 's/taskmanager.heap.mb: 1024/taskmanager.heap.mb: 6144/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
+sed -i 's/taskmanager.numberOfTaskSlots: 1/taskmanager.numberOfTaskSlots: 4/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
+sed -i 's/jobmanager.rpc.address: localhost/jobmanager.rpc.address: stream-node01/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
 
-sed -i 's/taskmanager.heap.mb: 6144/taskmanager.heap.mb: 15360/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
-sed -i 's/taskmanager.numberOfTaskSlots: 4/taskmanager.numberOfTaskSlots: 8/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
+sed -i 's/taskmanager.heap.mb: 6144/taskmanager.heap.mb: 15360/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
+sed -i 's/taskmanager.numberOfTaskSlots: 4/taskmanager.numberOfTaskSlots: 8/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
 
-sed -i 's/taskmanager.heap.mb: 15360/taskmanager.heap.mb: 30720/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
-sed -i 's/taskmanager.numberOfTaskSlots: 8/taskmanager.numberOfTaskSlots: 16/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
-sed -i 's/jobmanager.heap.mb: 1024/jobmanager.heap.mb: 15360/g' /root/stream-benchmarking/flink-1.5.0/conf/flink-conf.yaml
+sed -i 's/taskmanager.heap.mb: 15360/taskmanager.heap.mb: 30720/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
+sed -i 's/taskmanager.numberOfTaskSlots: 8/taskmanager.numberOfTaskSlots: 16/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
+sed -i 's/jobmanager.heap.mb: 1024/jobmanager.heap.mb: 15360/g' /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/flink-conf.yaml
 
-cp /dev/null /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node02" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node03" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node04" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node05" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node06" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node07" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node08" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node09" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
-echo "stream-node10" >> /root/stream-benchmarking/flink-1.5.0/conf/slaves
+cp /dev/null /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node02" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node03" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node04" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node05" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node06" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node07" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node08" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node09" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+echo "stream-node10" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
 
 
-cp /dev/null /root/stream-benchmarking/flink-1.5.0/conf/masters
-echo "stream-node01" >> /root/stream-benchmarking/flink-1.5.0/conf/masters
+cp /dev/null /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/masters
+echo "stream-node01" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/masters
 
 #SPARK SETUP
-cp /dev/null /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node02" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node03" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6conf/slaves
-echo "stream-node04" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node05" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node06" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node07" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node08" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node09" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
-echo "stream-node10" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/slaves
+cp /dev/null /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node02" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node03" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node04" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node05" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node06" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node07" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node08" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node09" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+echo "stream-node10" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
 
 
-cp /dev/null /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-echo "#!/usr/bin/env bash" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-echo "SPARK_DRIVER_MEMORY=30G" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-echo "SPARK_EXECUTOR_CORES=16" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-echo "SPARK_EXECUTOR_MEMORY=30G" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-echo "SPARK_WORKER_CORES=16" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-echo "SPARK_WORKER_MEMORY=30g" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-echo "SPARK_DAEMON_MEMORY=30g" >> /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
-chmod +x /root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/conf/spark-env.sh
+cp /dev/null /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+echo "#!/usr/bin/env bash" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+echo "SPARK_DRIVER_MEMORY=30G" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+echo "SPARK_EXECUTOR_CORES=16" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+echo "SPARK_EXECUTOR_MEMORY=30G" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+echo "SPARK_WORKER_CORES=16" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+echo "SPARK_WORKER_MEMORY=30g" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+echo "SPARK_DAEMON_MEMORY=30g" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
+chmod +x /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh
 
 #STORM SETUP
 cp /dev/null /root/stream-benchmarking/apache-storm-1.2.1/conf/storm.yaml
@@ -145,6 +156,5 @@ mvn install:install-file -Dfile=/root/stream-benchmarking/jstorm-2.4.0/jstorm-co
 #scp apache-storm-1.2.1/conf/storm.yaml ubuntu@stream-node09:~/stream-benchmarking/apache-storm-1.2.1/conf/storm.yaml
 #scp apache-storm-1.2.1/conf/storm.yaml ubuntu@stream-node10:~/stream-benchmarking/apache-storm-1.2.1/conf/storm.yaml
 #scp apache-storm-1.2.1/conf/storm.yaml ubuntu@stream-node11:~/stream-benchmarking/apache-storm-1.2.1/conf/storm.yaml
-
 
 

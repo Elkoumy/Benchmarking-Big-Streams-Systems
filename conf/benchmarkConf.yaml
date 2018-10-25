@@ -5,26 +5,26 @@ kafka.brokers:
     - "kafka-node01"
     - "kafka-node02"
     - "kafka-node03"
-    - "kafka-node04"
-    - "kafka-node05"
+   # - "kafka-node04"
+   # - "kafka-node05"
 
 zookeeper.servers:
     - "zookeeper-node01"
-    - "zookeeper-node02"
-    - "zookeeper-node03"
+ #   - "zookeeper-node02"
+  #  - "zookeeper-node03"
 
 kafka.port: 9092
 zookeeper.port: 2181
 redis.host: "redis"
 kafka.topic: "ad-events"
-kafka.partitions: 5
+kafka.partitions: 3
 
-process.hosts: 9
-process.cores: 16
+process.hosts: 5
+process.cores: 8
 
 #STORM Specific
-storm.workers: 72
-storm.ackers: 9
+storm.workers: 40
+storm.ackers: 5
 storm.ack: "enabled"
 
 
