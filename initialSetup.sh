@@ -4,12 +4,12 @@ sudo yum update
 sudo yum install git
 sudo add-apt-repository ppa:webupd8team/java
 sudo yum update
-sudo yum install oracle-java8-installer
-sudo yum install maven
-sudo update-alternatives --config java
 sudo yum install wget
 sudo yum install git
+sudo yum install maven
 sudo yum groupinstall 'Development Tools'
+sudo yum install oracle-java8-installer
+sudo update-alternatives --config java
 #source /etc/environment
 echo $JAVA_HOME >> /etc/environment
 
