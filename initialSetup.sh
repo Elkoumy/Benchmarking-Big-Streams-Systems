@@ -4,6 +4,10 @@ sudo yum update
 sudo yum install git
 sudo add-apt-repository ppa:webupd8team/java
 sudo yum update
+sudo yum install oracle-java8-installer
+sudo update-alternatives --config java
+#source /etc/environment
+echo $JAVA_HOME >> /etc/environment
 sudo yum install wget
 sudo yum install git
 sudo yum install maven
@@ -12,11 +16,6 @@ sudo yum install make
 sudo yum install gcc
 sudo yum install tcl
 sudo yum install build-essential
-#sudo yum install oracle-java8-installer
-#sudo update-alternatives --config java
-#source /etc/environment
-#echo $JAVA_HOME >> /etc/environment
-
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo yum update
 sudo yum install python2.7
