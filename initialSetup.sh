@@ -7,8 +7,9 @@ sudo yum update
 sudo yum install oracle-java8-installer
 sudo yum install maven
 sudo update-alternatives --config java
-
-
+sudo yum install wget
+sudo yum install git
+sudo yum groupinstall 'Development Tools'
 #source /etc/environment
 echo $JAVA_HOME >> /etc/environment
 
