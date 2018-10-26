@@ -12,6 +12,10 @@ sudo yum install make
 sudo yum install gcc
 sudo yum install tcl
 sudo yum install build-essential
+#sudo yum install oracle-java8-installer
+#sudo update-alternatives --config java
+#source /etc/environment
+#echo $JAVA_HOME >> /etc/environment
 
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo yum update
@@ -26,10 +30,7 @@ sudo mv ./lein* /usr/local/bin/lein
 sudo chmod a+x /usr/local/bin/lein
 export PATH=$PATH:/usr/local/bin
 lein repl
-sudo yum install oracle-java8-installer
-sudo update-alternatives --config java
-#source /etc/environment
-echo $JAVA_HOME >> /etc/environment
+
 sudo reboot
 
 
