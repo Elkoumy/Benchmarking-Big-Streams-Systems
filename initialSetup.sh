@@ -8,11 +8,6 @@ sudo yum install wget
 sudo yum install git
 sudo yum install maven
 sudo yum groupinstall 'Development Tools'
-sudo yum install oracle-java8-installer
-sudo update-alternatives --config java
-#source /etc/environment
-echo $JAVA_HOME >> /etc/environment
-
 sudo yum install make
 sudo yum install gcc
 sudo yum install tcl
@@ -31,6 +26,10 @@ sudo mv ./lein* /usr/local/bin/lein
 sudo chmod a+x /usr/local/bin/lein
 export PATH=$PATH:/usr/local/bin
 lein repl
+sudo yum install oracle-java8-installer
+sudo update-alternatives --config java
+#source /etc/environment
+echo $JAVA_HOME >> /etc/environment
 sudo reboot
 
 
