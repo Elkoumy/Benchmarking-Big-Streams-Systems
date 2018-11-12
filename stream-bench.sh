@@ -251,10 +251,13 @@ run() {
   elif [ "START_KAFKA" = "$OPERATION" ];
   then
     start_if_needed kafka\.Kafka Kafka 10 "$KAFKA_DIR/bin/kafka-server-start.sh" "$KAFKA_DIR/config/server.properties"
+    sleep 5
     create_kafka_topic
+    sleep 15
   elif [ "STOP_KAFKA" = "$OPERATION" ];
   then
     stop_if_needed kafka\.Kafka Kafka
+    sleep 5
     rm -rf /tmp/kafka-logs/
   elif [ "START_KAFKA_STREAM" = "$OPERATION" ];
   then
