@@ -1,6 +1,5 @@
 package ee.ut.cs.dsg.efficientSWAG;
 
-
 import org.apache.flink.api.common.ExecutionConfig;
 	import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -23,7 +22,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
  * DataStream<Tuple2<String, Integer>> in = ...;
  * KeyedStream<String, Tuple2<String, Integer>> keyed = in.keyBy(...);
  * WindowedStream<Tuple2<String, Integer>, String, TimeWindows> windowed =
- *   keyed.window(EfficientSWAGSlidingProcessingTimeWindows.of(Time.of(1, MINUTES), Time.of(10, SECONDS));
+ *   keyed.window(ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.EfficientSWAGSlidingProcessingTimeWindows.of(Time.of(1, MINUTES), Time.of(10, SECONDS));
  * } </pre>
  */
 public class EfficientSWAGSlidingProcessingTimeWindows extends WindowAssigner<Object, TimeWindow> {
@@ -44,7 +43,7 @@ public class EfficientSWAGSlidingProcessingTimeWindows extends WindowAssigner<Ob
 	 */
 	private EfficientSWAGSlidingProcessingTimeWindows(long size, long slide, long offset, Enumerators.Operator operation) {
 		if (offset < 0 || offset >= slide || size <= 0) {
-			throw new IllegalArgumentException("EfficientSWAGSlidingProcessingTimeWindows parameters must satisfy 0 <= offset < slide and size > 0");
+			throw new IllegalArgumentException("ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.EfficientSWAGSlidingProcessingTimeWindows parameters must satisfy 0 <= offset < slide and size > 0");
 		}
 
 		this.size = size;
@@ -81,11 +80,11 @@ public class EfficientSWAGSlidingProcessingTimeWindows extends WindowAssigner<Ob
 
 	@Override
 	public String toString() {
-		return "EfficientSWAGSlidingProcessingTimeWindows(" + size + ", " + slide + ")";
+		return "ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.EfficientSWAGSlidingProcessingTimeWindows(" + size + ", " + slide + ")";
 	}
 
 	/**
-	 * Creates a new {@code EfficientSWAGSlidingProcessingTimeWindows} {@link WindowAssigner} that assigns
+	 * Creates a new {@code ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.EfficientSWAGSlidingProcessingTimeWindows} {@link WindowAssigner} that assigns
 	 * elements to sliding time windows based on the element timestamp.
 	 *
 	 * @param size The size of the generated windows.
@@ -97,7 +96,7 @@ public class EfficientSWAGSlidingProcessingTimeWindows extends WindowAssigner<Ob
 	}
 
 	/**
-	 * Creates a new {@code EfficientSWAGSlidingProcessingTimeWindows} {@link WindowAssigner} that assigns
+	 * Creates a new {@code ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.EfficientSWAGSlidingProcessingTimeWindows} {@link WindowAssigner} that assigns
 	 * elements to time windows based on the element timestamp and offset.
 	 *
 	 * <p>For example, if you want window a stream by hour,but window begins at the 15th minutes

@@ -1,6 +1,5 @@
 package ee.ut.cs.dsg.efficientSWAG;
 
-import java.util.Comparator;
 import java.util.Random;
 import org.apache.flink.api.java.tuple.Tuple3;
 //0- based indexable skip list.

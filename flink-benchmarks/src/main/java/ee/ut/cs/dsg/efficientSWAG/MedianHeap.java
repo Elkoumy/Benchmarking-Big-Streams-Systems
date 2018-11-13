@@ -42,7 +42,7 @@ public class MedianHeap {
 	}
 
 	/**
-	 * Constructor for a MedianHeap, to dynamically generate median.
+	 * Constructor for a ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.MedianHeap, to dynamically generate median.
 	 */
 	public MedianHeap(){
 		// initialize maxheap and minheap with appropriate comparators
@@ -59,7 +59,7 @@ public class MedianHeap {
 	}
 
 	/**
-	 * Inserts into MedianHeap to update the median accordingly
+	 * Inserts into ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.MedianHeap to update the median accordingly
 	 * @param n
 	 */
 	public void insert(double n){

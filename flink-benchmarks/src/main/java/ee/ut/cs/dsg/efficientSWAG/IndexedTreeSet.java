@@ -30,7 +30,7 @@ import java.util.*;
  * correctly implement the {@code Set} interface.  (See {@code Comparable}
  * or {@code Comparator} for a precise definition of <i>consistent with
  * equals</i>.)  This is so because the {@code Set} interface is defined in
- * terms of the {@code equals} operation, but a {@code IndexedTreeSet} instance
+ * terms of the {@code equals} operation, but a {@code ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet} instance
  * performs all element comparisons using its {@code compareTo} (or
  * {@code compare}) method, so two elements that are deemed equal by this method
  * are, from the standpoint of the set, equal.  The behavior of a set
@@ -46,7 +46,7 @@ import java.util.*;
  * {@link Collections#synchronizedSortedSet Collections.synchronizedSortedSet}
  * method.  This is best done at creation time, to prevent accidental
  * unsynchronized access to the set: <pre>
- *   SortedSet s = Collections.synchronizedSortedSet(new IndexedTreeSet(...));</pre>
+ *   SortedSet s = Collections.synchronizedSortedSet(new ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet(...));</pre>
  * <p/>
  * <p>The iterators returned by this class's {@code iterator} method are
  * <i>fail-fast</i>: if the set is modified at any time after the iterator is
@@ -95,7 +95,7 @@ public class IndexedTreeSet<E> extends AbstractSet<E>
      */
     IndexedTreeSet(NavigableMap<E, Object> m) {
         if (!(m instanceof IndexedTreeMap)) {
-            throw new IllegalArgumentException("Map should implement IndexedTreeMap");
+            throw new IllegalArgumentException("Map should implement ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap");
         }
         this.m = m;
     }
@@ -457,7 +457,7 @@ public class IndexedTreeSet<E> extends AbstractSet<E>
     }
 
     /**
-     * Returns a shallow copy of this {@code IndexedTreeSet} instance. (The elements
+     * Returns a shallow copy of this {@code ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet} instance. (The elements
      * themselves are not cloned.)
      *
      * @return a shallow copy of this set
@@ -475,7 +475,7 @@ public class IndexedTreeSet<E> extends AbstractSet<E>
     }
 
     /**
-     * Save the state of the {@code IndexedTreeSet} instance to a stream (that is,
+     * Save the state of the {@code ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet} instance to a stream (that is,
      * serialize it).
      *
      * @serialData Emits the comparator used to order this set, or
@@ -503,7 +503,7 @@ public class IndexedTreeSet<E> extends AbstractSet<E>
     }
 
     /**
-     * Reconstitute the {@code IndexedTreeSet} instance from a stream (that is,
+     * Reconstitute the {@code ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet} instance from a stream (that is,
      * deserialize it).
      */
     private void readObject(java.io.ObjectInputStream s)
@@ -514,7 +514,7 @@ public class IndexedTreeSet<E> extends AbstractSet<E>
         // Read in Comparator
         Comparator<? super E> c = (Comparator<? super E>) s.readObject();
 
-        // Create backing IndexedTreeMap
+        // Create backing ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap
         IndexedTreeMap<E, Object> tm;
         if (c == null)
             tm = new IndexedTreeMap<E, Object>();

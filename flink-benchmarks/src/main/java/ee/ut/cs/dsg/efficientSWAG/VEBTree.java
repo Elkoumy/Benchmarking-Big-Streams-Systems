@@ -59,8 +59,8 @@ public class VEBTree<V>
     }
 
     public String toString(){
-//        for ( VEBNode i: root.cluster  ){
-//            for (VEBNode j: i.cluster) {
+//        for ( ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.VEBNode i: root.cluster  ){
+//            for (ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.VEBNode j: i.cluster) {
 //                System.out.println(j.max);
 //                System.out.println(j.min);
 //            }

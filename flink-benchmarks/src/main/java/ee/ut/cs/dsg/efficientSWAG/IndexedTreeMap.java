@@ -1,7 +1,4 @@
-package ee.ut.cs.dsg.efficientSWAG;
-
-
-/**
+package ee.ut.cs.dsg.efficientSWAG; /**
  * User: Vitaly Sazanovich
  * Date: 07/02/13
  * Time: 19:16
@@ -52,7 +49,7 @@ import java.util.*;
  * {@link Collections#synchronizedSortedMap Collections.synchronizedSortedMap}
  * method.  This is best done at creation time, to prevent accidental
  * unsynchronized access to the map: <pre>
- *   SortedMap m = Collections.synchronizedSortedMap(new IndexedTreeMap(...));</pre>
+ *   SortedMap m = Collections.synchronizedSortedMap(new ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap(...));</pre>
  * <p/>
  * <p>The iterators returned by the <tt>iterator</tt> method of the collections
  * returned by all of this class's "collection view methods" are
@@ -544,7 +541,7 @@ public class IndexedTreeMap<K, V>
         Entry<K, V> t = root;
         if (t == null) {
             // TBD:
-            // 5045147: (coll) Adding null to an empty IndexedTreeSet should
+            // 5045147: (coll) Adding null to an empty ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet should
             // throw NullPointerException
             //
             // compare(key, key); // type check
@@ -599,7 +596,7 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Removes the mapping for this key from this IndexedTreeMap if present.
+     * Removes the mapping for this key from this ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap if present.
      *
      * @param key key for which mapping should be removed
      * @return the previous value associated with <tt>key</tt>, or
@@ -633,7 +630,7 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Returns a shallow copy of this <tt>IndexedTreeMap</tt> instance. (The keys and
+     * Returns a shallow copy of this <tt>ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap</tt> instance. (The keys and
      * values themselves are not cloned.)
      *
      * @return a shallow copy of this map
@@ -1239,7 +1236,7 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Base class for IndexedTreeMap Iterators
+     * Base class for ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap Iterators
      */
     abstract class PrivateEntryIterator<T> implements Iterator<T> {
         Entry<K, V> next;
@@ -1335,7 +1332,7 @@ public class IndexedTreeMap<K, V>
     // Little utilities
 
     /**
-     * Compares two keys using the correct comparison method for this IndexedTreeMap.
+     * Compares two keys using the correct comparison method for this ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap.
      */
     final int compare(Object k1, Object k2) {
         return comparator == null ? ((Comparable<? super K>) k1).compareTo((K) k2)
@@ -2051,7 +2048,7 @@ public class IndexedTreeMap<K, V>
 
     /**
      * This class exists solely for the sake of serialization
-     * compatibility with previous releases of IndexedTreeMap that did not
+     * compatibility with previous releases of ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap that did not
      * support NavigableMap.  It translates an old-version SubMap into
      * a new-version AscendingSubMap. This class is never otherwise
      * used.
@@ -2195,8 +2192,8 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Returns the first Entry in the IndexedTreeMap (according to the IndexedTreeMap's
-     * key-sort function).  Returns null if the IndexedTreeMap is empty.
+     * Returns the first Entry in the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap (according to the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap's
+     * key-sort function).  Returns null if the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap is empty.
      */
     final Entry<K, V> getFirstEntry() {
         Entry<K, V> p = root;
@@ -2207,8 +2204,8 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Returns the last Entry in the IndexedTreeMap (according to the IndexedTreeMap's
-     * key-sort function).  Returns null if the IndexedTreeMap is empty.
+     * Returns the last Entry in the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap (according to the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap's
+     * key-sort function).  Returns null if the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap is empty.
      */
     final Entry<K, V> getLastEntry() {
         Entry<K, V> p = root;
@@ -2549,15 +2546,15 @@ public class IndexedTreeMap<K, V>
     private static final long serialVersionUID = 919286545866124006L;
 
     /**
-     * Save the state of the <tt>IndexedTreeMap</tt> instance to a stream (i.e.,
+     * Save the state of the <tt>ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap</tt> instance to a stream (i.e.,
      * serialize it).
      *
-     * @serialData The <i>size</i> of the IndexedTreeMap (the number of key-value
+     * @serialData The <i>size</i> of the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap (the number of key-value
      * mappings) is emitted (int), followed by the key (Object)
      * and value (Object) for each key-value mapping represented
-     * by the IndexedTreeMap. The key-value mappings are emitted in
-     * key-order (as determined by the IndexedTreeMap's Comparator,
-     * or by the keys' natural ordering if the IndexedTreeMap has no
+     * by the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap. The key-value mappings are emitted in
+     * key-order (as determined by the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap's Comparator,
+     * or by the keys' natural ordering if the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap has no
      * Comparator).
      */
     private void writeObject(java.io.ObjectOutputStream s)
@@ -2577,7 +2574,7 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Reconstitute the <tt>IndexedTreeMap</tt> instance from a stream (i.e.,
+     * Reconstitute the <tt>ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap</tt> instance from a stream (i.e.,
      * deserialize it).
      */
     private void readObject(final java.io.ObjectInputStream s)
@@ -2592,7 +2589,7 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Intended to be called only from IndexedTreeSet.readObject
+     * Intended to be called only from ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet.readObject
      */
     void readTreeSet(int size, java.io.ObjectInputStream s, V defaultVal)
             throws java.io.IOException, ClassNotFoundException {
@@ -2611,7 +2608,7 @@ public class IndexedTreeMap<K, V>
     }
 
     /**
-     * Intended to be called only from IndexedTreeSet.addAll
+     * Intended to be called only from ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeSet.addAll
      */
     void addAllForTreeSet(SortedSet<? extends K> set, V defaultVal) {
         try {
@@ -2634,7 +2631,7 @@ public class IndexedTreeMap<K, V>
      * (it == null, defaultVal == null).
      * 4) A stream of serialized keys. (it == null, defaultVal != null).
      * <p/>
-     * It is assumed that the comparator of the IndexedTreeMap is already set prior
+     * It is assumed that the comparator of the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap is already set prior
      * to calling this method.
      *
      * @param size       the number of keys (or key-value pairs) to be read from
@@ -2665,7 +2662,7 @@ public class IndexedTreeMap<K, V>
      * Recursive "helper method" that does the real work of the
      * previous method.  Identically named parameters have
      * identical definitions.  Additional parameters are documented below.
-     * It is assumed that the comparator and size fields of the IndexedTreeMap are
+     * It is assumed that the comparator and size fields of the ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.IndexedTreeMap are
      * already set prior to calling this method.  (It ignores both fields.)
      *
      * @param level    the current level of tree. Initial call should be 0.

@@ -1,4 +1,4 @@
-/*
+package ee.ut.cs.dsg.efficientSWAG;/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package ee.ut.cs.dsg.efficientSWAG;
 
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -59,7 +57,7 @@ public class MergingWindowSet<W extends Window> {
 	private final Map<W, W> mapping;
 
 	/**
-	 * Mapping when we created the {@code MergingWindowSet}. We use this to decide whether
+	 * Mapping when we created the {@code ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.MergingWindowSet}. We use this to decide whether
 	 * we need to persist any changes to state.
 	 */
 	private final Map<W, W> initialMapping;
@@ -240,7 +238,7 @@ public class MergingWindowSet<W extends Window> {
 
 	@Override
 	public String toString() {
-		return "MergingWindowSet{" +
+		return "ee.ut.cs.dsc.efficientSWAG.ee.ut.cs.dsc.efficientSWAG.MergingWindowSet{" +
 				"windows=" + mapping +
 				'}';
 	}
