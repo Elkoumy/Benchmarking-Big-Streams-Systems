@@ -4,19 +4,26 @@
  */
 package flink.benchmark;
 
-import benchmark.common.advertising.RedisAdCampaignCache;
-import benchmark.common.advertising.CampaignProcessorCommon;
+
+
+
+import ee.ut.cs.dsg.efficientSWAG.Enumerators;
 import benchmark.common.Utils;
-import org.apache.flink.api.common.functions.*;
+import benchmark.common.advertising.CampaignProcessorCommon;
+import benchmark.common.advertising.RedisAdCampaignCache;
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.CheckpointingMode;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.util.Collector;
@@ -24,7 +31,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * To Run:  flink run target/flink-benchmarks-0.1.0-AdvertisingTopologyNative.jar  --confPath "../conf/benchmarkConf.yaml"
@@ -51,7 +63,8 @@ public class AdvertisingTopologyNative {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.getConfig().setGlobalJobParameters(flinkBenchmarkParams);
 
-		// Set the buffer timeout (default 100)
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        // Set the buffer timeout (default 100)
         // Lowering the timeout will lead to lower latencies, but will eventually reduce throughput.
         env.setBufferTimeout(flinkBenchmarkParams.getLong("flink.buffer-timeout", 100));
 
@@ -68,26 +81,37 @@ public class AdvertisingTopologyNative {
                         new SimpleStringSchema(),
                         flinkBenchmarkParams.getProperties())).setParallelism(Math.min(hosts * cores, kafkaPartitions));
 
-        messageStream
+//        messageStream
+//                .rebalance()
+//                // Parse the String as JSON
+//                .flatMap(new DeserializeBoltGamal())
+//                //Filter the records if event type is "view"
+////                .filter(new EventFilterBoltGamal())
+//                // project the event
+//                .<Tuple2<String, String>>project(2, 5)
+//                // perform join with redis data
+////                .flatMap(new RedisJoinBolt())
+//                // process campaign
+//                .flatMap(new MyFlatMap())
+//                .keyBy(0)
+//                .flatMap(new CampaignProcessor());
+
+
+        DataStream result= messageStream
                 .rebalance()
                 // Parse the String as JSON
                 .flatMap(new DeserializeBoltGamal())
-                //Filter the records if event type is "view"
-                .filter(new EventFilterBoltGamal())
-                // project the event
-                .<Tuple2<String, String>>project(2, 5)
-                // perform join with redis data
-//                .flatMap(new RedisJoinBolt())
-                // process campaign
-                .flatMap(new MyFlatMap())
-                .keyBy(0)
-                .flatMap(new CampaignProcessor());
+                .keyBy(1)
+                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.SUM)
+                .sum(2)
+                ;
+        ;
 
-
-        messageStream.print();
+        result.print();
 
         env.execute();
     }
+
 
     public static class DeserializeBolt implements
             FlatMapFunction<String, Tuple7<String, String, String, String, String, String, String>> {
@@ -118,9 +142,9 @@ public class AdvertisingTopologyNative {
     }
 
     public static class EventFilterBoltGamal implements
-            FilterFunction<Tuple6<String, String, String, String, String, String>> {
+            FilterFunction<Tuple3<Long, String, Double>> {
         @Override
-        public boolean filter(Tuple6<String, String, String,  String, String, String> tuple) throws Exception {
+        public boolean filter(Tuple3<Long, String, Double> tuple) throws Exception {
             return tuple.getField(4).equals("view");
         }
     }
@@ -159,21 +183,19 @@ public class AdvertisingTopologyNative {
 
 
     public static class DeserializeBoltGamal implements
-            FlatMapFunction<String, Tuple6<String, String, String, String, String, String>> {
+            FlatMapFunction<String, Tuple3<Long, String, Double>> {
 
         @Override
-        public void flatMap(String input, Collector<Tuple6<String, String, String, String, String, String>> out)
+        public void flatMap(String input, Collector<Tuple3<Long, String, Double>> out)
                 throws Exception {
             JSONObject obj = new JSONObject(input);
-            Tuple6<String, String, String, String, String, String> tuple =
-                    new Tuple6<String, String, String, String, String,  String>(
-                            obj.getString("user_id"),
-                            obj.getString("page_id"),
+            Tuple3<Long, String, Double> tuple =
+                    new Tuple3<Long, String, Double>(
+                            Long.parseLong(obj.getString("event_time")),
                             obj.getString("ad_id"),
-                            obj.getString("ad_type"),
-                            obj.getString("event_type"),
-                            obj.getString("event_time")
-                            );
+                            Double.parseDouble(obj.getString("page_id"))
+
+                    );
             out.collect(tuple);
         }
     }
@@ -294,3 +316,9 @@ public class AdvertisingTopologyNative {
         return val;
     }
 }
+
+/**
+ * To Run:  flink run target/flink-benchmarks-0.1.0-AdvertisingTopologyNative.jar  --confPath "../conf/benchmarkConf.yaml"
+ */
+
+
