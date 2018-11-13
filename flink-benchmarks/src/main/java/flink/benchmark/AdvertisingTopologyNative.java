@@ -76,8 +76,9 @@ public class AdvertisingTopologyNative {
                 // project the event
                 .<Tuple2<String, String>>project(2, 5)
                 // perform join with redis data
-                .flatMap(new RedisJoinBolt())
+//                .flatMap(new RedisJoinBolt())
                 // process campaign
+                .flatMap(new MyFlatMap())
                 .keyBy(0)
                 .flatMap(new CampaignProcessor());
 
@@ -138,6 +139,33 @@ public class AdvertisingTopologyNative {
 
             Tuple3<String, String, String> tuple = new Tuple3<String, String, String>(
                     campaign_id,
+                    (String) input.getField(0),
+                    (String) input.getField(1));
+            out.collect(tuple);
+        }
+    }
+
+    public static final class MyFlatMap extends RichFlatMapFunction<Tuple2<String, String>, Tuple3<String, String, String>> {
+
+
+
+        @Override
+        public void open(Configuration parameters) {
+
+        }
+
+        @Override
+        public void flatMap(Tuple2<String, String> input,
+                            Collector<Tuple3<String, String, String>> out) throws Exception {
+//            String ad_id = input.getField(0);
+
+
+            Random rand = new Random();
+
+            int  n = rand.nextInt(1000000000) + 1;
+            String s_n = n+"";
+            Tuple3<String, String, String> tuple = new Tuple3<String, String, String>(
+                    s_n,
                     (String) input.getField(0),
                     (String) input.getField(1));
             out.collect(tuple);
