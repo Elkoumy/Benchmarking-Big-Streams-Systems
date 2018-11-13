@@ -423,7 +423,7 @@ function getBenchmarkResult(){
     getResultFromKafkaServer "${PATH_RESULT}"
     getResultFromRedisServer "${PATH_RESULT}"
     sleep ${SHORT_SLEEP}
-    Rscript reporting/reporting.R ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 15
+    Rscript reporting/reporting.r ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 15
 }
 
 function benchmark(){
@@ -694,7 +694,7 @@ case $1 in
         runAllServers "${PULL_GIT}"
     ;;
     report)
-        Rscript reporting.R
+        Rscript reporting.r
     ;;
     reboot)
         runAllServers "${REBOOT_CMD}"
