@@ -694,7 +694,7 @@ case $1 in
         runAllServers "${PULL_GIT}"
     ;;
     report)
-        Rscript reporting.r
+        Rscript ./reporting/reporting.r
     ;;
     reboot)
         runAllServers "${REBOOT_CMD}"
