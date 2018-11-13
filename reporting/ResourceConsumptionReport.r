@@ -13,10 +13,10 @@ generateResourceConsumptionReport <- function(engines, tps, duration, tps_count)
      for(eng in 1:length(engines)){
        engine = engines[eng]
        TPS = toString(tps*i)
-       reportFolder = paste("/Users/sahverdiyev/Desktop/EDU/THESIS/stream-benchmarking/result/", sep = "")
-       sourceFolder = paste("/Users/sahverdiyev/Desktop/EDU/THESIS/stream-benchmarking/result/", engine, "/TPS_", TPS,"_DURATION_",toString(duration),"/", sep = "")
+       reportFolder = paste("/root/stream-benchmarking/result/", sep = "")
+       sourceFolder = paste("/root/stream-benchmarking/result/", engine, "/TPS_", TPS,"_DURATION_",toString(duration),"/", sep = "")
        #Get the stream servers cpu and memory consumption statistics
-       for(x in 1:10) {
+       for(x in 1:6) {
          streamCpu = read.table(paste(sourceFolder, "stream-node-0", x,".cpu",sep=""),header=F,stringsAsFactors=F,sep=',')
          streamMem = read.table(paste(sourceFolder, "stream-node-0", x,".mem",sep=""),header=F,stringsAsFactors=F,sep=',')
 
@@ -31,7 +31,7 @@ generateResourceConsumptionReport <- function(engines, tps, duration, tps_count)
          memoryUsage <- rbind(memoryUsage, dfMemory)
        }
        #Get the kafka servers cpu and memory consumption statistics
-       for(x in 1:5) {
+       for(x in 1:3) {
          kafkaCpu = read.table(paste(sourceFolder, "kafka-node-0", x,".cpu",sep=""),header=F,stringsAsFactors=F,sep=',')
          kafkaMem = read.table(paste(sourceFolder, "kafka-node-0", x,".mem",sep=""),header=F,stringsAsFactors=F,sep=',')
 
@@ -124,10 +124,10 @@ generateResourceConsumptionReportByTps <- function(engine, tps, duration, tps_co
     for(i in 1:tps_count) {
   
       TPS = toString(tps*i)
-      reportFolder = paste("/Users/sahverdiyev/Desktop/EDU/THESIS/stream-benchmarking/result/", engine, "/", sep = "")
-      sourceFolder = paste("/Users/sahverdiyev/Desktop/EDU/THESIS/stream-benchmarking/result/", engine, "/TPS_", TPS,"_DURATION_",toString(duration),"/", sep = "")
+      reportFolder = paste("/root/stream-benchmarking/result/", engine, "/", sep = "")
+      sourceFolder = paste("/root/stream-benchmarking/result/", engine, "/TPS_", TPS,"_DURATION_",toString(duration),"/", sep = "")
       #Get the stream servers cpu and memory consumption statistics
-      for(x in 1:10) {
+      for(x in 1:6) {
         streamCpu = read.table(paste(sourceFolder, "stream-node-0", x,".cpu",sep=""),header=F,stringsAsFactors=F,sep=',')
         streamMem = read.table(paste(sourceFolder, "stream-node-0", x,".mem",sep=""),header=F,stringsAsFactors=F,sep=',')
         
@@ -142,7 +142,7 @@ generateResourceConsumptionReportByTps <- function(engine, tps, duration, tps_co
         memoryUsage <- rbind(memoryUsage, dfMemory)
       }
       #Get the kafka servers cpu and memory consumption statistics
-      for(x in 1:5) {
+      for(x in 1:3) {
         kafkaCpu = read.table(paste(sourceFolder, "kafka-node-0", x,".cpu",sep=""),header=F,stringsAsFactors=F,sep=',')
         kafkaMem = read.table(paste(sourceFolder, "kafka-node-0", x,".mem",sep=""),header=F,stringsAsFactors=F,sep=',')
         
