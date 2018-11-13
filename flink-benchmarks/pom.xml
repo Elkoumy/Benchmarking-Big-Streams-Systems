@@ -49,9 +49,9 @@
         <dependency>
             <groupId>ee.ut.cs.dsg.efficientSWAG</groupId>
             <artifactId>efficientSWAG</artifactId>
-            <version>1.0</version>
+            <version>18</version>
             <scope>system</scope>
-            <systemPath>/root/stream-benchmarking/eeutcsdsgefficientSWAG/target/ee.ut.cs.dsg.efficientSWAG-1.0-SNAPSHOT.jar</systemPath>
+            <systemPath>//root/stream-benchmarking/flink-1.6.0/lib/flink-dist_2.11-1.6.0.jar</systemPath>
         </dependency>
     </dependencies>
 
