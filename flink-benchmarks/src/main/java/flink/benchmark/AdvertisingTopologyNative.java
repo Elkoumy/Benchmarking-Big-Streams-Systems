@@ -84,6 +84,7 @@ public class AdvertisingTopologyNative {
                 .flatMap(new CampaignProcessor());
 
 
+        messageStream.print();
         env.execute();
     }
 
