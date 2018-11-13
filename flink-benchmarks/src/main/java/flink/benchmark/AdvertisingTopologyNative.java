@@ -10,6 +10,7 @@ import benchmark.common.Utils;
 import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
@@ -70,9 +71,9 @@ public class AdvertisingTopologyNative {
         messageStream
                 .rebalance()
                 // Parse the String as JSON
-//                .flatMap(new DeserializeBolt())
+                .flatMap(new DeserializeBoltGamal())
                 //Filter the records if event type is "view"
-//                .filter(new EventFilterBolt())
+                .filter(new EventFilterBoltGamal())
                 // project the event
                 .<Tuple2<String, String>>project(2, 5)
                 // perform join with redis data
@@ -114,6 +115,14 @@ public class AdvertisingTopologyNative {
         }
     }
 
+    public static class EventFilterBoltGamal implements
+            FilterFunction<Tuple6<String, String, String, String, String, String>> {
+        @Override
+        public boolean filter(Tuple6<String, String, String,  String, String, String> tuple) throws Exception {
+            return tuple.getField(4).equals("view");
+        }
+    }
+
     public static final class RedisJoinBolt extends RichFlatMapFunction<Tuple2<String, String>, Tuple3<String, String, String>> {
 
         RedisAdCampaignCache redisAdCampaignCache;
@@ -144,6 +153,30 @@ public class AdvertisingTopologyNative {
             out.collect(tuple);
         }
     }
+
+
+
+    public static class DeserializeBoltGamal implements
+            FlatMapFunction<String, Tuple6<String, String, String, String, String, String>> {
+
+        @Override
+        public void flatMap(String input, Collector<Tuple6<String, String, String, String, String, String>> out)
+                throws Exception {
+            JSONObject obj = new JSONObject(input);
+            Tuple6<String, String, String, String, String, String> tuple =
+                    new Tuple6<String, String, String, String, String,  String>(
+                            obj.getString("user_id"),
+                            obj.getString("page_id"),
+                            obj.getString("ad_id"),
+                            obj.getString("ad_type"),
+                            obj.getString("event_type"),
+                            obj.getString("event_time")
+                            );
+            out.collect(tuple);
+        }
+    }
+
+
 
     public static final class MyFlatMap extends RichFlatMapFunction<Tuple2<String, String>, Tuple3<String, String, String>> {
 
