@@ -6,7 +6,7 @@ package flink.benchmark;
 
 
 
-
+import ee.ut.cs.dsg.efficientSWAG.Enumerators;
 import benchmark.common.Utils;
 import benchmark.common.advertising.CampaignProcessorCommon;
 import benchmark.common.advertising.RedisAdCampaignCache;
