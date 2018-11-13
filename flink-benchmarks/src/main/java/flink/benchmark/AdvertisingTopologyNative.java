@@ -85,6 +85,7 @@ public class AdvertisingTopologyNative {
 
 
         messageStream.print();
+
         env.execute();
     }
 
