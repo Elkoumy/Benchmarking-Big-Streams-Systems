@@ -95,8 +95,6 @@ public class AdvertisingTopologyNative {
 //                .keyBy(0)
 //                .flatMap(new CampaignProcessor());
 
-
-
         DataStream result= messageStream
                 .rebalance()
                 // Parse the String as JSON
