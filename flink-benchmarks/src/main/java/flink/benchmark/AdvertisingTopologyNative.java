@@ -43,7 +43,7 @@ public class AdvertisingTopologyNative {
 
     private static final Logger LOG = LoggerFactory.getLogger(AdvertisingTopologyNative.class);
 
-
+    private static Random rand = new Random();
     public static void main(final String[] args) throws Exception {
 
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -186,11 +186,12 @@ public class AdvertisingTopologyNative {
         public void flatMap(String input, Collector<Tuple3<Long, String, Double>> out)
                 throws Exception {
             JSONObject obj = new JSONObject(input);
+
             Tuple3<Long, String, Double> tuple =
                     new Tuple3<Long, String, Double>(
                             Long.parseLong(obj.getString("event_time")),
                             obj.getString("page_id"),
-                            (double) Integer.parseInt(obj.getString("ad_id"))
+                            rand.nextDouble()
 
                     );
             out.collect(tuple);
