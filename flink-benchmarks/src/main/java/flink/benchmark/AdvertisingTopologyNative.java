@@ -190,7 +190,7 @@ public class AdvertisingTopologyNative {
                     new Tuple3<Long, String, Double>(
                             Long.parseLong(obj.getString("event_time")),
                             obj.getString("ad_id"),
-                            Double.parseDouble(obj.getString("page_id"))
+                            (double) Long.parseLong(obj.getString("page_id"))
 
                     );
             out.collect(tuple);
