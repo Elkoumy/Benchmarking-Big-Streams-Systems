@@ -42,7 +42,7 @@ time.divisor: 10000
 
 
 #Benchmark Specific
-test.time: 60
+test.time: 600
 
 tps.tps: 1000
 tps.range: 1000
