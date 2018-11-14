@@ -551,8 +551,8 @@ function benchmarkLoop (){
         runSystem $1 $2
         TPS=$[$TPS + $TPS_RANGE]
     done
-#    rebootServer
-    runAllServers "reboot"
+    rebootServer
+#    runAllServers "reboot"
     sleep ${WAIT_AFTER_REBOOT_SERVER}
     TPS=${INITIAL_TPS}
 }
