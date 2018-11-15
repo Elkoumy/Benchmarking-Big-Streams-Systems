@@ -543,6 +543,8 @@ function stopAll (){
 function benchmarkLoop (){
     while true; do
         runAllServers "${PULL_GIT}"
+        runAllServers "find /root/stream-benchmarking -type d -exec chmod 777 {} \;"
+        runAllServers "find /root/stream-benchmarking -type f -exec chmod 777 {} \;"
         sleep ${SHORT_SLEEP}
         if (("$TPS" > "$TPS_LIMIT")); then
             break
@@ -692,6 +694,8 @@ case $1 in
         git commit -am "$2"
         git push origin master
         runAllServers "${PULL_GIT}"
+        runAllServers "find /root/stream-benchmarking -type d -exec chmod 777 {} \;"
+        runAllServers "find /root/stream-benchmarking -type f -exec chmod 777 {} \;"
     ;;
     report)
         Rscript ./reporting/reporting.r

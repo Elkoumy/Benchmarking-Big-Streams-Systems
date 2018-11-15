@@ -101,6 +101,7 @@ public class AdvertisingTopologyNative {
                 .keyBy(1)
                 .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_DOUBLE_HEAP)
                 .sum(2)
+                .flatMap(new CampaignProcessorGamal())
                 ;
         ;
 
@@ -190,7 +191,7 @@ public class AdvertisingTopologyNative {
             Tuple3<Long, String, Double> tuple =
                     new Tuple3<Long, String, Double>(
                             Long.parseLong(obj.getString("event_time")),
-                            obj.getString("page_id"),
+                            obj.getString("campaign_id"),
                             rand.nextDouble()
 
                     );
@@ -227,6 +228,31 @@ public class AdvertisingTopologyNative {
         }
     }
 
+
+
+    public static class CampaignProcessorGamal extends RichFlatMapFunction<Tuple3<String, String, String>, String> {
+
+        CampaignProcessorCommon campaignProcessorCommon;
+
+        @Override
+        public void open(Configuration parameters) {
+            ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+            parameterTool.getRequired("jedis_server");
+            LOG.info("Opening connection with Jedis to {}", parameterTool.getRequired("jedis_server"));
+
+            this.campaignProcessorCommon = new CampaignProcessorCommon(parameterTool.getRequired("jedis_server"),Long.valueOf(parameterTool.get("time.divisor")));
+            this.campaignProcessorCommon.prepare();
+        }
+
+        @Override
+        public void flatMap(Tuple3<String, String, String> tuple, Collector<String> out) throws Exception {
+
+            String campaign_id = tuple.getField(1);
+            String event_time =  tuple.getField(0);
+            this.campaignProcessorCommon.execute(campaign_id, event_time);
+        }
+    }
+
     public static class CampaignProcessor extends RichFlatMapFunction<Tuple3<String, String, String>, String> {
 
         CampaignProcessorCommon campaignProcessorCommon;
@@ -249,6 +275,12 @@ public class AdvertisingTopologyNative {
             this.campaignProcessorCommon.execute(campaign_id, event_time);
         }
     }
+
+
+
+
+
+
 
     private static Map<String, String> getFlinkConfs(Map conf) {
         String kafkaBrokers = getKafkaBrokers(conf);
