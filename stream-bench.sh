@@ -210,7 +210,7 @@ run() {
     rm -rf /tmp/zookeeper
   elif [ "START_REDIS" = "$OPERATION" ];
   then
-    start_if_needed redis-server Redis 1 "$REDIS_DIR/src/redis-server" --protected-mode no
+    start_if_needed redis-server Redis 1 "$REDIS_DIR/src/redis-server" --maxclients 100000000 --protected-mode no
     cd data
     $LEIN run -n --configPath ../$CONF_FILE
     cd ..
