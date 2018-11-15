@@ -230,7 +230,7 @@ public class AdvertisingTopologyNative {
 
 
 
-    public static class CampaignProcessorGamal extends RichFlatMapFunction<Tuple3<String, String, String>, String> {
+    public static class CampaignProcessorGamal extends RichFlatMapFunction<Tuple3<Long, String, Double>, String> {
 
         CampaignProcessorCommon campaignProcessorCommon;
 
@@ -248,7 +248,7 @@ public class AdvertisingTopologyNative {
         public void flatMap(Tuple3<String, String, String> tuple, Collector<String> out) throws Exception {
 
             String campaign_id = tuple.getField(1);
-            String event_time =  tuple.getField(0);
+            String event_time =  tuple.getField(0).	toString();
             this.campaignProcessorCommon.execute(campaign_id, event_time);
         }
     }
