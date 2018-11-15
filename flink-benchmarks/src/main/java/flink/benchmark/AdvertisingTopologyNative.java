@@ -245,7 +245,7 @@ public class AdvertisingTopologyNative {
         }
 
         @Override
-        public void flatMap(Tuple3<String, String, String> tuple, Collector<String> out) throws Exception {
+        public void flatMap(Tuple3<Long, String, Double> tuple, Collector<String> out) throws Exception {
 
             String campaign_id = tuple.getField(1);
             String event_time =  tuple.getField(0)+"";
