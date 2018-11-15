@@ -248,7 +248,7 @@ public class AdvertisingTopologyNative {
         public void flatMap(Tuple3<String, String, String> tuple, Collector<String> out) throws Exception {
 
             String campaign_id = tuple.getField(1);
-            String event_time =  tuple.getField(0).	toString();
+            String event_time =  tuple.getField(0)+"";
             this.campaignProcessorCommon.execute(campaign_id, event_time);
         }
     }
