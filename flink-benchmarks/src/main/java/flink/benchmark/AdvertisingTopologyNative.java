@@ -99,7 +99,7 @@ public class AdvertisingTopologyNative {
                 // Parse the String as JSON
                 .flatMap(new DeserializeBoltGamal())
                 // perform join with redis data
-                .flatMap(new RedisJoinBolt())
+                .flatMap(new RedisJoinBoltGamal())
                 .keyBy(1)
                 .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_DOUBLE_HEAP)
                 .sum(2)
