@@ -46,7 +46,7 @@ test.time: 600
 
 tps.tps: 1000
 tps.range: 1000
-tps.limit: 10000
+tps.limit: 3000
 
 time.short: 5
 time.long: 10
