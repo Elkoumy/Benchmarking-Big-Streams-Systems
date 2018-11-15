@@ -98,6 +98,8 @@ public class AdvertisingTopologyNative {
                 .rebalance()
                 // Parse the String as JSON
                 .flatMap(new DeserializeBoltGamal())
+                // perform join with redis data
+                .flatMap(new RedisJoinBolt())
                 .keyBy(1)
                 .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_DOUBLE_HEAP)
                 .sum(2)
@@ -147,6 +149,39 @@ public class AdvertisingTopologyNative {
         }
     }
 
+
+
+    public static final class RedisJoinBoltGamal extends RichFlatMapFunction<Tuple3<Long, String, Double>, Tuple3<Long, String, Double>> {
+
+        RedisAdCampaignCache redisAdCampaignCache;
+
+        @Override
+        public void open(Configuration parameters) {
+            //initialize jedis
+            ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+            parameterTool.getRequired("jedis_server");
+            LOG.info("Opening connection with Jedis to {}", parameterTool.getRequired("jedis_server"));
+            this.redisAdCampaignCache = new RedisAdCampaignCache(parameterTool.getRequired("jedis_server"));
+            this.redisAdCampaignCache.prepare();
+        }
+
+        @Override
+        public void flatMap(Tuple3<Long, String, Double> input,
+                            Collector<Tuple3<Long, String, Double>> out) throws Exception {
+            String ad_id = input.getField(1);
+            String campaign_id = this.redisAdCampaignCache.execute(ad_id);
+            if(campaign_id == null) {
+                return;
+            }
+
+            Tuple3<Long, String, Double> tuple = new Tuple3<Long, String, Double>(
+
+                     input.getField(0),
+                    campaign_id,
+                     input.getField(2));
+            out.collect(tuple);
+        }
+    }
     public static final class RedisJoinBolt extends RichFlatMapFunction<Tuple2<String, String>, Tuple3<String, String, String>> {
 
         RedisAdCampaignCache redisAdCampaignCache;
@@ -191,7 +226,7 @@ public class AdvertisingTopologyNative {
             Tuple3<Long, String, Double> tuple =
                     new Tuple3<Long, String, Double>(
                             Long.parseLong(obj.getString("event_time")),
-                            obj.getString("campaign_id"),
+                            obj.getString("ad_id"),
                             rand.nextDouble()
 
                     );
