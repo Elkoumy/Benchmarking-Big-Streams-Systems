@@ -20,6 +20,7 @@ import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
+import org.apache.flink.metrics.Counter;
 import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -148,6 +149,23 @@ public class AdvertisingTopologyNative {
     /********************
      * Adding metric class
      ********************/
+
+    public static class MyMapper extends RichMapFunction<String, String> {
+        private transient Counter counter;
+
+        @Override
+        public void open(Configuration config) {
+            this.counter = getRuntimeContext()
+                    .getMetricGroup()
+                    .counter("myCounter");
+        }
+
+        @Override
+        public String map(String value) throws Exception {
+            this.counter.inc();
+            return value;
+        }
+    }
     public static class ThroughputRecorder  extends RichMapFunction<String, String> {
 
 
