@@ -90,6 +90,7 @@ public class AdvertisingTopologyNative {
          *****************************/
 
         messageStream= messageStream.map(new MyMapper());
+        messageStream= messageStream.map(new ThroughputRecorder());
 
 //        messageStream
 //                .rebalance()
