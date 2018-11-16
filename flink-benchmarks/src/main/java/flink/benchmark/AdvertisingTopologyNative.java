@@ -22,6 +22,7 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
 import org.apache.flink.metrics.Counter;
 import org.apache.flink.metrics.Meter;
+import org.apache.flink.metrics.MeterView;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -178,8 +179,8 @@ public class AdvertisingTopologyNative {
             super.open(parameters);
             this.meter = getRuntimeContext()
                     .getMetricGroup()
-
-                    .meter("throughput", new DropwizardMeterWrapper(new com.codahale.metrics.Meter()));
+                    .meter("throughput", new MeterView(5));
+//                    .meter("throughput", new MeterV(new com.codahale.metrics.Meter()));
         }
 
         @Override
