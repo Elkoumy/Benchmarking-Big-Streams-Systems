@@ -115,7 +115,7 @@ public class AdvertisingTopologyNative {
                 // perform join with redis data
                 .flatMap(new RedisJoinBoltGamal())
                 .keyBy(1)
-                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_SKIP_LIST)
+                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_VEB)
                 .sum(2)
                 .flatMap(new CampaignProcessorGamal())
                 ;
