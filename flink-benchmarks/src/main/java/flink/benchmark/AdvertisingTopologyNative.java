@@ -89,7 +89,7 @@ public class AdvertisingTopologyNative {
         adding metrics for the log
          *****************************/
 
-        messageStream= messageStream.map(new ThroughputRecorder());
+        messageStream= messageStream.map(new MyMapper());
 
 //        messageStream
 //                .rebalance()
