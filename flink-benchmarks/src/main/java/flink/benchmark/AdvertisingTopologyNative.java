@@ -13,11 +13,14 @@ import benchmark.common.advertising.RedisAdCampaignCache;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
+import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -79,6 +82,14 @@ public class AdvertisingTopologyNative {
                         new SimpleStringSchema(),
                         flinkBenchmarkParams.getProperties())).setParallelism(Math.min(hosts * cores, kafkaPartitions));
 
+
+
+        /*****************************
+        adding metrics for the log
+         *****************************/
+
+        messageStream.map(new ThroughputRecorder());
+
 //        messageStream
 //                .rebalance()
 //                // Parse the String as JSON
@@ -132,6 +143,33 @@ public class AdvertisingTopologyNative {
             out.collect(tuple);
         }
     }
+
+
+    /********************
+     * Adding metric class
+     ********************/
+    public static class ThroughputRecorder  extends RichMapFunction<String, String> {
+
+
+
+        private transient Meter meter;
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            super.open(parameters);
+            this.meter = getRuntimeContext()
+                    .getMetricGroup()
+
+                    .meter("throughput", new DropwizardMeterWrapper(new com.codahale.metrics.Meter()));
+        }
+
+        @Override
+        public String map(String value) throws Exception {
+            this.meter.markEvent();
+            return value;
+        }
+    }
+
 
     public static class EventFilterBolt implements
             FilterFunction<Tuple7<String, String, String, String, String, String, String>> {
