@@ -93,35 +93,35 @@ public class AdvertisingTopologyNative {
         messageStream= messageStream.map(new MyMapper());
         messageStream= messageStream.map(new ThroughputRecorder());
 
-//        messageStream
+        messageStream
+                .rebalance()
+                // Parse the String as JSON
+                .flatMap(new DeserializeBolt())
+                //Filter the records if event type is "view"
+                .filter(new EventFilterBolt())
+                // project the event
+                .<Tuple2<String, String>>project(2, 5)
+                // perform join with redis data
+                .flatMap(new RedisJoinBolt())
+                // process campaign
+//                .flatMap(new MyFlatMap())
+                .keyBy(0)
+                .flatMap(new CampaignProcessor());
+
+//        DataStream result= messageStream
 //                .rebalance()
 //                // Parse the String as JSON
 //                .flatMap(new DeserializeBoltGamal())
-//                //Filter the records if event type is "view"
-////                .filter(new EventFilterBoltGamal())
-//                // project the event
-//                .<Tuple2<String, String>>project(2, 5)
 //                // perform join with redis data
-////                .flatMap(new RedisJoinBolt())
-//                // process campaign
-//                .flatMap(new MyFlatMap())
-//                .keyBy(0)
-//                .flatMap(new CampaignProcessor());
-
-        DataStream result= messageStream
-                .rebalance()
-                // Parse the String as JSON
-                .flatMap(new DeserializeBoltGamal())
-                // perform join with redis data
-                .flatMap(new RedisJoinBoltGamal())
-                .keyBy(1)
-                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_VEB)
-                .sum(2)
-                .flatMap(new CampaignProcessorGamal())
-                ;
-        ;
-
-        result.print();
+//                .flatMap(new RedisJoinBoltGamal())
+//                .keyBy(1)
+//                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_VEB)
+//                .sum(2)
+//                .flatMap(new CampaignProcessorGamal())
+//                ;
+//        ;
+//
+//        result.print();
 
         env.execute();
     }
