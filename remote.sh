@@ -438,7 +438,7 @@ function benchmark(){
 
 
 function runSystem(){
-    CONF_FILE=./conf/benchmarkConf.yaml
+    CONF_FILE=/root/stream-benchmarking/conf/benchmarkConf.yaml
     prepareEnvironment
     case $1 in
          jet_embedded)
