@@ -233,10 +233,9 @@ public class AdvertisingTopologyNative {
             }
 
             Tuple3<Long, String, Double> tuple = new Tuple3<Long, String, Double>(
-
-                     input.getField(0),
-                    campaign_id,
-                     input.getField(2));
+                    (Long)    input.getField(0),
+                    (String)  campaign_id,
+                    (Double) input.getField(2));
             out.collect(tuple);
         }
     }
