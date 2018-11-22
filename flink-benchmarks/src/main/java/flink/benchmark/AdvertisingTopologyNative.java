@@ -4,12 +4,13 @@
  */
 package flink.benchmark;
 
+/**
+ * Copyright 2015, Yahoo Inc.
+ * Licensed under the terms of the Apache License 2.0. Please see LICENSE file in the project root for terms.
+ */
 
 
 import ee.ut.cs.dsg.efficientSWAG.Enumerators;
-import benchmark.common.Utils;
-import benchmark.common.advertising.CampaignProcessorCommon;
-import benchmark.common.advertising.RedisAdCampaignCache;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -20,13 +21,13 @@ import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
 import org.apache.flink.metrics.Counter;
 import org.apache.flink.metrics.Meter;
 import org.apache.flink.metrics.MeterView;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
@@ -65,6 +66,7 @@ public class AdvertisingTopologyNative {
         LOG.info("Parameters used: {}", flinkBenchmarkParams.toMap());
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//        StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("172.17.77.47", 6123, "C:\\Gamal Elkoumy\\PhD\\OneDrive - Tartu Ülikool\\Stream Processing\\Source Code and Example\\Benchmarking-gamal-version\\redisTest\\out\\artifacts\\redisTest_jar\\redisTest.jar");
         env.getConfig().setGlobalJobParameters(flinkBenchmarkParams);
 
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
@@ -88,13 +90,12 @@ public class AdvertisingTopologyNative {
 
 
         /*****************************
-        adding metrics for the log
+         adding metrics for the log
          *****************************/
 
-//        messageStream= messageStream.map(new MyMapper());
-//        messageStream= messageStream.map(new ThroughputRecorder());
-//
-//
+        messageStream= messageStream.map(new MyMapper());
+        messageStream= messageStream.map(new ThroughputRecorder());
+
 //        messageStream
 //                .rebalance()
 //                // Parse the String as JSON
@@ -110,19 +111,7 @@ public class AdvertisingTopologyNative {
 //                .keyBy(0)
 //                .flatMap(new CampaignProcessor());
 
-//        DataStream result= messageStream
-//                .rebalance()
-//                // Parse the String as JSON
-//                .flatMap(new DeserializeBoltGamal())
-//                // perform join with redis data
-//                .flatMap(new RedisJoinBoltGamal())
-//                .keyBy(1)
-//                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_VEB)
-//                .sum(2)
-//                .flatMap(new CampaignProcessorGamal())
-//                ;
-//        ;
-//
+
         messageStream
                 .rebalance()
                 // Parse the String as JSON
@@ -151,7 +140,7 @@ public class AdvertisingTopologyNative {
                 .flatMap(new FormatRestore())
                 .flatMap(new CampaignProcessor())
         ;
-//        result.print();
+
 
         env.execute();
     }
@@ -176,7 +165,7 @@ public class AdvertisingTopologyNative {
     public static class DeserializeBolt implements
             FlatMapFunction<String, Tuple7<String, String, String, String, String, String, String>> {
 
-        @Override
+        //        @Override
         public void flatMap(String input, Collector<Tuple7<String, String, String, String, String, String, String>> out)
                 throws Exception {
             JSONObject obj = new JSONObject(input);
@@ -239,7 +228,7 @@ public class AdvertisingTopologyNative {
 
     public static class EventFilterBolt implements
             FilterFunction<Tuple7<String, String, String, String, String, String, String>> {
-        @Override
+        //        @Override
         public boolean filter(Tuple7<String, String, String, String, String, String, String> tuple) throws Exception {
             return tuple.getField(4).equals("view");
         }
@@ -247,7 +236,7 @@ public class AdvertisingTopologyNative {
 
     public static class EventFilterBoltGamal implements
             FilterFunction<Tuple3<Long, String, Double>> {
-        @Override
+        //        @Override
         public boolean filter(Tuple3<Long, String, Double> tuple) throws Exception {
             return tuple.getField(4).equals("view");
         }
@@ -321,7 +310,7 @@ public class AdvertisingTopologyNative {
     public static class DeserializeBoltGamal implements
             FlatMapFunction<String, Tuple3<Long, String, Double>> {
 
-        @Override
+        //        @Override
         public void flatMap(String input, Collector<Tuple3<Long, String, Double>> out)
                 throws Exception {
             JSONObject obj = new JSONObject(input);
