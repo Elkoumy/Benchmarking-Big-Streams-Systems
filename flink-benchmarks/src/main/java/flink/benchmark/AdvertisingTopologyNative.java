@@ -16,6 +16,7 @@ import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
@@ -90,23 +91,24 @@ public class AdvertisingTopologyNative {
         adding metrics for the log
          *****************************/
 
-        messageStream= messageStream.map(new MyMapper());
-        messageStream= messageStream.map(new ThroughputRecorder());
-
-        messageStream
-                .rebalance()
-                // Parse the String as JSON
-                .flatMap(new DeserializeBolt())
-                //Filter the records if event type is "view"
-                .filter(new EventFilterBolt())
-                // project the event
-                .<Tuple2<String, String>>project(2, 5)
-                // perform join with redis data
-                .flatMap(new RedisJoinBolt())
-                // process campaign
-//                .flatMap(new MyFlatMap())
-                .keyBy(0)
-                .flatMap(new CampaignProcessor());
+//        messageStream= messageStream.map(new MyMapper());
+//        messageStream= messageStream.map(new ThroughputRecorder());
+//
+//
+//        messageStream
+//                .rebalance()
+//                // Parse the String as JSON
+//                .flatMap(new DeserializeBolt())
+//                //Filter the records if event type is "view"
+//                .filter(new EventFilterBolt())
+//                // project the event
+//                .<Tuple2<String, String>>project(2, 5)
+//                // perform join with redis data
+//                .flatMap(new RedisJoinBolt())
+//                // process campaign
+////                .flatMap(new MyFlatMap())
+//                .keyBy(0)
+//                .flatMap(new CampaignProcessor());
 
 //        DataStream result= messageStream
 //                .rebalance()
@@ -121,9 +123,53 @@ public class AdvertisingTopologyNative {
 //                ;
 //        ;
 //
+        messageStream
+                .rebalance()
+                // Parse the String as JSON
+                .flatMap(new DeserializeBolt())
+                //Filter the records if event type is "view"
+                .filter(new EventFilterBolt())
+                // project the event
+                .<Tuple2<String, String>>project(2, 5)
+                // perform join with redis data
+                .flatMap(new RedisJoinBolt())
+                .flatMap(new FormatConvert())
+                .assignTimestampsAndWatermarks(
+                        new AscendingTimestampExtractor<Tuple4<String,String,String,Double>>() {
+
+                            //																		 @Override
+                            public long extractAscendingTimestamp(Tuple4<String, String, String, Double> element) {
+                                return Long.parseLong(element.f2);
+                            }
+                        }
+                )
+//                // process campaign
+////                .flatMap(new MyFlatMap())
+                .keyBy(0)
+                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MEDIAN_VEB)
+                .sum(3)
+                .flatMap(new FormatRestore())
+                .flatMap(new CampaignProcessor())
+        ;
 //        result.print();
 
         env.execute();
+    }
+
+    public static class FormatConvert implements org.apache.flink.api.common.functions.FlatMapFunction<Tuple3<String, String, String>, Tuple4<String, String,String, Double>> {
+
+        Random rand = new Random();
+
+        public void flatMap(Tuple3<String, String, String> input, Collector<Tuple4<String, String, String, Double>> collector) throws Exception {
+            collector.collect(new Tuple4(input.f0,input.f1,input.f2, rand.nextDouble()));
+        }
+    }
+
+    public static class FormatRestore implements org.apache.flink.api.common.functions.FlatMapFunction<Tuple4<String, String, String, Double>, Tuple3<String, String, String>> {
+
+        public void flatMap(Tuple4<String, String, String, Double> input, Collector<Tuple3<String, String, String>> collector) throws Exception {
+            collector.collect(new Tuple3(input.f0, input.f1, input.f2));
+        }
     }
 
 
