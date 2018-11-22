@@ -423,7 +423,7 @@ function getBenchmarkResult(){
     getResultFromKafkaServer "${PATH_RESULT}"
     getResultFromRedisServer "${PATH_RESULT}"
     sleep ${SHORT_SLEEP}
-    Rscript reporting/reporting.r ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 15
+    Rscript reporting/reporting.r ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 1
 }
 
 function benchmark(){
