@@ -234,46 +234,7 @@ public class AdvertisingTopologyNative {
         }
     }
 
-    public static class EventFilterBoltGamal implements
-            FilterFunction<Tuple3<Long, String, Double>> {
-        //        @Override
-        public boolean filter(Tuple3<Long, String, Double> tuple) throws Exception {
-            return tuple.getField(4).equals("view");
-        }
-    }
 
-
-
-    public static final class RedisJoinBoltGamal extends RichFlatMapFunction<Tuple3<Long, String, Double>, Tuple3<Long, String, Double>> {
-
-        RedisAdCampaignCache redisAdCampaignCache;
-
-        @Override
-        public void open(Configuration parameters) {
-            //initialize jedis
-            ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-            parameterTool.getRequired("jedis_server");
-            LOG.info("Opening connection with Jedis to {}", parameterTool.getRequired("jedis_server"));
-            this.redisAdCampaignCache = new RedisAdCampaignCache(parameterTool.getRequired("jedis_server"));
-            this.redisAdCampaignCache.prepare();
-        }
-
-        @Override
-        public void flatMap(Tuple3<Long, String, Double> input,
-                            Collector<Tuple3<Long, String, Double>> out) throws Exception {
-            String ad_id = input.getField(1);
-            String campaign_id = this.redisAdCampaignCache.execute(ad_id);
-            if(campaign_id == null) {
-                return;
-            }
-
-            Tuple3<Long, String, Double> tuple = new Tuple3<Long, String, Double>(
-                    (Long)    input.getField(0),
-                    (String)  campaign_id,
-                    (Double) input.getField(2));
-            out.collect(tuple);
-        }
-    }
     public static final class RedisJoinBolt extends RichFlatMapFunction<Tuple2<String, String>, Tuple3<String, String, String>> {
 
         RedisAdCampaignCache redisAdCampaignCache;
