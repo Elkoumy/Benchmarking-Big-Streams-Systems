@@ -139,7 +139,9 @@ public class BenchmarkConfig implements Serializable{
     if(!conf.containsKey("zookeeper.servers")) {
       throw new IllegalArgumentException("Not zookeeper servers found!");
     }
-    return listOfStringToString((List<String>) conf.get("zookeeper.servers"), String.valueOf(conf.get("zookeeper.port")), zkPath);
+    String s= listOfStringToString((List<String>) conf.get("zookeeper.servers"), String.valueOf(conf.get("zookeeper.port")), zkPath);
+
+    return s.replace("null","");
   }
 
   private static String getKafkaBrokers(Map conf) {
@@ -149,7 +151,9 @@ public class BenchmarkConfig implements Serializable{
     if(!conf.containsKey("kafka.port")) {
       throw new IllegalArgumentException("No kafka port found!");
     }
-    return listOfStringToString((List<String>) conf.get("kafka.brokers"), String.valueOf(conf.get("kafka.port")), "");
+    String s= listOfStringToString((List<String>) conf.get("kafka.brokers"), String.valueOf(conf.get("kafka.port")), "");
+
+    return s;
   }
 
 
