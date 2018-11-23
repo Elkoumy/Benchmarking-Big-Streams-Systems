@@ -133,7 +133,7 @@ public class AdvertisingTopologyNative {
  */
 //        config = conf;
 
-//        args[0]="C:\\Gamal Elkoumy\\PhD\\OneDrive - Tartu Ülikool\\Stream Processing\\Source Code and Example\\Benchmarking-gamal-version\\stream-benchmarking\\conf\\benchmarkConf.yaml";
+        args[0]=" /root/stream-benchmarking/conf/benchmarkConf.yaml";
         BenchmarkConfig config = BenchmarkConfig.fromArgs(args);
 
         DataStream<String> rawMessageStream = streamSource(config, env);
