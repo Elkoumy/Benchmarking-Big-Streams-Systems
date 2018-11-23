@@ -133,7 +133,7 @@ public class AdvertisingTopologyNative {
  */
 //        config = conf;
 
-        args[0]=" /root/stream-benchmarking/conf/benchmarkConf.yaml";
+        args[0]="/root/stream-benchmarking/conf/benchmarkConf.yaml";
         BenchmarkConfig config = BenchmarkConfig.fromArgs(args);
 
         DataStream<String> rawMessageStream = streamSource(config, env);
