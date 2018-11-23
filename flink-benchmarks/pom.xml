@@ -40,11 +40,7 @@
             <groupId>com.yahoo.stream</groupId>
             <artifactId>streaming-benchmark-common</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_2.11</artifactId>
-            <version>1.6.0</version>
-        </dependency>
+
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
@@ -56,10 +52,16 @@
             <artifactId>flink-metrics-dropwizard</artifactId>
             <version>1.6.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka-0.8_2.11</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+
 
         <!--<dependency>-->
             <!--<groupId>org.apache.flink</groupId>-->
-            <!--<artifactId>flink-connector-kafka-0.8_2.11</artifactId>-->
+            <!--<artifactId>flink-streaming-java_2.11</artifactId>-->
             <!--<version>1.6.0</version>-->
         <!--</dependency>-->
 
