@@ -1,13 +1,8 @@
-/**
+package flink.benchmark; /**
  * Copyright 2015, Yahoo Inc.
  * Licensed under the terms of the Apache License 2.0. Please see LICENSE file in the project root for terms.
  */
-package flink.benchmark;
 
-/**
- * Copyright 2015, Yahoo Inc.
- * Licensed under the terms of the Apache License 2.0. Please see LICENSE file in the project root for terms.
- */
 
 import ee.ut.cs.dsg.efficientSWAG.Enumerators;
 import org.apache.flink.api.common.functions.*;
