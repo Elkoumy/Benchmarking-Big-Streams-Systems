@@ -25,12 +25,7 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.flink</groupId>-->
-            <!--<artifactId>flink-streaming-java_${scala.binary.version}</artifactId>-->
-            <!--<version>${flink.version}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka-0.11_${scala.binary.version}</artifactId>
@@ -52,6 +47,12 @@
             <artifactId>flink-metrics-dropwizard</artifactId>
             <version>1.6.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka-0.11_2.11</artifactId>
+            <version>1.6.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka-0.8_2.11</artifactId>
@@ -59,11 +60,19 @@
         </dependency>
 
 
+
         <!--<dependency>-->
             <!--<groupId>org.apache.flink</groupId>-->
-            <!--<artifactId>flink-streaming-java_2.11</artifactId>-->
-            <!--<version>1.6.0</version>-->
+            <!--<artifactId>flink-streaming-java_${scala.binary.version}</artifactId>-->
+            <!--<version>${flink.version}</version>-->
+            <!--<scope>provided</scope>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java_2.11</artifactId>
+            <version>1.6.0</version>
+        </dependency>
 
         <dependency>
             <groupId>ee.ut.cs.dsg.efficientSWAG</groupId>
