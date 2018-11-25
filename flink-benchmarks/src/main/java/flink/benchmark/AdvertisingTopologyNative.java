@@ -148,6 +148,7 @@ public class AdvertisingTopologyNative {
                 .sum(3)
                 .flatMap(new FormatRestore())
                 .flatMap(new CampaignProcessor())
+
         ;
 //        result.print();
 
