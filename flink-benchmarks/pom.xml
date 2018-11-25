@@ -61,12 +61,12 @@
 
 
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.flink</groupId>-->
+            <!--<artifactId>flink-streaming-java_${scala.binary.version}</artifactId>-->
+            <!--<version>${flink.version}</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -74,13 +74,13 @@
             <version>1.6.0</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>ee.ut.cs.dsg.efficientSWAG</groupId>-->
-            <!--<artifactId>efficientSWAG</artifactId>-->
-            <!--<version>1.6.0</version>-->
-            <!--<scope>system</scope>-->
-            <!--<systemPath>/root/stream-benchmarking/flink-1.6.0/lib/flink-dist_2.11-1.6.0.jar</systemPath>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>ee.ut.cs.dsg.efficientSWAG</groupId>
+            <artifactId>efficientSWAG</artifactId>
+            <version>1.6.0</version>
+            <scope>system</scope>
+            <systemPath>/root/stream-benchmarking/flink-1.6.0/lib/flink-dist_2.11-1.6.0.jar</systemPath>
+        </dependency>
 
 
 
