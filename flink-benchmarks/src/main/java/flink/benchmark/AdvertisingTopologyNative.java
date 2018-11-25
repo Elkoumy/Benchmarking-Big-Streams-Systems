@@ -30,7 +30,7 @@ import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.triggers.TriggerResult;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer082;
+//import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer082;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 import org.apache.flink.util.Collector;
 import org.json.JSONObject;
@@ -681,8 +681,15 @@ public class AdvertisingTopologyNative {
     /**
      * Configure Kafka source
      */
-    private static FlinkKafkaConsumer082<String> kafkaSource(BenchmarkConfig config) {
-        return new FlinkKafkaConsumer082(
+//    private static FlinkKafkaConsumer082<String> kafkaSource(BenchmarkConfig config) {
+//        return new FlinkKafkaConsumer082(
+//                config.kafkaTopic,
+//                new SimpleStringSchema(),
+//                config.getParameters().getProperties());
+//    }
+
+    private static FlinkKafkaConsumer011<String> kafkaSource(BenchmarkConfig config) {
+        return new FlinkKafkaConsumer011(
                 config.kafkaTopic,
                 new SimpleStringSchema(),
                 config.getParameters().getProperties());
