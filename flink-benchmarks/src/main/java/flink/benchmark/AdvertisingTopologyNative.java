@@ -171,8 +171,9 @@ public class AdvertisingTopologyNative {
                         .flatMap(new DeserializeBolt())
                         .filter(new EventFilterBolt())
                         .<Tuple2<String, String>>project(2, 5) //ad_id, event_time
-                        .flatMap(new RedisJoinBolt()) // campaign_id, ad_id, event_time
-        ;
+                        ;
+//                        .flatMap(new RedisJoinBolt()) // campaign_id, ad_id, event_time
+//        ;
 //                        .assignTimestampsAndWatermarks(new AdTimestampExtractorNewer())
 //                        .flatMap(new FormatConvert())
 //////                .assignTimestampsAndWatermarks(
