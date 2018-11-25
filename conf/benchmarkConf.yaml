@@ -45,8 +45,8 @@ time.divisor: 10000
 test.time: 600
 
 tps.tps: 4000
-tps.range: 1000
-tps.limit: 3000
+tps.range: 3000
+tps.limit: 15000
 
 time.short: 5
 time.long: 10
