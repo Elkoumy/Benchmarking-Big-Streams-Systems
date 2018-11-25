@@ -215,14 +215,14 @@ public class AdvertisingTopologyNative {
         Random rand = new Random();
 
         public void flatMap(Tuple3<String, String, String> input, Collector<Tuple5<String, String, String, Double,Long>> collector) throws Exception {
-            collector.collect(new Tuple5(input.f0,input.f2,input.f1, rand.nextDouble(), 1L));
+            collector.collect(new Tuple5(input.f0,input.f1,input.f2, rand.nextDouble(), 1L));
         }
     }
 
     public static class FormatRestore implements FlatMapFunction<Tuple5<String, String, String, Double,Long>, Tuple3<String, String, Long>> {
 
         public void flatMap(Tuple5<String, String, String, Double,Long> input, Collector<Tuple3<String, String, Long>> collector) throws Exception {
-            collector.collect(new Tuple3(input.f0, input.f1, input.f4));
+            collector.collect(new Tuple3(input.f0, input.f2, input.f4));
         }
     }
 
