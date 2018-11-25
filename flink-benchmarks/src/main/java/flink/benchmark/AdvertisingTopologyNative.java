@@ -171,11 +171,10 @@ public class AdvertisingTopologyNative {
                         .flatMap(new DeserializeBolt())
                         .filter(new EventFilterBolt())
                         .<Tuple2<String, String>>project(2, 5) //ad_id, event_time
-                        ;
-//                        .flatMap(new RedisJoinBolt()) // campaign_id, ad_id, event_time
-//        ;
-//                        .assignTimestampsAndWatermarks(new AdTimestampExtractorNewer())
-//                        .flatMap(new FormatConvert())
+                        .flatMap(new RedisJoinBolt()) // campaign_id, ad_id, event_time
+
+                        .assignTimestampsAndWatermarks(new AdTimestampExtractorNewer())
+                        .flatMap(new FormatConvert())
 //////                .assignTimestampsAndWatermarks(
 //////                        new AscendingTimestampExtractor<Tuple5<String,String,String,Double, Long>>() {
 //////
@@ -185,13 +184,13 @@ public class AdvertisingTopologyNative {
 //////                            }
 //////                        }
 //////                )
-//                        .keyBy(0)
-////                .timeWindow(Time.of(2500, MILLISECONDS), Time.of(500, MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
-//                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
-//                        .sum(3)
-//                        .flatMap(new FormatRestore())
-//
-//                ;
+                        .keyBy(0)
+//                .timeWindow(Time.of(2500, MILLISECONDS), Time.of(500, MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
+                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
+                        .sum(3)
+                        .flatMap(new FormatRestore())
+
+                ;
 //
 //
 //        // write result to redis
