@@ -172,37 +172,39 @@ public class AdvertisingTopologyNative {
                         .filter(new EventFilterBolt())
                         .<Tuple2<String, String>>project(2, 5) //ad_id, event_time
                         .flatMap(new RedisJoinBolt()) // campaign_id, ad_id, event_time
-                        .assignTimestampsAndWatermarks(new AdTimestampExtractorNewer())
-                        .flatMap(new FormatConvert())
-////                .assignTimestampsAndWatermarks(
-////                        new AscendingTimestampExtractor<Tuple5<String,String,String,Double, Long>>() {
-////
-////                            //																		 @Override
-////                            public long extractAscendingTimestamp(Tuple5<String, String, String, Double,Long> element) {
-////                                return Long.parseLong(element.f2);
-////                            }
-////                        }
-////                )
-                        .keyBy(0)
-//                .timeWindow(Time.of(2500, MILLISECONDS), Time.of(500, MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
-                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
-                        .sum(3)
-                        .flatMap(new FormatRestore())
+        ;
+//                        .assignTimestampsAndWatermarks(new AdTimestampExtractorNewer())
+//                        .flatMap(new FormatConvert())
+//////                .assignTimestampsAndWatermarks(
+//////                        new AscendingTimestampExtractor<Tuple5<String,String,String,Double, Long>>() {
+//////
+//////                            //																		 @Override
+//////                            public long extractAscendingTimestamp(Tuple5<String, String, String, Double,Long> element) {
+//////                                return Long.parseLong(element.f2);
+//////                            }
+//////                        }
+//////                )
+//                        .keyBy(0)
+////                .timeWindow(Time.of(2500, MILLISECONDS), Time.of(500, MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
+//                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
+//                        .sum(3)
+//                        .flatMap(new FormatRestore())
+//
+//                ;
+//
+//
+//        // write result to redis
+//        if (config.getParameters().has("add.result.sink.optimized")) {
+//            result.addSink(new RedisResultSinkOptimized(config));
+//        } else {
+//            result.addSink(new RedisResultSink(config));
+//        }
+//
+///**
+// * ***********************************************************************
+// */
 
-                ;
-
-
-        // write result to redis
-        if (config.getParameters().has("add.result.sink.optimized")) {
-            result.addSink(new RedisResultSinkOptimized(config));
-        } else {
-            result.addSink(new RedisResultSink(config));
-        }
-
-/**
- * ***********************************************************************
- */
-
+        result.print();
 
         env.execute();
     }
