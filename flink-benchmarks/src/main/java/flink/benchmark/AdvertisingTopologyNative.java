@@ -193,18 +193,18 @@ public class AdvertisingTopologyNative {
                 ;
 //
 //
-//        // write result to redis
-//        if (config.getParameters().has("add.result.sink.optimized")) {
-//            result.addSink(new RedisResultSinkOptimized(config));
-//        } else {
-//            result.addSink(new RedisResultSink(config));
-//        }
+        // write result to redis
+        if (config.getParameters().has("add.result.sink.optimized")) {
+            result.addSink(new RedisResultSinkOptimized(config));
+        } else {
+            result.addSink(new RedisResultSink(config));
+        }
 //
 ///**
 // * ***********************************************************************
 // */
 
-        result.print();
+//        result.print();
 
         env.execute();
     }
