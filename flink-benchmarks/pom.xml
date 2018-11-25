@@ -68,11 +68,11 @@
             <!--<scope>provided</scope>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_2.11</artifactId>
-            <version>1.6.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.flink</groupId>-->
+            <!--<artifactId>flink-streaming-java_2.11</artifactId>-->
+            <!--<version>1.6.0</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>ee.ut.cs.dsg.efficientSWAG</groupId>
