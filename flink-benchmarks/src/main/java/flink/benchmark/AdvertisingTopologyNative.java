@@ -187,8 +187,8 @@ public class AdvertisingTopologyNative {
 //////                        }
 //////                )
                         .keyBy(0)
-//                .timeWindow(Time.of(2500, MILLISECONDS), Time.of(500, MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
-                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
+                .timeWindow(Time.of(100, MILLISECONDS), Time.of(100, MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
+//                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
                         .sum(3)
                         .flatMap(new FormatRestore())
 
