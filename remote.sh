@@ -5,9 +5,9 @@
 
 
 
-
-TPS_RANGE=1000
-TPS_LIMIT=15000
+ALGORITHM="average"
+TPS_RANGE=6000
+TPS_LIMIT=7000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
@@ -422,6 +422,23 @@ function getBenchmarkResult(){
     getResultFromStreamServer "${PATH_RESULT}"
     getResultFromKafkaServer "${PATH_RESULT}"
     getResultFromRedisServer "${PATH_RESULT}"
+
+    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-01
+    scp -r root@stream-node-01:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-01
+    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-02
+    scp -r root@stream-node-02:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-02
+    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-03
+    scp -r root@stream-node-03:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-03
+    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-04
+    scp -r root@stream-node-04:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-04
+    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-05
+    scp -r root@stream-node-05:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-05
+    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-06
+    scp -r root@stream-node-06:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-06
+
+    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/results
+    scp -r root@stream-node-01:/root/stream-benchmarking/result /root/stream-benchmarking/resultLogs/${ALGORITHM}/results
+
     sleep ${SHORT_SLEEP}
     Rscript reporting/reporting.r ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 1
 }
