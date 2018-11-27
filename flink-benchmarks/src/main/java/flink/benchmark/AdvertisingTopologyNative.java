@@ -65,7 +65,6 @@ public class AdvertisingTopologyNative {
 //        StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("172.17.77.47", 6123, "C:\\Gamal Elkoumy\\PhD\\OneDrive - Tartu Ülikool\\Stream Processing\\Source Code and Example\\Benchmarking-gamal-version\\redisTest\\out\\artifacts\\redisTest_jar2\\redisTest.jar");
         env.getConfig().setGlobalJobParameters(flinkBenchmarkParams);
 
-
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         // Set the buffer timeout (default 100)
         // Lowering the timeout will lead to lower latencies, but will eventually reduce throughput.
