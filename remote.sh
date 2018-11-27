@@ -175,6 +175,8 @@ function cleanResult {
     runCommandKafkaServers "${CLEAN_LOAD_RESULT_CMD}" "nohup"
     runCommandRedisServer "${CLEAN_RESULT_CMD}" "nohup"
     runCommandZKServers "${CLEAN_RESULT_CMD}" "nohup"
+    runCommandMasterStreamServers "rm -f $PROJECT_DIR/result/flink/*.*"
+
 }
 
 
@@ -426,21 +428,21 @@ function getBenchmarkResult(){
     getResultFromKafkaServer "${PATH_RESULT}"
     getResultFromRedisServer "${PATH_RESULT}"
 
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01
-    scp -r root@stream-node-01:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}}/logs/stream-node-01
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02
-    scp -r root@stream-node-02:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03
-    scp -r root@stream-node-03:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04
-    scp -r root@stream-node-04:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05
-    scp -r root@stream-node-05:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06
-    scp -r root@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +-%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-01:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +-%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +-%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-02:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +-%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +-%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-03:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +-%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +-%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-04:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +-%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +-%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-05:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +-%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +-%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +-%Y-%m-%d_%H%M%S)
 
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results
-    scp -r root@stream-node-01:${PROJECT_DIR}/result ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results/$(date +-%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-01:${PROJECT_DIR}/result ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results/$(date +-%Y-%m-%d_%H%M%S)
 
     sleep ${SHORT_SLEEP}
     Rscript reporting/reporting.r ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 1
@@ -459,6 +461,7 @@ function benchmark(){
 
 function runSystem(){
     CONF_FILE=${PROJECT_DIR}/conf/benchmarkConf.yaml
+
     prepareEnvironment
     case $1 in
          jet_embedded)
@@ -562,18 +565,21 @@ function stopAll (){
 
 
 function benchmarkLoop (){
-    while true; do
-        runAllServers "${PULL_GIT}"
-        runAllServers "find $PROJECT_DIR -type d -exec chmod 777 {} \;"
-        runAllServers "find $PROJECT_DIR -type f -exec chmod 777 {} \;"
-        sleep ${SHORT_SLEEP}
-        if (("$TPS" > "$TPS_LIMIT")); then
-            break
-        fi
-        changeTps "${TPS}"
-        runSystem $1 $2
-        TPS=$[$TPS + $TPS_RANGE]
-    done
+    counter=1
+    while [ ${counter} -le 3 ];do
+        while true; do
+            runAllServers "${PULL_GIT}"
+            runAllServers "find $PROJECT_DIR -type d -exec chmod 777 {} \;"
+            runAllServers "find $PROJECT_DIR -type f -exec chmod 777 {} \;"
+            sleep ${SHORT_SLEEP}
+            if (("$TPS" > "$TPS_LIMIT")); then
+                break
+            fi
+            changeTps "${TPS}"
+            runSystem $1 $2
+            TPS=$[$TPS + $TPS_RANGE]
+        done
+     done
     rebootServer
 #    runAllServers "reboot"
     sleep ${WAIT_AFTER_REBOOT_SERVER}
