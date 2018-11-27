@@ -233,6 +233,9 @@ function stopJetEmbeddedProcessing {
  }
 
 function startFlink {
+    runCommandSlaveStreamServers "rm -f $FLINK_DIR/log/*.*"
+    runCommandMasterStreamServers "rm -f $FLINK_DIR/log/*.*"
+    sleep ${SHORT_SLEEP}
     echo "Starting Flink"
     runCommandMasterStreamServers "${START_FLINK_CMD}"
 }
@@ -423,21 +426,21 @@ function getBenchmarkResult(){
     getResultFromKafkaServer "${PATH_RESULT}"
     getResultFromRedisServer "${PATH_RESULT}"
 
-    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-01
-    scp -r root@stream-node-01:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-01
-    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-02
-    scp -r root@stream-node-02:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-02
-    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-03
-    scp -r root@stream-node-03:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-03
-    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-04
-    scp -r root@stream-node-04:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-04
-    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-05
-    scp -r root@stream-node-05:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-05
-    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-06
-    scp -r root@stream-node-06:/root/stream-benchmarking/flink-1.6.0/log /root/stream-benchmarking/resultLogs/${ALGORITHM}/logs/stream-node-06
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01
+    scp -r root@stream-node-01:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}}/logs/stream-node-01
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02
+    scp -r root@stream-node-02:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03
+    scp -r root@stream-node-03:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04
+    scp -r root@stream-node-04:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05
+    scp -r root@stream-node-05:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06
+    scp -r root@stream-node-06:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06
 
-    mkdir -p /root/stream-benchmarking/resultLogs/${ALGORITHM}/results
-    scp -r root@stream-node-01:/root/stream-benchmarking/result /root/stream-benchmarking/resultLogs/${ALGORITHM}/results
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results
+    scp -r root@stream-node-01:${PROJECT_DIR}/result ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results
 
     sleep ${SHORT_SLEEP}
     Rscript reporting/reporting.r ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 1
@@ -455,7 +458,7 @@ function benchmark(){
 
 
 function runSystem(){
-    CONF_FILE=/root/stream-benchmarking/conf/benchmarkConf.yaml
+    CONF_FILE=${PROJECT_DIR}/conf/benchmarkConf.yaml
     prepareEnvironment
     case $1 in
          jet_embedded)
@@ -561,8 +564,8 @@ function stopAll (){
 function benchmarkLoop (){
     while true; do
         runAllServers "${PULL_GIT}"
-        runAllServers "find /root/stream-benchmarking -type d -exec chmod 777 {} \;"
-        runAllServers "find /root/stream-benchmarking -type f -exec chmod 777 {} \;"
+        runAllServers "find $PROJECT_DIR -type d -exec chmod 777 {} \;"
+        runAllServers "find $PROJECT_DIR -type f -exec chmod 777 {} \;"
         sleep ${SHORT_SLEEP}
         if (("$TPS" > "$TPS_LIMIT")); then
             break
@@ -712,8 +715,8 @@ case $1 in
         git commit -am "$2"
         git push origin master
         runAllServers "${PULL_GIT}"
-        runAllServers "find /root/stream-benchmarking -type d -exec chmod 777 {} \;"
-        runAllServers "find /root/stream-benchmarking -type f -exec chmod 777 {} \;"
+        runAllServers "find $PROJECT_DIR -type d -exec chmod 777 {} \;"
+        runAllServers "find $PROJECT_DIR -type f -exec chmod 777 {} \;"
     ;;
     report)
         Rscript ./reporting/reporting.r
