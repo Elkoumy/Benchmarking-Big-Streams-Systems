@@ -7,7 +7,7 @@
 
 ALGORITHM="average"
 TPS_RANGE=6000
-TPS_LIMIT=25000
+TPS_LIMIT=18000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
@@ -592,8 +592,8 @@ case $1 in
     flink)
 
         benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
 
     ;;
     spark)
