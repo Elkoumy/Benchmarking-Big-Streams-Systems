@@ -566,8 +566,7 @@ function stopAll (){
 
 function benchmarkLoop (){
     runAllServers "${PULL_GIT}"
-    counter=1
-    while [ ${counter} -le 3 ];do
+
         while true; do
             runAllServers "find $PROJECT_DIR -type d -exec chmod 777 {} \;"
             runAllServers "find $PROJECT_DIR -type f -exec chmod 777 {} \;"
@@ -578,9 +577,11 @@ function benchmarkLoop (){
             changeTps "${TPS}"
             runSystem $1 $2
             TPS=$[$TPS + $TPS_RANGE]
+
+
         done
-     done
-    rebootServer
+
+#    rebootServer
 #    runAllServers "reboot"
     sleep ${WAIT_AFTER_REBOOT_SERVER}
     TPS=${INITIAL_TPS}
@@ -589,7 +590,11 @@ function benchmarkLoop (){
 
 case $1 in
     flink)
+
         benchmarkLoop "flink"
+        benchmarkLoop "flink"
+        benchmarkLoop "flink"
+
     ;;
     spark)
         benchmarkLoop "spark" $2
