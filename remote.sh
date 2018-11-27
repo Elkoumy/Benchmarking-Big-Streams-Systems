@@ -428,21 +428,21 @@ function getBenchmarkResult(){
     getResultFromKafkaServer "${PATH_RESULT}"
     getResultFromRedisServer "${PATH_RESULT}"
 
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +-%Y-%m-%d_%H%M%S)
-    scp -r root@stream-node-01:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +-%Y-%m-%d_%H%M%S)
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +-%Y-%m-%d_%H%M%S)
-    scp -r root@stream-node-02:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +-%Y-%m-%d_%H%M%S)
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +-%Y-%m-%d_%H%M%S)
-    scp -r root@stream-node-03:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +-%Y-%m-%d_%H%M%S)
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +-%Y-%m-%d_%H%M%S)
-    scp -r root@stream-node-04:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +-%Y-%m-%d_%H%M%S)
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +-%Y-%m-%d_%H%M%S)
-    scp -r root@stream-node-05:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +-%Y-%m-%d_%H%M%S)
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +-%Y-%m-%d_%H%M%S)
-    scp -r root@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +-%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-01:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-02:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-03:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-04:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-05:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +%Y-%m-%d_%H%M%S)
 
-    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results/$(date +-%Y-%m-%d_%H%M%S)
-    scp -r root@stream-node-01:${PROJECT_DIR}/result ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results/$(date +-%Y-%m-%d_%H%M%S)
+    mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results/$(date +%Y-%m-%d_%H%M%S)
+    scp -r root@stream-node-01:${PROJECT_DIR}/result ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results/$(date +%Y-%m-%d_%H%M%S)
 
     sleep ${SHORT_SLEEP}
     Rscript reporting/reporting.r ${ENGINE_PATH} ${INITIAL_TPS} ${TEST_TIME} 1
