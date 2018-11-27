@@ -193,7 +193,7 @@ public class AdvertisingTopologyNative {
 //                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
                         .sum(3)
                         .flatMap(new FormatRestore())
-.addSink(new RedisResultSink(config))
+.addSink(new RedisResultSinkOptimized(config))
                 ;
 //
 //
