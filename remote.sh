@@ -427,17 +427,17 @@ function getBenchmarkResult(){
     getResultFromRedisServer "${PATH_RESULT}"
 
     mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01
-    scp -r root@stream-node-01:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}}/logs/stream-node-01
+    scp -r root@stream-node-01:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}}/logs/stream-node-01
     mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02
-    scp -r root@stream-node-02:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02
+    scp -r root@stream-node-02:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02
     mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03
-    scp -r root@stream-node-03:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03
+    scp -r root@stream-node-03:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03
     mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04
-    scp -r root@stream-node-04:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04
+    scp -r root@stream-node-04:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04
     mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05
-    scp -r root@stream-node-05:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05
+    scp -r root@stream-node-05:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05
     mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06
-    scp -r root@stream-node-06:${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06
+    scp -r root@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06
 
     mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results
     scp -r root@stream-node-01:${PROJECT_DIR}/result ${PROJECT_DIR}/resultLogs/${ALGORITHM}/results
