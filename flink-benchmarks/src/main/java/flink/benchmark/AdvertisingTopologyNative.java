@@ -61,8 +61,8 @@ public class AdvertisingTopologyNative {
         LOG.info("conf: {}", conf);
         LOG.info("Parameters used: {}", flinkBenchmarkParams.toMap());
 
-//        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("172.17.77.47", 6123, "C:\\Gamal Elkoumy\\PhD\\OneDrive - Tartu Ülikool\\Stream Processing\\Source Code and Example\\Benchmarking-gamal-version\\redisTest\\out\\artifacts\\redisTest_jar2\\redisTest.jar");
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//        StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("172.17.77.47", 6123, "C:\\Gamal Elkoumy\\PhD\\OneDrive - Tartu Ülikool\\Stream Processing\\Source Code and Example\\Benchmarking-gamal-version\\redisTest\\out\\artifacts\\redisTest_jar2\\redisTest.jar");
         env.getConfig().setGlobalJobParameters(flinkBenchmarkParams);
 
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
