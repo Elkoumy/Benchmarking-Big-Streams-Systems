@@ -167,7 +167,7 @@ public class AdvertisingTopologyNative {
 //        DataStream<Tuple3<String, String, Long>> result =
 //                windowStream.apply(sumReduceFunction(), sumWindowFunction());
 
-        DataStream<Tuple3<String, String, Long>> result=
+//        DataStream<Tuple3<String, String, Long>> result=
 //        DataStream<Tuple3<String, String, String>> result=
                 rawMessageStream
                         .flatMap(new DeserializeBolt())
@@ -193,22 +193,24 @@ public class AdvertisingTopologyNative {
 //                        .timeWindow( Time.of(config.windowSize, TimeUnit.MILLISECONDS),Time.of(config.windowSize, TimeUnit.MILLISECONDS),3, Enumerators.Operator.STANDARD_DEVIATION)
                         .sum(3)
                         .flatMap(new FormatRestore())
-
+.addSink(new RedisResultSink(config))
                 ;
 //
 //
         // write result to redis
-        if (config.getParameters().has("add.result.sink.optimized")) {
-            result.addSink(new RedisResultSinkOptimized(config));
-        } else {
-            result.addSink(new RedisResultSink(config));
-        }
+//        if (config.getParameters().has("add.result.sink.optimized")) {
+//            result.addSink(new RedisResultSinkOptimized(config));
+//        } else {
+//            result.addSink(new RedisResultSink(config));
+//        }
 //
 ///**
 // * ***********************************************************************
 // */
 
 //        result.print();
+
+
 
         env.execute();
     }
@@ -895,6 +897,13 @@ public class AdvertisingTopologyNative {
         public void close() throws Exception {
             super.close();
             flushJedis.close();
+        }
+
+        public Tuple3<String,String,String> printResults(Tuple3<String, String, Long> result){
+            String campaign = result.f0;
+            String timestamp = result.f1;
+            String windowUUID = getOrCreateWindow(campaign, timestamp);
+            return new Tuple3<>(windowUUID,Long.toString(result.f2),Long.toString(System.currentTimeMillis()));
         }
     }
 
