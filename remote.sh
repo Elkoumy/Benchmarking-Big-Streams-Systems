@@ -565,10 +565,10 @@ function stopAll (){
 
 
 function benchmarkLoop (){
+    runAllServers "${PULL_GIT}"
     counter=1
     while [ ${counter} -le 3 ];do
         while true; do
-            runAllServers "${PULL_GIT}"
             runAllServers "find $PROJECT_DIR -type d -exec chmod 777 {} \;"
             runAllServers "find $PROJECT_DIR -type f -exec chmod 777 {} \;"
             sleep ${SHORT_SLEEP}
