@@ -35,8 +35,8 @@ PARTITIONS=${PARTITIONS:-1}
 #CONF_FILE=./conf/localConf.yaml
 CONF_FILE=./conf/benchmarkConf.yaml
 
-TPS=${TPS:-1000}
-TEST_TIME=${TEST_TIME:-120}
+TPS=${TPS:-3000}
+TEST_TIME=${TEST_TIME:-60}
 
 SPARK_MASTER_HOST="stream-node01"
 BATCH="3000"
