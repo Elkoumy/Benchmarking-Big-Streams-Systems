@@ -578,7 +578,10 @@ function benchmarkLoop (){
             changeTps "${TPS}"
             runSystem $1 $2
             TPS=$[$TPS + $TPS_RANGE]
+
+
         done
+        sleep ${LONG_SLEEP}
      done
     rebootServer
 #    runAllServers "reboot"
