@@ -136,7 +136,8 @@ public class AdvertisingTopologyNative {
         args[0]="/root/stream-benchmarking/conf/benchmarkConf.yaml";
         BenchmarkConfig config = BenchmarkConfig.fromArgs(args);
 
-        DataStream<String> rawMessageStream = streamSource(config, env);
+//        DataStream<String> rawMessageStream = streamSource(config, env);
+        DataStream<String> rawMessageStream= messageStream;
 
         // log performance
         rawMessageStream.flatMap(new ThroughputLogger<String>(240, 1000000));
