@@ -22,5 +22,3 @@ dump.rdb
 nohup.out
 result_old
 *.zip
-data/seen.txt
-data/updated.txt
