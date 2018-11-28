@@ -131,7 +131,7 @@ public class AdvertisingTopologyNative {
 //                // process campaign
 ////                .flatMap(new MyFlatMap())
                 .keyBy(0)
-                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.AVERAGE)
+                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.SUM)
 //        .timeWindow(Time.of(1, SECONDS))
                 .sum(3)
                 .flatMap(new FormatRestore())
