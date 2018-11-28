@@ -6,8 +6,8 @@
 
 
 ALGORITHM="average"
-TPS_RANGE=3000
-TPS_LIMIT=10000
+TPS_RANGE=100000
+TPS_LIMIT=1000000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
@@ -395,6 +395,10 @@ function prepareEnvironment(){
     sleep ${SHORT_SLEEP}
     startZK
     sleep ${LONG_SLEEP}
+    # delete all the topics
+    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /config/topics
+    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /brokers/topics
+    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /admin/delete_topics
     startKafka
     sleep ${LONG_SLEEP}
     cleanKafka
@@ -407,10 +411,7 @@ function destroyEnvironment(){
     stopRedis
     stopKafka
     sleep ${SHORT_SLEEP}
-    # delete all the topics
-    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /config/topics
-    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /brokers/topics
-    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /admin/delete_topics
+
     stopZK
 }
 
