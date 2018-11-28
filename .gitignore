@@ -15,7 +15,6 @@ hazelcast-jet-*
 flink-1.*
 heron-0.*
 kafka_2.11*
-redis-*
 spark-2.*
 jstorm-2.*
 dump.rdb
