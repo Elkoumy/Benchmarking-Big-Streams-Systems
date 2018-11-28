@@ -580,8 +580,8 @@ function benchmarkLoop (){
             scp -r ${SSH_USER}@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
 
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/seen.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)/redis-seen.txt_TPS_${TPS}
-            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/updated.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)/redis-updated.txt_TPS_${TPS}
+            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/seen.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-seen.txt
+            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/updated.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-updated.txt
         #    scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/result ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             TPS=$[$TPS + $TPS_RANGE]
 
