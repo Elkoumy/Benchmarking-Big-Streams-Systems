@@ -407,6 +407,10 @@ function destroyEnvironment(){
     stopRedis
     stopKafka
     sleep ${SHORT_SLEEP}
+    # delete all the topics
+    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /config/topics
+    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /brokers/topics
+    ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /admin/delete_topics
     stopZK
 }
 
