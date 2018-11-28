@@ -6,8 +6,8 @@
 
 
 ALGORITHM="average"
-TPS_RANGE=100000
-TPS_LIMIT=150000
+TPS_RANGE=2000000
+TPS_LIMIT=10000000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
@@ -580,9 +580,9 @@ function benchmarkLoop (){
             scp -r ${SSH_USER}@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
 
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-#            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/seen.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-seen.txt
-#            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/updated.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-updated.txt
-            scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/result/flink/* ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
+            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/seen.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-seen.txt
+            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/updated.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-updated.txt
+#            scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/result/flink/* ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             TPS=$[$TPS + $TPS_RANGE]
 
 
