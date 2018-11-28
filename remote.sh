@@ -399,6 +399,8 @@ function prepareEnvironment(){
     ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /config/topics
     ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /brokers/topics
     ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /admin/delete_topics
+    rm -rf /tmp/kafka-logs/*
+    rm -rf ${PROJECT_DIR}/kafka_2.11-0.11.0.2/logs/*
     startKafka
     sleep ${LONG_SLEEP}
     cleanKafka
