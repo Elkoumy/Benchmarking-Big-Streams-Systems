@@ -1,0 +1,68 @@
+2018-11-14 13:58:31,642 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       - --------------------------------------------------------------------------------
+2018-11-14 13:58:31,644 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  Starting TaskManager (Version: 1.6.0, Rev:<unknown>, Date:<unknown>)
+2018-11-14 13:58:31,644 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  OS current user: root
+2018-11-14 13:58:31,976 WARN  org.apache.hadoop.util.NativeCodeLoader                       - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2018-11-14 13:58:32,195 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  Current Hadoop/Kerberos user: root
+2018-11-14 13:58:32,195 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  JVM: OpenJDK 64-Bit Server VM - Oracle Corporation - 1.8/25.191-b12
+2018-11-14 13:58:32,195 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  Maximum heap size: 29696 MiBytes
+2018-11-14 13:58:32,195 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  JAVA_HOME: (not set)
+2018-11-14 13:58:32,199 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  Hadoop version: 2.4.1
+2018-11-14 13:58:32,200 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  JVM Options:
+2018-11-14 13:58:32,200 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     -XX:+UseG1GC
+2018-11-14 13:58:32,200 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     -Xms29696M
+2018-11-14 13:58:32,200 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     -Xmx29696M
+2018-11-14 13:58:32,200 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     -XX:MaxDirectMemorySize=8388607T
+2018-11-14 13:58:32,200 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     -Dlog.file=/root/stream-benchmarking/flink-1.6.0/log/flink-root-taskexecutor-2-vm-stream-2.novalocal.log
+2018-11-14 13:58:32,201 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     -Dlog4j.configuration=file:/root/stream-benchmarking/flink-1.6.0/conf/log4j.properties
+2018-11-14 13:58:32,201 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     -Dlogback.configurationFile=file:/root/stream-benchmarking/flink-1.6.0/conf/logback.xml
+2018-11-14 13:58:32,201 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  Program Arguments:
+2018-11-14 13:58:32,201 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     --configDir
+2018-11-14 13:58:32,201 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -     /root/stream-benchmarking/flink-1.6.0/conf
+2018-11-14 13:58:32,202 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       -  Classpath: /root/stream-benchmarking/flink-1.6.0/lib/flink-python_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-shaded-hadoop2-uber-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/log4j-1.2.17.jar:/root/stream-benchmarking/flink-1.6.0/lib/slf4j-log4j12-1.7.7.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-dist_2.11-1.6.0.jar:::
+2018-11-14 13:58:32,202 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       - --------------------------------------------------------------------------------
+2018-11-14 13:58:32,203 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       - Registered UNIX signal handlers for [TERM, HUP, INT]
+2018-11-14 13:58:32,208 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       - Maximum number of open file descriptors is 4096.
+2018-11-14 13:58:32,223 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: jobmanager.rpc.address, stream-node01
+2018-11-14 13:58:32,223 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: jobmanager.rpc.port, 6123
+2018-11-14 13:58:32,224 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: jobmanager.heap.size, 30720m
+2018-11-14 13:58:32,224 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: taskmanager.heap.size, 30720m
+2018-11-14 13:58:32,224 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: taskmanager.numberOfTaskSlots, 16
+2018-11-14 13:58:32,225 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: parallelism.default, 1
+2018-11-14 13:58:32,225 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: high-availability, NONE
+2018-11-14 13:58:32,226 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: rest.port, 8081
+2018-11-14 13:58:32,322 INFO  org.apache.flink.runtime.security.modules.HadoopModule        - Hadoop user set to root (auth:SIMPLE)
+2018-11-14 13:58:32,639 WARN  org.apache.flink.configuration.Configuration                  - Config uses deprecated configuration key 'jobmanager.rpc.address' instead of proper key 'rest.address'
+2018-11-14 13:58:32,645 INFO  org.apache.flink.runtime.util.LeaderRetrievalUtils            - Trying to select the network interface and address to use by connecting to the leading JobManager.
+2018-11-14 13:58:32,646 INFO  org.apache.flink.runtime.util.LeaderRetrievalUtils            - TaskManager will try to connect for 10000 milliseconds before falling back to heuristics
+2018-11-14 13:58:32,650 INFO  org.apache.flink.runtime.net.ConnectionUtils                  - Retrieved new target address stream-node01/172.17.77.47:6123.
+2018-11-14 13:58:32,658 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       - TaskManager will use hostname/address 'vm-stream-2.novalocal' (172.17.77.42) for communication.
+2018-11-14 13:58:32,662 INFO  org.apache.flink.runtime.rpc.akka.AkkaRpcServiceUtils         - Starting AkkaRpcService at vm-stream-2.novalocal:0.
+2018-11-14 13:58:33,249 INFO  akka.event.slf4j.Slf4jLogger                                  - Slf4jLogger started
+2018-11-14 13:58:33,367 INFO  akka.remote.Remoting                                          - Starting remoting
+2018-11-14 13:58:33,593 INFO  akka.remote.Remoting                                          - Remoting started; listening on addresses :[akka.tcp://flink@vm-stream-2.novalocal:33143]
+2018-11-14 13:58:33,634 INFO  org.apache.flink.runtime.metrics.MetricRegistryImpl           - No metrics reporter configured, no metrics will be exposed/reported.
+2018-11-14 13:58:33,643 INFO  org.apache.flink.runtime.blob.PermanentBlobCache              - Created BLOB cache storage directory /tmp/blobStore-ba1163bf-d91e-4717-8ac2-9b9d8914e969
+2018-11-14 13:58:33,648 INFO  org.apache.flink.runtime.blob.TransientBlobCache              - Created BLOB cache storage directory /tmp/blobStore-02999cc5-249b-42a8-96fa-011e6e423e0d
+2018-11-14 13:58:33,655 INFO  org.apache.flink.runtime.io.network.netty.NettyConfig         - NettyConfig [server address: vm-stream-2.novalocal/172.17.77.42, server port: 0, ssl enabled: false, memory segment size (bytes): 32768, transport type: NIO, number of server threads: 16 (manual), number of client threads: 16 (manual), server connect backlog: 0 (use Netty's default), client connect timeout (sec): 120, send/receive buffer size (bytes): 0 (use Netty's default)]
+2018-11-14 13:58:34,016 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerServices     - Temporary file directory '/tmp': total 437 GB, usable 412 GB (94.28% usable)
+2018-11-14 13:58:35,123 INFO  org.apache.flink.runtime.io.network.buffer.NetworkBufferPool  - Allocated 1024 MB for network buffer pool (number of memory segments: 32768, bytes per segment: 32768).
+2018-11-14 13:58:35,214 INFO  org.apache.flink.runtime.query.QueryableStateUtils            - Could not load Queryable State Client Proxy. Probable reason: flink-queryable-state-runtime is not in the classpath. To enable Queryable State, please move the flink-queryable-state-runtime jar from the opt to the lib folder.
+2018-11-14 13:58:35,214 INFO  org.apache.flink.runtime.query.QueryableStateUtils            - Could not load Queryable State Server. Probable reason: flink-queryable-state-runtime is not in the classpath. To enable Queryable State, please move the flink-queryable-state-runtime jar from the opt to the lib folder.
+2018-11-14 13:58:35,216 INFO  org.apache.flink.runtime.io.network.NetworkEnvironment        - Starting the network environment and its components.
+2018-11-14 13:58:35,283 INFO  org.apache.flink.runtime.io.network.netty.NettyClient         - Successful initialization (took 64 ms).
+2018-11-14 13:58:35,353 INFO  org.apache.flink.runtime.io.network.netty.NettyServer         - Successful initialization (took 69 ms). Listening on SocketAddress /172.17.77.42:35314.
+2018-11-14 13:58:35,355 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerServices     - Limiting managed memory to 0.7 of the currently free heap space (20782 MB), memory will be allocated lazily.
+2018-11-14 13:58:35,360 INFO  org.apache.flink.runtime.io.disk.iomanager.IOManager          - I/O manager uses directory /tmp/flink-io-1dcfcabb-cc19-45c1-8e41-7e80460a1e4b for spill files.
+2018-11-14 13:58:35,461 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerConfiguration  - Messages have a max timeout of 10000 ms
+2018-11-14 13:58:35,473 INFO  org.apache.flink.runtime.rpc.akka.AkkaRpcService              - Starting RPC endpoint for org.apache.flink.runtime.taskexecutor.TaskExecutor at akka://flink/user/taskmanager_0 .
+2018-11-14 13:58:35,495 INFO  org.apache.flink.runtime.taskexecutor.JobLeaderService        - Start job leader service.
+2018-11-14 13:58:35,497 INFO  org.apache.flink.runtime.filecache.FileCache                  - User file cache uses directory /tmp/flink-dist-cache-4bc5f49f-2cca-4b77-bad4-32aa309aa585
+2018-11-14 13:58:35,497 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor            - Connecting to ResourceManager akka.tcp://flink@stream-node01:6123/user/resourcemanager(00000000000000000000000000000000).
+2018-11-14 13:58:35,722 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor            - Resolved ResourceManager address, beginning registration
+2018-11-14 13:58:35,722 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor            - Registration at ResourceManager attempt 1 (timeout=100ms)
+2018-11-14 13:58:35,788 INFO  org.apache.flink.runtime.taskexecutor.TaskExecutor            - Successful registration at resource manager akka.tcp://flink@stream-node01:6123/user/resourcemanager under registration id 2e7117707f39fb0b4046f469b7cc7977.
+2018-11-14 14:09:18,002 INFO  org.apache.flink.runtime.taskexecutor.TaskManagerRunner       - RECEIVED SIGNAL 15: SIGTERM. Shutting down as requested.
+2018-11-14 14:09:18,011 INFO  org.apache.flink.runtime.state.TaskExecutorLocalStateStoresManager  - Shutting down TaskExecutorLocalStateStoresManager.
+2018-11-14 14:09:18,011 INFO  org.apache.flink.runtime.blob.TransientBlobCache              - Shutting down BLOB cache
+2018-11-14 14:09:18,014 INFO  org.apache.flink.runtime.blob.PermanentBlobCache              - Shutting down BLOB cache
+2018-11-14 14:09:18,021 INFO  org.apache.flink.runtime.io.disk.iomanager.IOManager          - I/O manager removed spill file directory /tmp/flink-io-1dcfcabb-cc19-45c1-8e41-7e80460a1e4b
