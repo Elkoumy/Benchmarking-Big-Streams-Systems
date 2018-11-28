@@ -1,0 +1,35 @@
+2018-11-28 16:04:41,001 INFO  org.apache.flink.client.cli.CliFrontend                       - --------------------------------------------------------------------------------
+2018-11-28 16:04:41,004 INFO  org.apache.flink.client.cli.CliFrontend                       -  Starting Command Line Client (Version: 1.6.0, Rev:<unknown>, Date:<unknown>)
+2018-11-28 16:04:41,004 INFO  org.apache.flink.client.cli.CliFrontend                       -  OS current user: root
+2018-11-28 16:04:41,567 INFO  org.apache.flink.client.cli.CliFrontend                       -  Current Hadoop/Kerberos user: root
+2018-11-28 16:04:41,568 INFO  org.apache.flink.client.cli.CliFrontend                       -  JVM: OpenJDK 64-Bit Server VM - Oracle Corporation - 1.8/25.191-b12
+2018-11-28 16:04:41,568 INFO  org.apache.flink.client.cli.CliFrontend                       -  Maximum heap size: 27305 MiBytes
+2018-11-28 16:04:41,568 INFO  org.apache.flink.client.cli.CliFrontend                       -  JAVA_HOME: (not set)
+2018-11-28 16:04:41,572 INFO  org.apache.flink.client.cli.CliFrontend                       -  Hadoop version: 2.8.1
+2018-11-28 16:04:41,573 INFO  org.apache.flink.client.cli.CliFrontend                       -  JVM Options:
+2018-11-28 16:04:41,573 INFO  org.apache.flink.client.cli.CliFrontend                       -     -Dlog.file=/root/stream-benchmarking/flink-1.6.0/log/flink-root-client-stream-node-01.log
+2018-11-28 16:04:41,573 INFO  org.apache.flink.client.cli.CliFrontend                       -     -Dlog4j.configuration=file:/root/stream-benchmarking/flink-1.6.0/conf/log4j-cli.properties
+2018-11-28 16:04:41,573 INFO  org.apache.flink.client.cli.CliFrontend                       -     -Dlogback.configurationFile=file:/root/stream-benchmarking/flink-1.6.0/conf/logback.xml
+2018-11-28 16:04:41,573 INFO  org.apache.flink.client.cli.CliFrontend                       -  Program Arguments:
+2018-11-28 16:04:41,573 INFO  org.apache.flink.client.cli.CliFrontend                       -     cancel
+2018-11-28 16:04:41,574 INFO  org.apache.flink.client.cli.CliFrontend                       -     928e29fd7bed6f7db35b9cd5a3708e11
+2018-11-28 16:04:41,574 INFO  org.apache.flink.client.cli.CliFrontend                       -  Classpath: /root/stream-benchmarking/flink-1.6.0/lib/flink-cep_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-cep-scala_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-gelly_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-gelly-scala_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-datadog-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-dropwizard-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-ganglia-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-graphite-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-opsclarity.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-prometheus-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-slf4j-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-metrics-statsd-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-ml_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-python_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-queryable-state-runtime_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-s3-fs-hadoop-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-s3-fs-presto-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-shaded-hadoop2-uber-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-sql-client-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-streaming-python_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-swift-fs-hadoop-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-table_2.11-1.6.0.jar:/root/stream-benchmarking/flink-1.6.0/lib/log4j-1.2.17.jar:/root/stream-benchmarking/flink-1.6.0/lib/slf4j-log4j12-1.7.7.jar:/root/stream-benchmarking/flink-1.6.0/lib/flink-dist_2.11-1.6.0.jar:::
+2018-11-28 16:04:41,574 INFO  org.apache.flink.client.cli.CliFrontend                       - --------------------------------------------------------------------------------
+2018-11-28 16:04:41,581 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: jobmanager.rpc.address, stream-node01
+2018-11-28 16:04:41,582 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: jobmanager.rpc.port, 6123
+2018-11-28 16:04:41,582 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: jobmanager.heap.size, 60000m
+2018-11-28 16:04:41,582 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: taskmanager.heap.size, 60000m
+2018-11-28 16:04:41,583 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: metrics.reporter.slf4j.class, org.apache.flink.metrics.slf4j.Slf4jReporter
+2018-11-28 16:04:41,583 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: metrics.reporter.slf4j.interval, 120 SECONDS
+2018-11-28 16:04:41,583 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: taskmanager.numberOfTaskSlots, 16
+2018-11-28 16:04:41,584 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: parallelism.default, 1
+2018-11-28 16:04:41,584 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: high-availability, NONE
+2018-11-28 16:04:41,585 INFO  org.apache.flink.configuration.GlobalConfiguration            - Loading configuration property: rest.port, 8081
+2018-11-28 16:04:42,004 INFO  org.apache.flink.runtime.security.modules.HadoopModule        - Hadoop user set to root (auth:SIMPLE)
+2018-11-28 16:04:42,050 INFO  org.apache.flink.client.cli.CliFrontend                       - Running 'cancel' command.
+2018-11-28 16:04:42,059 INFO  org.apache.flink.client.cli.CliFrontend                       - Cancelling job 928e29fd7bed6f7db35b9cd5a3708e11.
+2018-11-28 16:04:42,107 WARN  org.apache.flink.configuration.Configuration                  - Config uses deprecated configuration key 'jobmanager.rpc.address' instead of proper key 'rest.address'
+2018-11-28 16:04:42,439 INFO  org.apache.flink.runtime.rest.RestClient                      - Rest client endpoint started.
+2018-11-28 16:04:42,893 INFO  org.apache.flink.runtime.rest.RestClient                      - Shutting down rest endpoint.
+2018-11-28 16:04:42,896 INFO  org.apache.flink.runtime.rest.RestClient                      - Rest endpoint shutdown complete.
+2018-11-28 16:04:42,897 INFO  org.apache.flink.client.cli.CliFrontend                       - Cancelled job 928e29fd7bed6f7db35b9cd5a3708e11.
