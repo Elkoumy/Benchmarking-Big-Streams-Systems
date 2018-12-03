@@ -83,6 +83,33 @@ public class AdvertisingTopologyNative {
                         new SimpleStringSchema(),
                         flinkBenchmarkParams.getProperties())).setParallelism(Math.min(hosts * cores, kafkaPartitions));
 
+//        String param = "average";
+        String param= parameterTool.getRequired("algorithm");
+        Enumerators.Operator algorithm  ;
+
+        if (param=="average"){
+            algorithm= Enumerators.Operator.AVERAGE;
+        }
+        else if (param == "max"){
+            algorithm= Enumerators.Operator.MAX;
+        }else if (param == "sum"){
+            algorithm= Enumerators.Operator.SUM;
+        }else if (param == "std"){
+            algorithm= Enumerators.Operator.STANDARD_DEVIATION;
+        }else if (param == "double_heap"){
+            algorithm= Enumerators.Operator.MEDIAN_DOUBLE_HEAP;
+        }else if (param == "red_black"){
+            algorithm= Enumerators.Operator.MEDIAN_RED_BLACK;
+        }else if (param == "skip_list"){
+            algorithm= Enumerators.Operator.MEDIAN_SKIP_LIST;
+        }else if (param == "veb"){
+            algorithm= Enumerators.Operator.MEDIAN_VEB;
+        }else{
+            algorithm= Enumerators.Operator.SUM;
+        }
+
+
+
 
 
         /*****************************
@@ -131,7 +158,7 @@ public class AdvertisingTopologyNative {
 //                // process campaign
 ////                .flatMap(new MyFlatMap())
                 .keyBy(0)
-                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, Enumerators.Operator.MAX)
+                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, algorithm)
 //        .timeWindow(Time.of(1, SECONDS))
                 .sum(3)
                 .flatMap(new FormatRestore())

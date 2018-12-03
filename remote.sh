@@ -5,16 +5,16 @@
 
 
 
-ALGORITHM="max"
-TPS_RANGE=2000000
-TPS_LIMIT=10000000
+#ALGORITHM="max"
+TPS_RANGE=20000000
+TPS_LIMIT=100000000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
 LONG_SLEEP=5
 
 WAIT_AFTER_STOP_PRODUCER=30
-WAIT_AFTER_REBOOT_SERVER=30
+WAIT_AFTER_REBOOT_SERVER=300
 
 SSH_USER="root"
 
@@ -592,6 +592,9 @@ function benchmarkLoop (){
 
 #    rebootServer
 #    runAllServers "reboot"
+    runCommandKafkaServers "reboot"
+    runCommandLoadServers "reboot"
+    runCommandZKServers "reboot"
     sleep ${WAIT_AFTER_REBOOT_SERVER}
     TPS=${INITIAL_TPS}
 }
@@ -600,6 +603,8 @@ function benchmarkLoop (){
 case $1 in
     flink)
         rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
+        benchmarkLoop "flink"
+        benchmarkLoop "flink"
         benchmarkLoop "flink"
         benchmarkLoop "flink"
         benchmarkLoop "flink"

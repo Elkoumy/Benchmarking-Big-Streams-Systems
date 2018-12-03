@@ -23,6 +23,9 @@ SPARK_DIR="spark-$SPARK_VERSION-bin-hadoop2.6"
 HAZELCAST_DIR="hazelcast-jet-$HAZELCAST_VERSION"
 
 
+#average,max,sum,std,double_heap,red_black,skip_list,veb
+ALGORITHM="max"
+
 #Get one of the closet apache mirrors
 #APACHE_MIRROR=$(curl 'https://archive.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
 APACHE_MIRROR="http://archive.apache.org/dist"
@@ -35,8 +38,8 @@ PARTITIONS=${PARTITIONS:-1}
 #CONF_FILE=./conf/localConf.yaml
 CONF_FILE=./conf/benchmarkConf.yaml
 
-TPS=${TPS:-1000000}
-TEST_TIME=${TEST_TIME:-120}
+TPS=${TPS:-10000000}
+TEST_TIME=${TEST_TIME:-600}
 
 SPARK_MASTER_HOST="stream-node01"
 BATCH="3000"
