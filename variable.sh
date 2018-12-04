@@ -24,7 +24,7 @@ HAZELCAST_DIR="hazelcast-jet-$HAZELCAST_VERSION"
 
 
 #average,max,sum,std,double_heap,red_black,skip_list,veb
-ALGORITHM="max"
+ALGORITHM="double_heap"
 
 #Get one of the closet apache mirrors
 #APACHE_MIRROR=$(curl 'https://archive.apache.org/dyn/closer.cgi' |   grep -o '<strong>[^<]*</strong>' |   sed 's/<[^>]*>//g' |   head -1)
