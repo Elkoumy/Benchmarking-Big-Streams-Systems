@@ -10,6 +10,7 @@ download-cache
 .project
 .settings
 bin
+redis-*
 apache-storm-*
 hazelcast-jet-*
 flink-1.*
