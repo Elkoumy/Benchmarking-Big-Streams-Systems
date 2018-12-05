@@ -6,8 +6,8 @@
 
 
 #ALGORITHM="max"
-TPS_RANGE=3000000
-TPS_LIMIT=9000000
+TPS_RANGE=300000
+TPS_LIMIT=900000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
@@ -838,7 +838,7 @@ case $1 in
     ;;
     test)
         #runSystem $2 $3
-        TPS=$[15000]
+        TPS=$[100000]
         changeTps ${TPS}
         runSystem $2 $3
         #Rscript --vanilla reporting.R "spark_dstream_1000" 1000 60
