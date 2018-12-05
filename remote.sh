@@ -6,8 +6,8 @@
 
 
 #ALGORITHM="max"
-TPS_RANGE=300000
-TPS_LIMIT=900000
+TPS_RANGE=3000000
+TPS_LIMIT=9000000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
@@ -596,10 +596,10 @@ function benchmarkLoop (){
 
 #    rebootServer
 #    runAllServers "reboot"
-    runCommandKafkaServers "reboot"
-    runCommandLoadServers "reboot"
-    runCommandZKServers "reboot"
-    sleep ${WAIT_AFTER_REBOOT_SERVER}
+#    runCommandKafkaServers "reboot"
+#    runCommandLoadServers "reboot"
+#    runCommandZKServers "reboot"
+#    sleep ${WAIT_AFTER_REBOOT_SERVER}
     TPS=${INITIAL_TPS}
 }
 
