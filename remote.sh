@@ -616,53 +616,53 @@ case $1 in
         benchmarkLoop "flink"
         benchmarkLoop "flink"
 
-        ALGORITHM="veb"
-        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-
-        ALGORITHM="red_black"
-        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-
-        ALGORITHM="double_heap"
-        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-
-        ALGORITHM="std"
-        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-
-        ALGORITHM="sum"
-        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-
-        ALGORITHM="average"
-        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
-        benchmarkLoop "flink"
+#        ALGORITHM="veb"
+#        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#
+#        ALGORITHM="red_black"
+#        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#
+#        ALGORITHM="double_heap"
+#        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#
+#        ALGORITHM="std"
+#        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#
+#        ALGORITHM="sum"
+#        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#
+#        ALGORITHM="average"
+#        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
+#        benchmarkLoop "flink"
 
 
     ;;
