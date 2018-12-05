@@ -587,19 +587,19 @@ function benchmarkLoop (){
 #            scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/result/flink/* ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             TPS=$[$TPS + $TPS_RANGE]
 
-            runCommandKafkaServers "reboot"
-            runCommandLoadServers "reboot"
-            runCommandZKServers "reboot"
-            sleep ${WAIT_AFTER_REBOOT_SERVER}
+#            runCommandKafkaServers "reboot"
+#            runCommandLoadServers "reboot"
+#            runCommandZKServers "reboot"
+#            sleep ${WAIT_AFTER_REBOOT_SERVER}
 
         done
 
 #    rebootServer
 #    runAllServers "reboot"
-#    runCommandKafkaServers "reboot"
-#    runCommandLoadServers "reboot"
-#    runCommandZKServers "reboot"
-#    sleep ${WAIT_AFTER_REBOOT_SERVER}
+    runCommandKafkaServers "reboot"
+    runCommandLoadServers "reboot"
+    runCommandZKServers "reboot"
+    sleep ${WAIT_AFTER_REBOOT_SERVER}
     TPS=${INITIAL_TPS}
 }
 
