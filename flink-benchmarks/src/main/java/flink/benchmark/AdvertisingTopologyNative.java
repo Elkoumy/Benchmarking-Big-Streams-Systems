@@ -140,7 +140,7 @@ public class AdvertisingTopologyNative {
                 // Parse the String as JSON
                 .flatMap(new DeserializeBolt())
                 //Filter the records if event type is "view"
-                .filter(new EventFilterBolt())
+//                .filter(new EventFilterBolt())
                 // project the event
                 .<Tuple2<String, String>>project(2, 5)
                 // perform join with redis data
@@ -322,8 +322,8 @@ public class AdvertisingTopologyNative {
             }
 
             Tuple3<String, String, String> tuple = new Tuple3<String, String, String>(
-//                    campaign_id,
-                    (String) input.getField(0),
+                    campaign_id,
+//                    (String) input.getField(0),
                     (String) input.getField(0),
                     (String) input.getField(1));
             out.collect(tuple);
