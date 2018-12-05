@@ -590,7 +590,7 @@ function benchmarkLoop (){
             runCommandKafkaServers "reboot"
 #            runCommandLoadServers "reboot"
 #            runCommandZKServers "reboot"
-            sleep 120
+            sleep 180
 
         done
 
