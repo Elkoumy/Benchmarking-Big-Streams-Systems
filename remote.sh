@@ -6,7 +6,7 @@
 
 
 #ALGORITHM="max"
-TPS_RANGE=3000000
+TPS_RANGE=2000000
 TPS_LIMIT=9000000
 INITIAL_TPS=${TPS}
 
@@ -587,10 +587,10 @@ function benchmarkLoop (){
 #            scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/result/flink/* ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             TPS=$[$TPS + $TPS_RANGE]
 
-#            runCommandKafkaServers "reboot"
-#            runCommandLoadServers "reboot"
-#            runCommandZKServers "reboot"
-#            sleep 180
+            runCommandKafkaServers "reboot"
+            runCommandLoadServers "reboot"
+            runCommandZKServers "reboot"
+            sleep 180
 
         done
 
