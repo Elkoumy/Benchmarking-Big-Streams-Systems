@@ -10,7 +10,7 @@ LEIN=${LEIN:-lein}
 MVN=${MVN:-mvn}
 GIT=${GIT:-git}
 MAKE=${MAKE:-make}
-
+loaderPid=""
 . ./variable.sh --source-only
 
 
