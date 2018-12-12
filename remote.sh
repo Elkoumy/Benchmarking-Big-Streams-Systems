@@ -6,8 +6,8 @@
 
 
 #ALGORITHM="max"
-TPS_RANGE=2000
-TPS_LIMIT=9000
+TPS_RANGE=2000000
+TPS_LIMIT=9000000
 INITIAL_TPS=${TPS}
 
 SHORT_SLEEP=3
@@ -399,7 +399,7 @@ function prepareEnvironment(){
     ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /config/topics
     ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /brokers/topics
     ${PROJECT_DIR}/kafka_2.11-0.11.0.2/bin/zookeeper-shell.sh  zookeeper-node-01:2181 rmr /admin/delete_topics
-    rm -rf /tmp/kafka-logs/*
+    runCommandKafkaServers "rm -rf /tmp/kafka-logs/*" "nohub"
     rm -rf ${PROJECT_DIR}/kafka_2.11-0.11.0.2/logs/*
     startKafka
     sleep ${LONG_SLEEP}

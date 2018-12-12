@@ -32,10 +32,10 @@ echo "stream-node03" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/sl
 echo "stream-node04" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
 echo "stream-node05" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
 echo "stream-node06" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
-echo "stream-node07" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
-echo "stream-node08" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
-echo "stream-node09" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
-echo "stream-node10" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+#echo "stream-node07" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+#echo "stream-node08" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+#echo "stream-node09" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
+#echo "stream-node10" >> /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/slaves
 
 
 cp /dev/null /root/stream-benchmarking/flink-"$FLINK_VERSION"/conf/masters
@@ -48,10 +48,10 @@ echo "stream-node03" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-had
 echo "stream-node04" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
 echo "stream-node05" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
 echo "stream-node06" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
-echo "stream-node07" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
-echo "stream-node08" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
-echo "stream-node09" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
-echo "stream-node10" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+#echo "stream-node07" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+#echo "stream-node08" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+#echo "stream-node09" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
+#echo "stream-node10" >> /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/slaves
 
 
 cp /dev/null /root/stream-benchmarking/spark-"$SPARK_VERSION"-bin-hadoop2.6/conf/spark-env.sh

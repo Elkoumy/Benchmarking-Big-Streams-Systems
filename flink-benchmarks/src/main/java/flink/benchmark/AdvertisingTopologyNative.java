@@ -10,10 +10,7 @@ package flink.benchmark;
 
 
 import ee.ut.cs.dsg.efficientSWAG.Enumerators;
-import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.java.tuple.*;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
@@ -23,7 +20,9 @@ import org.apache.flink.metrics.MeterView;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks;
 import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
+import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
@@ -37,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -62,14 +62,14 @@ public class AdvertisingTopologyNative {
         LOG.info("Parameters used: {}", flinkBenchmarkParams.toMap());
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-//        StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("172.17.77.47", 6123, "C:\\Gamal Elkoumy\\PhD\\OneDrive - Tartu Ülikool\\Stream Processing\\Source Code and Example\\Benchmarking-gamal-version\\redisTest\\out\\artifacts\\redisTest_jar2\\redisTest.jar");
-        env.getConfig().setGlobalJobParameters(flinkBenchmarkParams);
 
-        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        env.getConfig().setGlobalJobParameters(flinkBenchmarkParams);
+        env.getConfig().setAutoWatermarkInterval(1000);
+//        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
         // Set the buffer timeout (default 100)
         // Lowering the timeout will lead to lower latencies, but will eventually reduce throughput.
         env.setBufferTimeout(flinkBenchmarkParams.getLong("flink.buffer-timeout", 100));
-
         if(flinkBenchmarkParams.has("flink.checkpoint-interval")) {
             // enable checkpointing for fault tolerance
             env.enableCheckpointing(flinkBenchmarkParams.getLong("flink.checkpoint-interval", 1000));
@@ -135,36 +135,55 @@ public class AdvertisingTopologyNative {
 //                .flatMap(new CampaignProcessor());
 
 
+//        messageStream
+////                .rebalance()
+//                // Parse the String as JSON
+//                .flatMap(new DeserializeBolt())
+//                //Filter the records if event type is "view"
+////                .filter(new EventFilterBolt())
+//                // project the event
+//                .<Tuple2<String, String>>project(2, 5)
+//                // perform join with redis data
+//                .flatMap(new RedisJoinBolt())
+//                .flatMap(new FormatConvert())
+//                .assignTimestampsAndWatermarks( new BoundedOutOfOrderWatermarkGenerator(3000))
+////                        new AscendingTimestampExtractor<Tuple5<String,String,String,Double,Long>>() {
+////
+////                            //																		 @Override
+////                            public long extractAscendingTimestamp(Tuple5<String, String, String, Double,Long> element) {
+////                                return Long.parseLong(element.f2);
+////                            }
+////                        }
+////                )
+////                // process campaign
+//////                .flatMap(new MyFlatMap())
+//                .keyBy(0)
+//                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, algorithm)
+////        .timeWindow(Time.of(1, SECONDS))
+//                .sum(3)
+//                .flatMap(new FormatRestore())
+//                .flatMap(new CampaignProcessor())
+//        ;
+//
+
+
+
+
+
         messageStream
-                .rebalance()
-                // Parse the String as JSON
+//
                 .flatMap(new DeserializeBolt())
-                //Filter the records if event type is "view"
-//                .filter(new EventFilterBolt())
-                // project the event
                 .<Tuple2<String, String>>project(2, 5)
                 // perform join with redis data
                 .flatMap(new RedisJoinBolt())
                 .flatMap(new FormatConvert())
-                .assignTimestampsAndWatermarks(
-                        new AscendingTimestampExtractor<Tuple5<String,String,String,Double,Long>>() {
-
-                            //																		 @Override
-                            public long extractAscendingTimestamp(Tuple5<String, String, String, Double,Long> element) {
-                                return Long.parseLong(element.f2);
-                            }
-                        }
-                )
-//                // process campaign
-////                .flatMap(new MyFlatMap())
+                .assignTimestampsAndWatermarks( new BoundedOutOfOrderWatermarkGenerator(3000))
                 .keyBy(0)
-                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, algorithm)
-//        .timeWindow(Time.of(1, SECONDS))
-                .sum(3)
+                .timeWindow(Time.of(1, SECONDS), Time.of(500, MILLISECONDS))
+                .aggregate(new AggregateSum())
                 .flatMap(new FormatRestore())
                 .flatMap(new CampaignProcessor())
         ;
-
 
         env.execute();
     }
@@ -178,10 +197,10 @@ public class AdvertisingTopologyNative {
         }
     }
 
-    public static class FormatRestore implements org.apache.flink.api.common.functions.FlatMapFunction<Tuple5<String, String, String, Double,Long>, Tuple3<String, String, String>> {
+    public static class FormatRestore implements org.apache.flink.api.common.functions.FlatMapFunction<Tuple5<String, String, String, Double,Long>, Tuple4<String, String, String,Long>> {
 
-        public void flatMap(Tuple5<String, String, String, Double,Long> input, Collector<Tuple3<String, String, String>> collector) throws Exception {
-            collector.collect(new Tuple3(input.f0, input.f1, input.f2));
+        public void flatMap(Tuple5<String, String, String, Double,Long> input, Collector<Tuple4<String, String, String,Long>> collector) throws Exception {
+            collector.collect(new Tuple4(input.f0, input.f1, input.f2, input.f4));
         }
     }
 
@@ -382,7 +401,7 @@ public class AdvertisingTopologyNative {
 
 
 
-    public static class CampaignProcessorGamal extends RichFlatMapFunction<Tuple3<Long, String, Double>, String> {
+    public static class CampaignProcessorGamal extends RichFlatMapFunction<Tuple4<Long, String, Double,Long>, String> {
 
         CampaignProcessorCommon campaignProcessorCommon;
 
@@ -397,15 +416,16 @@ public class AdvertisingTopologyNative {
         }
 
         @Override
-        public void flatMap(Tuple3<Long, String, Double> tuple, Collector<String> out) throws Exception {
+        public void flatMap(Tuple4<Long, String, Double,Long> tuple, Collector<String> out) throws Exception {
 
             String campaign_id = tuple.getField(1);
             String event_time =  tuple.getField(0)+"";
-            this.campaignProcessorCommon.execute(campaign_id, event_time);
+            long agg_count= tuple.getField(4);
+            this.campaignProcessorCommon.execute(campaign_id, event_time,agg_count);
         }
     }
 
-    public static class CampaignProcessor extends RichFlatMapFunction<Tuple3<String, String, String>, String> {
+    public static class CampaignProcessor extends RichFlatMapFunction<Tuple4<String, String, String, Long>, String> {
 
         CampaignProcessorCommon campaignProcessorCommon;
 
@@ -420,11 +440,12 @@ public class AdvertisingTopologyNative {
         }
 
         @Override
-        public void flatMap(Tuple3<String, String, String> tuple, Collector<String> out) throws Exception {
+        public void flatMap(Tuple4<String, String, String, Long> tuple, Collector<String> out) throws Exception {
 
             String campaign_id = tuple.getField(0);
             String event_time =  tuple.getField(2);
-            this.campaignProcessorCommon.execute(campaign_id, event_time);
+            Long agg_count = tuple.getField(4);
+            this.campaignProcessorCommon.execute(campaign_id, event_time, agg_count);
         }
     }
 
@@ -496,6 +517,76 @@ public class AdvertisingTopologyNative {
             }
         }
         return val;
+    }
+
+
+    public static class BoundedOutOfOrderWatermarkGenerator implements AssignerWithPeriodicWatermarks<Tuple5<String, String, String, Double,Long>> {
+
+
+        private long maxOutOfOrderness = 3500; // 3.5 seconds
+        private long numberOfGeneratedWatermarks=0;
+        public BoundedOutOfOrderWatermarkGenerator(long maxOOO)
+        {
+            this.maxOutOfOrderness = maxOOO;
+        }
+
+
+        private long currentMaxTimestamp= Long.MIN_VALUE;
+        long currentWatermark=0;
+
+        @Override
+        public long extractTimestamp(Tuple5<String, String, String, Double,Long> element, long previousElementTimestamp) {
+            long timestamp = Long.parseLong( element.f2);
+
+            currentMaxTimestamp = Math.max(currentMaxTimestamp,timestamp);
+            return timestamp;
+        }
+
+        @Override
+        public Watermark getCurrentWatermark() {
+            // return the watermark as current highest timestamp minus the out-of-orderness bound
+            long nextWatermark = currentMaxTimestamp - maxOutOfOrderness;
+//        if (currentWatermark != 0)
+//            System.out.println("Pending windows "+ ((nextWatermark-currentWatermark)/100));
+            if (nextWatermark > currentWatermark) {
+                currentWatermark = nextWatermark;
+                return new Watermark(nextWatermark);
+            }
+            // System.out.println("Next watermark "+nextWatermark);
+//            System.out.println("Total OOO Arrival "+totalOOOElements+" of total elements "+totalElements +" with percentage "+(double)totalOOOElements/totalElements);
+            return null;
+        }
+
+//        public long getNumberOfGeneratedWatermarks(){return numberOfGeneratedWatermarks;}
+    }
+
+    private static class AggregateSum implements AggregateFunction<Tuple5<String, String, String, Double, Long>, Tuple5<String, String, String, Double, Long>, Tuple5<String, String, String, Double, Long>> {
+        @Override
+        public Tuple5<String, String, String, Double,Long> createAccumulator() {
+            Tuple5<String, String, String, Double,Long> acc = new Tuple5<String, String, String, Double,Long>();
+
+            return acc;
+        }
+
+        @Override
+        public Tuple5<String, String, String, Double,Long> add(Tuple5<String, String, String, Double,Long> o, Tuple5<String, String, String, Double,Long> o2) {
+
+            o2.f3+=o.f3;
+            o2.f4++;
+            return o2;
+        }
+
+        @Override
+        public Tuple5<String, String, String, Double,Long> getResult(Tuple5<String, String, String, Double,Long> o) {
+            return o;
+        }
+
+        @Override
+        public Tuple5<String, String, String, Double,Long> merge(Tuple5<String, String, String, Double,Long> o, Tuple5<String, String, String, Double,Long> acc1) {
+            o.f3+=acc1.f3;
+            o.f4+=acc1.f4;
+            return o;
+        }
     }
 }
 

@@ -49,10 +49,11 @@ public class CampaignProcessorCommon {
         new Thread(flusher).start();
     }
 
-    public void execute(String campaign_id, String event_time) {
+    public void execute(String campaign_id, String event_time, Long agg_count) {
         Long timeBucket = Long.parseLong(event_time) / time_divisor;
         Window window = getWindow(timeBucket, campaign_id);
-        window.seenCount++;
+//        window.seenCount++;
+        window.seenCount += agg_count;
 
         CampaignWindowPair newPair = new CampaignWindowPair(campaign_id, window);
         synchronized(need_flush) {
@@ -144,12 +145,12 @@ public class CampaignProcessorCommon {
     public static void main(String[] args){
         CampaignProcessorCommon campaignProcessorCommon = new CampaignProcessorCommon("redis", 10000L);
         campaignProcessorCommon.prepare();
-        campaignProcessorCommon.execute("1", "1522620341534");
-        campaignProcessorCommon.execute("1", "1522620344534");
+        campaignProcessorCommon.execute("1", "1522620341534",1l);
+        campaignProcessorCommon.execute("1", "1522620344534",1l);
         LOG.info(campaignProcessorCommon.getWindow(152262034L, "1").toString());
         campaignProcessorCommon.flushWindows();
         LOG.info(campaignProcessorCommon.getWindow(152262034L, "1").toString());
-        campaignProcessorCommon.execute("1", "1522620346534");
+        campaignProcessorCommon.execute("1", "1522620346534",1l);
         LOG.info(campaignProcessorCommon.getWindow(152262034L, "1").toString());
 
     }
