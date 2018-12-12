@@ -316,7 +316,7 @@ run() {
   elif [ "STOP_LOAD" = "$OPERATION" ];
   then
 #    stop_if_needed leiningen.core.main "Load Generation"
-        pkill -f Main
+        pkill -f "Main"
   elif [ "START_STORM_TOPOLOGY" = "$OPERATION" ];
   then
     "$STORM_DIR/bin/storm" jar ./storm-benchmarks/target/storm-benchmarks-0.1.0.jar storm.benchmark.AdvertisingTopology test-topo -conf $CONF_FILE
