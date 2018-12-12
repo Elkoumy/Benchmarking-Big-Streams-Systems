@@ -89,9 +89,26 @@ fetch_untar_file() {
 
 create_kafka_topic() {
     local count=`$KAFKA_DIR/bin/kafka-topics.sh --describe --zookeeper "$ZK_CONNECTIONS" --topic ${TOPIC} 2>/dev/null | grep -c ${TOPIC}`
+   local countPurchases=`$KAFKA_DIR/bin/kafka-topics.sh --describe --zookeeper "$ZK_CONNECTIONS" --topic purchases 2>/dev/null | grep -c purchases`
+   local countAds=`$KAFKA_DIR/bin/kafka-topics.sh --describe --zookeeper "$ZK_CONNECTIONS" --topic ads 2>/dev/null | grep -c ads`
     if [[ "$count" = "0" ]];
     then
         $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ${TOPIC}
+    else
+        echo "Kafka topic $TOPIC already exists"
+    fi
+
+
+    if [[ "$countPurchases" = "0" ]];
+    then
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic purchases
+    else
+        echo "Kafka topic $TOPIC already exists"
+    fi
+
+    if [[ "$countAds" = "0" ]];
+    then
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ads
     else
         echo "Kafka topic $TOPIC already exists"
     fi
@@ -293,7 +310,7 @@ run() {
     cd data
 #    start_if_needed leiningen.core.main "Load Generation" 1 $LEIN run -r -t $TPS --configPath ../$CONF_FILE
         #!/bin/bash
-        java -cp data/Stream-Data-Generator.jar  ee.ut.cs.dsg.datagenrator.Main 100 1000 RR kafka &
+        java -cp ${PROJECT_DIR}/data/Stream-Data-Generator.jar  ee.ut.cs.dsg.datagenrator.Main 100 1000 RR kafka &
         loaderPid=$!
 
     cd ..
