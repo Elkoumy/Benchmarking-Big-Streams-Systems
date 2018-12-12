@@ -312,7 +312,7 @@ run() {
         #!/bin/bash
         java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 1000 RR kafka &
         echo $!
-        loaderPid=$!
+        export loaderPid=$!
 
 
     cd ..
