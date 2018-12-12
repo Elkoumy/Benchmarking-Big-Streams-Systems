@@ -310,7 +310,7 @@ run() {
     cd data
 #    start_if_needed leiningen.core.main "Load Generation" 1 $LEIN run -r -t $TPS --configPath ../$CONF_FILE
         #!/bin/bash
-        java -cp ./data/Stream-Data-Generator.jar  ee.ut.cs.dsg.datagenrator.Main 100 1000 RR kafka &
+        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 1000 RR kafka &
         loaderPid=$!
 
 
