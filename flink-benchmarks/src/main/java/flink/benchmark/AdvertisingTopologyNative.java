@@ -135,55 +135,55 @@ public class AdvertisingTopologyNative {
 //                .flatMap(new CampaignProcessor());
 
 
-//        messageStream
-////                .rebalance()
-//                // Parse the String as JSON
-//                .flatMap(new DeserializeBolt())
-//                //Filter the records if event type is "view"
-////                .filter(new EventFilterBolt())
-//                // project the event
-//                .<Tuple2<String, String>>project(2, 5)
-//                // perform join with redis data
-//                .flatMap(new RedisJoinBolt())
-//                .flatMap(new FormatConvert())
-//                .assignTimestampsAndWatermarks( new BoundedOutOfOrderWatermarkGenerator(3000))
-////                        new AscendingTimestampExtractor<Tuple5<String,String,String,Double,Long>>() {
-////
-////                            //																		 @Override
-////                            public long extractAscendingTimestamp(Tuple5<String, String, String, Double,Long> element) {
-////                                return Long.parseLong(element.f2);
-////                            }
-////                        }
-////                )
-////                // process campaign
-//////                .flatMap(new MyFlatMap())
-//                .keyBy(0)
-//                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, algorithm)
-////        .timeWindow(Time.of(1, SECONDS))
-//                .sum(3)
-//                .flatMap(new FormatRestore())
-//                .flatMap(new CampaignProcessor())
-//        ;
-//
-
-
-
-
-
         messageStream
-//
+//                .rebalance()
+                // Parse the String as JSON
                 .flatMap(new DeserializeBolt())
+                //Filter the records if event type is "view"
+//                .filter(new EventFilterBolt())
+                // project the event
                 .<Tuple2<String, String>>project(2, 5)
                 // perform join with redis data
                 .flatMap(new RedisJoinBolt())
                 .flatMap(new FormatConvert())
                 .assignTimestampsAndWatermarks( new BoundedOutOfOrderWatermarkGenerator(3000))
+//                        new AscendingTimestampExtractor<Tuple5<String,String,String,Double,Long>>() {
+//
+//                            //																		 @Override
+//                            public long extractAscendingTimestamp(Tuple5<String, String, String, Double,Long> element) {
+//                                return Long.parseLong(element.f2);
+//                            }
+//                        }
+//                )
+//                // process campaign
+////                .flatMap(new MyFlatMap())
                 .keyBy(0)
-                .timeWindow(Time.of(1, SECONDS), Time.of(500, MILLISECONDS))
-                .aggregate(new AggregateSum())
+                .timeWindow(Time.of(1, SECONDS), Time.of(1, SECONDS),1, algorithm)
+//        .timeWindow(Time.of(1, SECONDS))
+                .sum(3)
                 .flatMap(new FormatRestore())
                 .flatMap(new CampaignProcessor())
         ;
+
+
+
+
+
+
+//        messageStream
+////
+//                .flatMap(new DeserializeBolt())
+//                .<Tuple2<String, String>>project(2, 5)
+//                // perform join with redis data
+//                .flatMap(new RedisJoinBolt())
+//                .flatMap(new FormatConvert())
+//                .assignTimestampsAndWatermarks( new BoundedOutOfOrderWatermarkGenerator(3000))
+//                .keyBy(0)
+//                .timeWindow(Time.of(1, SECONDS), Time.of(500, MILLISECONDS))
+//                .aggregate(new AggregateSum())
+//                .flatMap(new FormatRestore())
+//                .flatMap(new CampaignProcessor())
+//        ;
 
         env.execute();
     }
