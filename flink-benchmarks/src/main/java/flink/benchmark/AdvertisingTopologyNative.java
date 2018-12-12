@@ -9,6 +9,7 @@ package flink.benchmark;
  */
 
 
+/*
 import ee.ut.cs.dsg.efficientSWAG.Enumerators;
 import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.java.tuple.*;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+*/
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -42,7 +44,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 /**
  * To Run:  flink run target/flink-benchmarks-0.1.0-AdvertisingTopologyNative.jar  --confPath "../conf/benchmarkConf.yaml"
  */
-public class AdvertisingTopologyNative {
+public class AdvertisingTopologyNative {/*
 
     private static final Logger LOG = LoggerFactory.getLogger(AdvertisingTopologyNative.class);
 
@@ -112,9 +114,9 @@ public class AdvertisingTopologyNative {
 
 
 
-        /*****************************
+        *//*****************************
          adding metrics for the log
-         *****************************/
+         *****************************//*
 
         messageStream= messageStream.map(new MyMapper());
         messageStream= messageStream.map(new ThroughputRecorder());
@@ -226,9 +228,9 @@ public class AdvertisingTopologyNative {
     }
 
 
-    /********************
+    *//********************
      * Adding metric class
-     ********************/
+     ********************//*
 
     public static class MyMapper extends RichMapFunction<String, String> {
         private transient Counter counter;
@@ -588,7 +590,7 @@ public class AdvertisingTopologyNative {
             o.f4+=acc1.f4;
             return o;
         }
-    }
+    }*/
 }
 
 /**
