@@ -311,15 +311,12 @@ run() {
 #    start_if_needed leiningen.core.main "Load Generation" 1 $LEIN run -r -t $TPS --configPath ../$CONF_FILE
         #!/bin/bash
         java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 1000 RR kafka &
-        echo $!
-        export loaderPid=$!
-
 
     cd ..
   elif [ "STOP_LOAD" = "$OPERATION" ];
   then
 #    stop_if_needed leiningen.core.main "Load Generation"
-        kill $loaderPid
+        pkill -f Main
   elif [ "START_STORM_TOPOLOGY" = "$OPERATION" ];
   then
     "$STORM_DIR/bin/storm" jar ./storm-benchmarks/target/storm-benchmarks-0.1.0.jar storm.benchmark.AdvertisingTopology test-topo -conf $CONF_FILE
