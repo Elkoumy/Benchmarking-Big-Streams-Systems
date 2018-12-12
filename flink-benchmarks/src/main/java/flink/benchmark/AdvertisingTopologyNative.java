@@ -427,6 +427,7 @@ public class AdvertisingTopologyNative {
 
     public static class CampaignProcessor extends RichFlatMapFunction<Tuple4<String, String, String, Long>, String> {
 
+
         CampaignProcessorCommon campaignProcessorCommon;
 
         @Override
