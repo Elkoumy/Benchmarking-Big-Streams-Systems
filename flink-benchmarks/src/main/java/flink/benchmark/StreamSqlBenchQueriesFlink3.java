@@ -94,7 +94,7 @@ public class StreamSqlBenchQueriesFlink3 {
                             }
                         });
         //mapper to write key and value of each element ot redis
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        //purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime");
         tEnv.registerTable("purchasesTable", purchasesTable);
@@ -110,7 +110,7 @@ public class StreamSqlBenchQueriesFlink3 {
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        //queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
 
         /**************************************************************
@@ -273,7 +273,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 7- Inner join // Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-        DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
+/*        DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
         DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
             @Override
             public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
@@ -282,7 +282,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
 
             }
-        });
+        });*/
 
   // I think no need to insert the other table since we are in the query projecting all from single tale so I hashed this mapper.
 /*      DataStream<Tuple2<Boolean, Row>> adDataStreamTable = tEnv.toRetractStream(adsTable, Row.class);
