@@ -43,7 +43,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // port=6666;
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        //env.setParallelism(1);
+        env.setParallelism(160);
         StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
