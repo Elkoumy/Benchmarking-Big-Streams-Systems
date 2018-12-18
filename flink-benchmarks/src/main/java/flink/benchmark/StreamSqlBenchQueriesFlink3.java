@@ -94,7 +94,7 @@ public class StreamSqlBenchQueriesFlink3 {
                             }
                         });
         //mapper to write key and value of each element ot redis
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+  /*      purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime");
         tEnv.registerTable("purchasesTable", purchasesTable);
@@ -103,14 +103,14 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //Workloads
         //================================General======================
-        /**************************************************************
+        *//**************************************************************
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
-         * ************************************************************/
+         * ************************************************************//*
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
 
 
         /**************************************************************
@@ -296,7 +296,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });*/
         // register function
-/*
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime  " +
@@ -308,7 +308,7 @@ public class StreamSqlBenchQueriesFlink3 {
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
-        DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
+       /* DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
             @Override
             public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
                 System.out.println("after "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(3)).getMillis()+" value> "+System.currentTimeMillis());
