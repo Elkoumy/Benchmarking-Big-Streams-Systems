@@ -844,8 +844,8 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
 
-            this.redisReadAndWrite.write(input.f1.getField(0)+":"+input.f1.getField(2)+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
-            this.redisReadAndWrite.write(input.f1.getField(0)+":"+input.f1.getField(2)+"","Throughput", (throughputCounterAfter++)+"");
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","Throughput", (throughputCounterAfter++)+"");
 
 
         }
