@@ -61,7 +61,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "purchases",
                         new SimpleStringSchema(),
                         props))
-                //.setParallelism(1)
+                .setParallelism(160)
                 ;
 
         DataStream<String> adsStream = env
@@ -69,7 +69,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "ads",
                         new SimpleStringSchema(),
                         props))
-                //.setParallelism(1)
+                .setParallelism(160)
                 ;
 
 
