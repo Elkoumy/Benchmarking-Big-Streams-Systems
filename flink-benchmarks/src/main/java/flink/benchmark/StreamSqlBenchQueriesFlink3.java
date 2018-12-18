@@ -2,10 +2,12 @@ package flink.benchmark;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -26,12 +28,13 @@ import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 
 public class StreamSqlBenchQueriesFlink3 {
-    public static int throughputCounterBefore=0;
-    public static int throughputCounterAfter=0;
-    public static int throughputAccomulationcount=0;
+    public static Long throughputCounterBefore=new Long("0");
+    public static Long throughputCounterAfter=new Long("0");
+    public static Long throughputAccomulationcount=new Long("0");
     public static void main(String[] args) {
         //ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
@@ -40,7 +43,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // port=6666;
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+        //env.setParallelism(1);
         StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
@@ -53,22 +56,20 @@ public class StreamSqlBenchQueriesFlink3 {
         // not to be shared with another job consuming the same topic
         props.setProperty("group.id", "flink-group");
 
-
-
         DataStream<String> purchasesStream = env
                 .addSource(new FlinkKafkaConsumer011<String>(
                         "purchases",
                         new SimpleStringSchema(),
-                        props)).
-                        setParallelism(1)
+                        props))
+                //.setParallelism(1)
                 ;
 
         DataStream<String> adsStream = env
                 .addSource(new FlinkKafkaConsumer011<String>(
                         "ads",
                         new SimpleStringSchema(),
-                        props)).
-                        setParallelism(1)
+                        props))
+                //.setParallelism(1)
                 ;
 
 
@@ -79,7 +80,6 @@ public class StreamSqlBenchQueriesFlink3 {
 
                             @Override
                             public long extractTimestamp(Tuple4<Integer, Integer, Integer, Long> element) {
-                                //System.out.println("p "+element.f0+"  "+element.f1+"  "+element.f2+"  "+element.f3);
                                 return element.getField(3);
                             }
                         });
@@ -87,31 +87,18 @@ public class StreamSqlBenchQueriesFlink3 {
         DataStream<Tuple3<Integer, Integer, Long>> adsWithTimestampsAndWatermarks =
                 adsStream
                         .flatMap( new AdsParser())
-                        .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<Integer, Integer, Long>>(Time.seconds(1)) {
+                        .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<Integer, Integer, Long>>(Time.seconds(10)) {
                             @Override
                             public long extractTimestamp(Tuple3<Integer, Integer, Long> element) {
-                                //System.out.println("a "+element.f0+"  "+element.f1+"  "+element.f2);
                                 return element.getField(2);
                             }
                         });
-        adsWithTimestampsAndWatermarks.print();
-
-
+        //mapper to write key and value of each element ot redis
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime");
         tEnv.registerTable("purchasesTable", purchasesTable);
         tEnv.registerTable("adsTable", adsTable);
-
-        //mapper to write key and value of each element ot redis
-/*          //if i used this the event time as a key not written the same before and after
-            DataStream<Tuple2<String,String>> writeToRedisBefore = purchaseWithTimestampsAndWatermarks.map(new MapFunction<Tuple4<Integer, Integer, Integer, Long>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple4<Integer, Integer, Integer, Long> inputTuple) {
-                System.out.println("before "+"Key>"+inputTuple.f0+" "+inputTuple.f3+" "+"value> "+new Instant(System.currentTimeMillis()) );
-                return new Tuple2<>(inputTuple.f0+"",inputTuple.f3+"");
-            }
-        });*/
-
 
 
         //Workloads
@@ -120,30 +107,11 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-/*        DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
-        DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("before "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(3)).getMillis()+" value> "+System.currentTimeMillis());
-                System.out.println( throughputCounterBefore++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
-
-            }
-        });
-
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
-        DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("after "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(2)).getMillis()+" value> "+System.currentTimeMillis());
-                System.out.println( "throughput> " +throughputCounterAfter++); //for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+""); //for latency
-
-            }
-        });*/
 
         /**************************************************************
          * 2- Filtering// Get the purchases of specific user//
@@ -328,6 +296,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });*/
         // register function
+/*
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime  " +
@@ -348,6 +317,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
             }
         });
+*/
 
         /**************************************************************
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase)
@@ -825,6 +795,59 @@ public class StreamSqlBenchQueriesFlink3 {
                     );
 
             out.collect(tuple);
+        }
+    }
+
+    /**
+     * write to redis before query
+     */
+    public static class WriteToRedis extends RichFlatMapFunction<Tuple4<Integer, Integer, Integer, Long>, String> {
+        RedisReadAndWrite redisReadAndWrite;
+
+        @Override
+        public String toString() {
+            return "";
+        }
+        @Override
+        public void open(Configuration parameters) {
+            // Jedis flush_jedis=new Jedis("redis",6379,1225253525);
+            // flush_jedis.hset(input.f1.getField(0)+"",input.f1.getField(1)+"",input.f1.getField(2)+"");
+//            this.redisAdCampaignCache.prepare();
+            this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+
+        }
+
+        @Override
+        public void flatMap(Tuple4<Integer, Integer, Integer, Long> input, Collector<String> out) throws Exception {
+
+            this.redisReadAndWrite.write(input.f0+":"+input.f3+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //this.redisReadAndWrite.write(input.f0+":"+input.f3+"","Throughput", (throughputCounterBefore++)+"");
+        }
+    }
+
+    /**
+     * write to redis after query
+     */
+    public static class WriteToRedisAfterQuery extends RichFlatMapFunction<Tuple2<Boolean, Row>, String> {
+        RedisReadAndWrite redisReadAndWrite;
+
+        @Override
+        public String toString() {
+            return "";
+        }
+        @Override
+        public void open(Configuration parameters) {
+            this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+
+        }
+
+        @Override
+        public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
+
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+input.f1.getField(2)+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+input.f1.getField(2)+"","Throughput", (throughputCounterAfter++)+"");
+
+
         }
     }
 
