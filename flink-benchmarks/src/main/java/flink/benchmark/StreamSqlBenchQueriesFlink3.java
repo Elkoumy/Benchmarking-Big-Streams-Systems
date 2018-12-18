@@ -94,7 +94,7 @@ public class StreamSqlBenchQueriesFlink3 {
                             }
                         });
         //mapper to write key and value of each element ot redis
-  /*      purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+       // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime");
         tEnv.registerTable("purchasesTable", purchasesTable);
@@ -103,11 +103,12 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //Workloads
         //================================General======================
-        *//**************************************************************
+
+        /**************************************************************
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
-         * ************************************************************//*
-        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
+         * ************************************************************/
+      /*  Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
