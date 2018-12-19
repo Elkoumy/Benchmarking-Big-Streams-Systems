@@ -3,10 +3,12 @@ package flink.benchmark;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -24,11 +26,16 @@ import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 import org.joda.time.Instant;
 import org.json.JSONObject;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.metrics.Counter;
+import org.apache.flink.metrics.Meter;
+import org.apache.flink.metrics.MeterView;
 
 import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static org.apache.flink.runtime.state.CheckpointStreamWithResultProvider.LOG;
 
 
 public class StreamSqlBenchQueriesFlink3 {
@@ -39,13 +46,43 @@ public class StreamSqlBenchQueriesFlink3 {
         //ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
         //int port=Integer.parseInt(params.getRequired("port"));
-        String ip="localhost";
+        //String ip="localhost";
         // port=6666;
+        //////
+        ParameterTool parameterTool = ParameterTool.fromArgs(args);
+
+        Map conf = Utils.findAndReadConfigFile(parameterTool.getRequired("confPath"), true);
+        int kafkaPartitions = ((Number)conf.get("kafka.partitions")).intValue();
+        int hosts = ((Number)conf.get("process.hosts")).intValue();
+        int cores = ((Number)conf.get("process.cores")).intValue();
+
+        ParameterTool flinkBenchmarkParams = ParameterTool.fromMap(getFlinkConfs(conf));
+
+        LOG.info("conf: {}", conf);
+        LOG.info("Parameters used: {}", flinkBenchmarkParams.toMap());
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(160);
-        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);
+
+        env.getConfig().setGlobalJobParameters(flinkBenchmarkParams);
+        env.getConfig().setAutoWatermarkInterval(1000);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        //env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+        // Set the buffer timeout (default 100)
+        // Lowering the timeout will lead to lower latencies, but will eventually reduce throughput.
+        env.setBufferTimeout(flinkBenchmarkParams.getLong("flink.buffer-timeout", 100));
+        if(flinkBenchmarkParams.has("flink.checkpoint-interval")) {
+            // enable checkpointing for fault tolerance
+            env.enableCheckpointing(flinkBenchmarkParams.getLong("flink.checkpoint-interval", 1000));
+        }
+        // set default parallelism for all operators (recommended value: number of available worker CPU cores in the cluster (hosts * cores))
+        env.setParallelism(hosts * cores);
+
+        /////
+
+        //StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        //env.setParallelism(160);
+        StreamTableEnvironment tEnv = TableEnvironment.getTableEnvironment(env);
+
 
        /* DataStreamSource<Tuple4<Integer, Integer, Integer, Long>> purchaseInputTuple=env.addSource(new YetAnotherSourceSocketPurchase(ip,6666));
         DataStreamSource<Tuple3<Integer, Integer, Long>> adsInputTuple=env.addSource(new YetAnotherSourceSocketAd(ip,7777));
@@ -61,17 +98,23 @@ public class StreamSqlBenchQueriesFlink3 {
                         "purchases",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(160)
-                ;
+                .setParallelism(Math.min(hosts * cores, kafkaPartitions));
+
 
         DataStream<String> adsStream = env
                 .addSource(new FlinkKafkaConsumer011<String>(
                         "ads",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(160)
-                ;
+                .setParallelism(Math.min(hosts * cores, kafkaPartitions));
 
+        /*****************************
+         *  adding metrics for the log (I need to know what are these actually)
+         *****************************/
+
+        purchasesStream= purchasesStream.map(new MyMapper());
+        adsStream= adsStream.map(new ThroughputRecorder());
+        /************************************************************/
 
         DataStream<Tuple4<Integer, Integer, Integer, Long>> purchaseWithTimestampsAndWatermarks =
                 purchasesStream
@@ -93,6 +136,8 @@ public class StreamSqlBenchQueriesFlink3 {
                                 return element.getField(2);
                             }
                         });
+
+
         //mapper to write key and value of each element ot redis
        // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime");
@@ -806,15 +851,13 @@ public class StreamSqlBenchQueriesFlink3 {
         RedisReadAndWrite redisReadAndWrite;
 
         @Override
-        public String toString() {
-            return "";
-        }
-        @Override
         public void open(Configuration parameters) {
-            // Jedis flush_jedis=new Jedis("redis",6379,1225253525);
-            // flush_jedis.hset(input.f1.getField(0)+"",input.f1.getField(1)+"",input.f1.getField(2)+"");
-//            this.redisAdCampaignCache.prepare();
-            this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+            parameterTool.getRequired("jedis_server");
+            LOG.info("Opening connection with Jedis to {}", parameterTool.getRequired("jedis_server"));
+            //this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            this.redisReadAndWrite = new RedisReadAndWrite(parameterTool.getRequired("jedis_server"),6379);
+            this.redisReadAndWrite.prepare();
 
         }
 
@@ -852,5 +895,109 @@ public class StreamSqlBenchQueriesFlink3 {
         }
     }
 
+
+    private static Map<String, String> getFlinkConfs(Map conf) {
+        String kafkaBrokers = getKafkaBrokers(conf);
+        String zookeeperServers = getZookeeperServers(conf);
+
+        Map<String, String> flinkConfs = new HashMap<String, String>();
+        flinkConfs.put("topic", getKafkaTopic(conf));
+        flinkConfs.put("bootstrap.servers", kafkaBrokers);
+        flinkConfs.put("zookeeper.connect", zookeeperServers);
+        flinkConfs.put("jedis_server", getRedisHost(conf));
+        flinkConfs.put("time.divisor", getTimeDivisor(conf));
+        flinkConfs.put("group.id", "myGroup");
+
+        return flinkConfs;
+    }
+    private static String getTimeDivisor(Map conf) {
+        if(!conf.containsKey("time.divisor")) {
+            throw new IllegalArgumentException("Not time divisor found!");
+        }
+        return String.valueOf(conf.get("time.divisor"));
+    }
+
+    private static String getZookeeperServers(Map conf) {
+        if(!conf.containsKey("zookeeper.servers")) {
+            throw new IllegalArgumentException("Not zookeeper servers found!");
+        }
+        return listOfStringToString((List<String>) conf.get("zookeeper.servers"), String.valueOf(conf.get("zookeeper.port")));
+    }
+
+    private static String getKafkaBrokers(Map conf) {
+        if(!conf.containsKey("kafka.brokers")) {
+            throw new IllegalArgumentException("No kafka brokers found!");
+        }
+        if(!conf.containsKey("kafka.port")) {
+            throw new IllegalArgumentException("No kafka port found!");
+        }
+        return listOfStringToString((List<String>) conf.get("kafka.brokers"), String.valueOf(conf.get("kafka.port")));
+    }
+
+    private static String getKafkaTopic(Map conf) {
+        if(!conf.containsKey("kafka.topic")) {
+            throw new IllegalArgumentException("No kafka topic found!");
+        }
+        return (String)conf.get("kafka.topic");
+    }
+
+    private static String getRedisHost(Map conf) {
+        if(!conf.containsKey("redis.host")) {
+            throw new IllegalArgumentException("No redis host found!");
+        }
+        return (String)conf.get("redis.host");
+    }
+
+    public static String listOfStringToString(List<String> list, String port) {
+        String val = "";
+        for(int i=0; i<list.size(); i++) {
+            val += list.get(i) + ":" + port;
+            if(i < list.size()-1) {
+                val += ",";
+            }
+        }
+        return val;
+    }
+    /********************
+     * Adding metric class
+     ********************/
+
+    public static class MyMapper extends RichMapFunction<String, String> {
+        private transient Counter counter;
+
+        @Override
+        public void open(Configuration config) {
+            this.counter = getRuntimeContext()
+                    .getMetricGroup()
+                    .counter("myCounter");
+        }
+
+        @Override
+        public String map(String value) throws Exception {
+            this.counter.inc();
+            return value;
+        }
+    }
+    public static class ThroughputRecorder  extends RichMapFunction<String, String> {
+
+
+
+        private transient Meter meter;
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            super.open(parameters);
+            this.meter = getRuntimeContext()
+                    .getMetricGroup()
+                    .meter("throughput", new MeterView(5));
+//                    .meter("throughput", new MeterV(new com.codahale.metrics.Meter()));
+        }
+
+        @Override
+        public String map(String value) throws Exception {
+            this.meter.markEvent();
+            return value;
+        }
+    }
 
 }
