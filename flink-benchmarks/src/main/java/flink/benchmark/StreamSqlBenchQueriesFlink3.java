@@ -43,8 +43,9 @@ public class StreamSqlBenchQueriesFlink3 {
     public static Long throughputCounterAfter=new Long("0");
     public static Long throughputAccomulationcount=new Long("0");
     public static void main(String[] args) {
-        //ParameterTool params = ParameterTool.fromArgs(args);
+        ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
+        int k_partitions = Integer.parseInt(params.getRequired("k-partitions"));
         //int port=Integer.parseInt(params.getRequired("port"));
         //String ip="localhost";
         // port=6666;
@@ -100,7 +101,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "purchases",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(Math.min(5 * 32, 4));
+                .setParallelism(Math.min(5 * 32, k_partitions));
 
 
         DataStream<String> adsStream = env
@@ -108,7 +109,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "ads",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(Math.min(5 * 32, 4));
+                .setParallelism(Math.min(5 * 32, k_partitions));
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
