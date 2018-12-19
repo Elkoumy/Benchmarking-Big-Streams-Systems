@@ -100,7 +100,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "purchases",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(Math.min(5 * 32, 20));
+                .setParallelism(Math.min(5 * 32, 4));
 
 
         DataStream<String> adsStream = env
@@ -108,7 +108,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "ads",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(Math.min(5 * 32, 20));
+                .setParallelism(Math.min(5 * 32, 4));
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
