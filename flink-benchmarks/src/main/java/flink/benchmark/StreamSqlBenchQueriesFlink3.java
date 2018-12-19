@@ -49,7 +49,7 @@ public class StreamSqlBenchQueriesFlink3 {
         //String ip="localhost";
         // port=6666;
         //////
-        ParameterTool parameterTool = ParameterTool.fromArgs(args);
+ /*       ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
         Map conf = Utils.findAndReadConfigFile(parameterTool.getRequired("confPath"), true);
         int kafkaPartitions = ((Number)conf.get("kafka.partitions")).intValue();
@@ -73,9 +73,10 @@ public class StreamSqlBenchQueriesFlink3 {
         if(flinkBenchmarkParams.has("flink.checkpoint-interval")) {
             // enable checkpointing for fault tolerance
             env.enableCheckpointing(flinkBenchmarkParams.getLong("flink.checkpoint-interval", 1000));
-        }
+        }*/
         // set default parallelism for all operators (recommended value: number of available worker CPU cores in the cluster (hosts * cores))
-        env.setParallelism(hosts * cores);
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(5 * 32);
 
         /////
 
@@ -98,7 +99,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "purchases",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(Math.min(hosts * cores, kafkaPartitions));
+                .setParallelism(Math.min(5 * 32, 3));
 
 
         DataStream<String> adsStream = env
@@ -106,7 +107,7 @@ public class StreamSqlBenchQueriesFlink3 {
                         "ads",
                         new SimpleStringSchema(),
                         props))
-                .setParallelism(Math.min(hosts * cores, kafkaPartitions));
+                .setParallelism(Math.min(5 * 32, 3));
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
@@ -852,11 +853,12 @@ public class StreamSqlBenchQueriesFlink3 {
 
         @Override
         public void open(Configuration parameters) {
-            ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-            parameterTool.getRequired("jedis_server");
-            LOG.info("Opening connection with Jedis to {}", parameterTool.getRequired("jedis_server"));
+            //ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+            //parameterTool.getRequired("jedis_server");
+//            LOG.info("Opening connection with Jedis to {}", parameterTool.getRequired("jedis_server"));
+            LOG.info("Opening connection with Jedis to {}", "redis");
             //this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
-            this.redisReadAndWrite = new RedisReadAndWrite(parameterTool.getRequired("jedis_server"),6379);
+            this.redisReadAndWrite = new RedisReadAndWrite("redis",6379);
             this.redisReadAndWrite.prepare();
 
         }
