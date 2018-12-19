@@ -901,11 +901,11 @@ public class StreamSqlBenchQueriesFlink3 {
         String zookeeperServers = getZookeeperServers(conf);
 
         Map<String, String> flinkConfs = new HashMap<String, String>();
-        flinkConfs.put("topic", getKafkaTopic(conf));
+        //flinkConfs.put("topic", getKafkaTopic(conf));
         flinkConfs.put("bootstrap.servers", kafkaBrokers);
         flinkConfs.put("zookeeper.connect", zookeeperServers);
         flinkConfs.put("jedis_server", getRedisHost(conf));
-        flinkConfs.put("time.divisor", getTimeDivisor(conf));
+        //flinkConfs.put("time.divisor", getTimeDivisor(conf));
         flinkConfs.put("group.id", "myGroup");
 
         return flinkConfs;
