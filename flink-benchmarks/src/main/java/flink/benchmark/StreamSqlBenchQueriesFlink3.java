@@ -344,7 +344,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });*/
         // register function
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+       // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime  " +
