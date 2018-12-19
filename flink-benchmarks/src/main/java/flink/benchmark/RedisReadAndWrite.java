@@ -55,6 +55,6 @@ public class RedisReadAndWrite {
     }
     private void writeWindow(String key, String value) {
 
-        flush_jedis.hset(key, "time_seen", Long.toString(System.currentTimeMillis()));
+        flush_jedis.hset(key, "time_seen", value);
     }
 }

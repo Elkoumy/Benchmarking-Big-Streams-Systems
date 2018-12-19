@@ -864,8 +864,9 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public void flatMap(Tuple4<Integer, Integer, Integer, Long> input, Collector<String> out) throws Exception {
 
-            this.redisReadAndWrite.write(input.f0+":"+input.f3+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //this.redisReadAndWrite.write(input.f0+":"+input.f3+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write(input.f0+":"+input.f3+"","Throughput", (throughputCounterBefore++)+"");
+            this.redisReadAndWrite.execute(input.f0+":"+input.f3+"", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
         }
     }
 
@@ -905,7 +906,7 @@ public class StreamSqlBenchQueriesFlink3 {
         flinkConfs.put("bootstrap.servers", kafkaBrokers);
         flinkConfs.put("zookeeper.connect", zookeeperServers);
         flinkConfs.put("jedis_server", getRedisHost(conf));
-        //flinkConfs.put("time.divisor", getTimeDivisor(conf));
+       // flinkConfs.put("time.divisor", getTimeDivisor(conf));
         flinkConfs.put("group.id", "myGroup");
 
         return flinkConfs;

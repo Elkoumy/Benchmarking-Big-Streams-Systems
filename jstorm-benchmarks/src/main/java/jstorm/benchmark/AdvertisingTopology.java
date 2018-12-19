@@ -1,7 +1,8 @@
 /**
  * Copyright 2015, Yahoo Inc.
  * Licensed under the terms of the Apache License 2.0. Please see LICENSE file in the project root for terms.
- */
+ *//*
+
 package jstorm.benchmark;
 
 import backtype.storm.Config;
@@ -34,9 +35,11 @@ import java.util.Map;
 
 import static java.lang.System.out;
 
+*/
 /**
  * This is a basic example of a Storm topology.
- */
+ *//*
+
 public class AdvertisingTopology {
 
     public static class DeserializeBolt extends BaseRichBolt {
@@ -265,3 +268,4 @@ public class AdvertisingTopology {
         out.println("Configuration done ");
     }
 }
+*/
