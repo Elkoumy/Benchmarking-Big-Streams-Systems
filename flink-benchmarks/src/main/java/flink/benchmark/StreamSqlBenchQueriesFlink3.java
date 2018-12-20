@@ -861,7 +861,7 @@ public class StreamSqlBenchQueriesFlink3 {
             LOG.info("Opening connection with Jedis to {}", "redis");
             //this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWrite = new RedisReadAndWrite("redis",6379);
-            this.redisReadAndWrite.prepare();
+            //this.redisReadAndWrite.prepare();
 
         }
 

@@ -28,6 +28,7 @@ public class RedisReadAndWrite {
     public void execute(String key, String value) {
         keyToFlush=key;
         valueToFlush=value;
+        writeWindow(keyToFlush, valueToFlush);
     }
 
     public void prepare() {
