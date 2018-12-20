@@ -33,7 +33,7 @@ ZK_HOST="zookeeper-node-01"
 ZK_PORT="2181"
 ZK_CONNECTIONS="$ZK_HOST:$ZK_PORT"
     TOPIC=${TOPIC:-"ad-events"}
-PARTITIONS=${PARTITIONS:-1}
+PARTITIONS=${PARTITIONS:-3}
 
 #CONF_FILE=./conf/localConf.yaml
 CONF_FILE=./conf/benchmarkConf.yaml
