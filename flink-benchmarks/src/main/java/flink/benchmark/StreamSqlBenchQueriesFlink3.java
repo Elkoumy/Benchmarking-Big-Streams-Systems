@@ -156,10 +156,10 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-      /*  Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
-
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
 
         /**************************************************************
@@ -345,7 +345,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });*/
         // register function
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime  " +
@@ -356,7 +356,8 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+
 
        /* DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
             @Override
@@ -894,7 +895,7 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
 
-            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
 
 
