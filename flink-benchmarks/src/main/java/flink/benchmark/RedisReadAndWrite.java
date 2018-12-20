@@ -33,25 +33,25 @@ public class RedisReadAndWrite {
     public void prepare() {
         keyToFlush="";
         valueToFlush="";
-        Runnable flusher = new Runnable() {
-            public void run() {
-                try {
-                    while (true) {
-                        Thread.sleep(1000);
+//        Runnable flusher = new Runnable() {
+//            public void run() {
+//                try {
+//                    while (true) {
+//                        Thread.sleep(1000);
                         flushWindows();
-                    }
-                } catch (InterruptedException e) {
-                    LOG.error("Interrupted", e);
-                }
-            }
-        };
-        new Thread(flusher).start();
+//                    }
+//                } catch (InterruptedException e) {
+//                    LOG.error("Interrupted", e);
+//                }
+//            }
+//        };
+//        new Thread(flusher).start();
     }
 
     private void flushWindows() {
-        synchronized (keyToFlush) {
+        //synchronized (keyToFlush) {
             writeWindow(keyToFlush, valueToFlush);
-        }
+        //}
     }
     private void writeWindow(String key, String value) {
 
