@@ -356,6 +356,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
        /* DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
             @Override
@@ -868,9 +869,9 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public void flatMap(Tuple4<Integer, Integer, Integer, Long> input, Collector<String> out) throws Exception {
 
-            //this.redisReadAndWrite.write(input.f0+":"+input.f3+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
-            //this.redisReadAndWrite.write(input.f0+":"+input.f3+"","Throughput", (throughputCounterBefore++)+"");
-            this.redisReadAndWrite.execute(input.f0+":"+input.f3+"", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write(input.f0+":"+input.f3+"","time_seen", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write("JnTPBef","Throughput", (throughputCounterBefore++)+"");
+            //this.redisReadAndWrite.execute(input.f0+":"+input.f3+"", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
         }
     }
 
@@ -893,8 +894,8 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
 
-            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","Latency", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
-            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","Throughput", (throughputCounterAfter++)+"");
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
 
 
         }
