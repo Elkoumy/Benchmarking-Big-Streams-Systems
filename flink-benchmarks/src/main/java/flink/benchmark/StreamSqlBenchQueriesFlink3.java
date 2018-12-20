@@ -43,9 +43,9 @@ public class StreamSqlBenchQueriesFlink3 {
     public static Long throughputCounterAfter=new Long("0");
     public static Long throughputAccomulationcount=new Long("0");
     public static void main(String[] args) {
-        ParameterTool params = ParameterTool.fromArgs(args);
+        //ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
-        int k_partitions = Integer.parseInt(params.getRequired("k-partitions"));
+        int k_partitions = 20;
         //int port=Integer.parseInt(params.getRequired("port"));
         //String ip="localhost";
         // port=6666;
