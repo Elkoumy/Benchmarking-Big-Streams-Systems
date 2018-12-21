@@ -98,7 +98,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         DataStream<String> purchasesStream = env
                 .addSource(new FlinkKafkaConsumer011<String>(
-                        "try1",
+                        "purchases",
                         new SimpleStringSchema(),
                         props))
                 .setParallelism(Math.min(5 * 32, k_partitions));
@@ -106,7 +106,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         DataStream<String> adsStream = env
                 .addSource(new FlinkKafkaConsumer011<String>(
-                        "try2",
+                        "ads",
                         new SimpleStringSchema(),
                         props))
                 .setParallelism(Math.min(5 * 32, k_partitions));
