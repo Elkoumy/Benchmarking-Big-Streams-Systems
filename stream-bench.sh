@@ -101,14 +101,16 @@ create_kafka_topic() {
 
     if [[ "$countPurchases" = "0" ]];
     then
-        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic purchases
+        #$KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic purchases
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions 3 --topic purchases
     else
         echo "Kafka topic $TOPIC already exists"
     fi
 
     if [[ "$countAds" = "0" ]];
     then
-        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ads
+        #$KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ads
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions 3 --topic ads
     else
         echo "Kafka topic $TOPIC already exists"
     fi
