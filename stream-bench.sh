@@ -93,7 +93,8 @@ create_kafka_topic() {
    local countAds=`$KAFKA_DIR/bin/kafka-topics.sh --describe --zookeeper "$ZK_CONNECTIONS" --topic ads 2>/dev/null | grep -c ads`
     if [[ "$count" = "0" ]];
     then
-        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ${TOPIC}
+        #$KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ${TOPIC}
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 3 --partitions 10 --topic ${TOPIC}
     else
         echo "Kafka topic $TOPIC already exists"
     fi
