@@ -80,6 +80,7 @@ public class StreamSqlBenchQueriesFlink3 {
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.setParallelism(5 * 32);
 
+
         /////
 
         //StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
