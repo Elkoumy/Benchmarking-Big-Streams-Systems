@@ -180,7 +180,7 @@
         (doall
          (map data-printer
               (apply concat
-                     (let [campaigns (redis/keys "*")]
+                     (let [campaigns (redis/keys *)]
                        (for [campaign campaigns]
                          (let [seen (redis/hget campaign "time_seen")
                                updated (redis/hget campaign "time_updated")]
