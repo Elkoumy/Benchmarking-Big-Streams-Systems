@@ -232,9 +232,7 @@ run() {
   then
     start_if_needed redis-server Redis 1 "$REDIS_DIR/src/redis-server" --maxclients 100000000 --protected-mode no
     cd data
-    #$LEIN run -n --configPath ../$CONF_FILE
-    #!/bin/bash
-    java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ReadFromRedis &
+    $LEIN run -n --configPath ../$CONF_FILE
     cd ..
   elif [ "LOAD_FROM_REDIS" = "$OPERATION" ];
   then
@@ -246,7 +244,9 @@ run() {
   elif [ "STOP_REDIS" = "$OPERATION" ];
   then
     cd data
-    $LEIN run -g --configPath ../$CONF_FILE || true
+    #$LEIN run -g --configPath ../$CONF_FILE || true
+    #!/bin/bash
+    java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ReadFromRedis &
     cd ..
     stop_if_needed redis-server Redis
     rm -f dump.rdb
