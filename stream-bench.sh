@@ -240,7 +240,7 @@ run() {
     #$LEIN run -g --configPath ../$CONF_FILE || true
      #!/bin/bash
     java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ee.redis.ReadFromRedis &
-    sleep 500
+    sleep 50000
     cd ..
   elif [ "STOP_REDIS" = "$OPERATION" ];
   then
@@ -248,7 +248,7 @@ run() {
     #$LEIN run -g --configPath ../$CONF_FILE || true
     #!/bin/bash
     java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ee.redis.ReadFromRedis &
-    sleep 500
+    sleep 50000
     cd ..
     stop_if_needed redis-server Redis
     rm -f dump.rdb
