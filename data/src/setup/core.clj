@@ -155,7 +155,7 @@
               updated-file (clojure.java.io/writer "updated.txt")]
     (.write seen-file "Hello world clj")))
     )
-
+(comment
 (defn get-stats [redis-host]
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
               updated-file (clojure.java.io/writer "updated.txt")]
@@ -170,7 +170,7 @@
                          (let [seen (campaign)
                                updated (campaign)]
                            ))))))))))
-(comment
+)
 (defn get-stats [redis-host]
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
               updated-file (clojure.java.io/writer "updated.txt")]
@@ -184,7 +184,7 @@
                        (for [campaign campaigns]
                          (let [seen (redis/hget campaign "time_seen")
                                updated (redis/hget campaign "time_updated")]
-                           )))))))))))
+                           ))))))))))
 (defn gen-ads [redis-host]
   (redis/with-server {:host redis-host}
     (let [campaigns (redis/smembers "campaigns")
