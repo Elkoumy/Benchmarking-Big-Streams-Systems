@@ -165,7 +165,7 @@
         (doall
          (map data-printer
               (apply concat
-                     (let [campaigns (1 2 3)]
+                     (let [campaigns 1]
                        (for [campaign campaigns]
                          (let [seen (campaign)
                                updated (campaign)]
