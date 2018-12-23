@@ -182,8 +182,8 @@
               (apply concat
                      (let [campaigns (redis/keys *)]
                        (for [campaign campaigns]
-                         (let [seen ("time_seen")
-                               updated ("time_updated")]
+                         (let [seen (campaign1 "time_seen")
+                               updated (campaign2 "time_updated")]
                            ))))))))))
 (defn gen-ads [redis-host]
   (redis/with-server {:host redis-host}
