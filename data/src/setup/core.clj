@@ -160,8 +160,7 @@
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
               updated-file (clojure.java.io/writer "updated.txt")]
     (letfn [(data-printer [[seen updated]]
-              (.write seen-file (str seen "\n"))
-              (.write updated-file (str (redis/hget "JnTPAft" "Throughput") "\n")))]
+              (.write seen-file (str seen "\n")))]
       (redis/with-server {:host redis-host}
         (doall
          (map data-printer
