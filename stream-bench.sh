@@ -239,14 +239,16 @@ run() {
     cd data
     #$LEIN run -g --configPath ../$CONF_FILE || true
      #!/bin/bash
-    java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ReadFromRedis &
+    java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ee.redis.ReadFromRedis &
+    sleep 25
     cd ..
   elif [ "STOP_REDIS" = "$OPERATION" ];
   then
     cd data
     #$LEIN run -g --configPath ../$CONF_FILE || true
     #!/bin/bash
-    java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ReadFromRedis &
+    java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ee.redis.ReadFromRedis &
+    sleep 25
     cd ..
     stop_if_needed redis-server Redis
     rm -f dump.rdb
