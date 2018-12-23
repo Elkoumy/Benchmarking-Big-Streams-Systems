@@ -127,6 +127,7 @@
                  {}
                  (line-seq kafkas)))))
 
+(comment
 (defn get-stats [redis-host]
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
               updated-file (clojure.java.io/writer "updated.txt")]
@@ -147,6 +148,12 @@
                                    seen (redis/hget window-key "seen_count")
                                    time_updated (redis/hget window-key "time_updated")]
                                [seen (- (Long/parseLong time_updated) (Long/parseLong window-time))]))))))))))))
+)
+
+(defn get-stats [redis-host]
+  (with-open [seen-file (clojure.java.io/writer "seen.txt")
+              updated-file (clojure.java.io/writer "updated.txt")]
+    (.write seen-file "Hello world clj")))
 
 (defn gen-ads [redis-host]
   (redis/with-server {:host redis-host}

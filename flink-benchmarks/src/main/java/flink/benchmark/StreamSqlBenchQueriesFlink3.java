@@ -637,6 +637,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         try {
             env.execute("flink SQL Streaming Benchmarking");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
