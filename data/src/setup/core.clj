@@ -149,12 +149,12 @@
                                    time_updated (redis/hget window-key "time_updated")]
                                [seen (- (Long/parseLong time_updated) (Long/parseLong window-time))]))))))))))))
 )
-(comment
+
 (defn get-stats [redis-host]
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
               updated-file (clojure.java.io/writer "updated.txt")]
     (.write seen-file "Hello world clj")))
-    )
+
 (comment
 (defn get-stats [redis-host]
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
@@ -171,6 +171,7 @@
                                updated (campaign)]
                            ))))))))))
 )
+(comment
 (defn get-stats [redis-host]
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
               updated-file (clojure.java.io/writer "updated.txt")]
@@ -185,6 +186,7 @@
                          (let [seen (campaign1 "time_seen")
                                updated (campaign2 "time_updated")]
                            ))))))))))
+                            )
 (defn gen-ads [redis-host]
   (redis/with-server {:host redis-host}
     (let [campaigns (redis/smembers "campaigns")
