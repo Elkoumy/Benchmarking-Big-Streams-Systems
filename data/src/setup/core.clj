@@ -165,12 +165,26 @@
         (doall
          (map data-printer
               (apply concat
+                     (let [campaigns (1 2 3)]
+                       (for [campaign campaigns]
+                         (let [seen (campaign)
+                               updated (campaign)]
+                           ))))))))))
+(comment
+(defn get-stats [redis-host]
+  (with-open [seen-file (clojure.java.io/writer "seen.txt")
+              updated-file (clojure.java.io/writer "updated.txt")]
+    (letfn [(data-printer [[seen updated]]
+              (.write seen-file (str seen "\n")))]
+      (redis/with-server {:host redis-host}
+        (doall
+         (map data-printer
+              (apply concat
                      (let [campaigns (redis/keys "*")]
                        (for [campaign campaigns]
                          (let [seen (redis/hget campaign "time_seen")
                                updated (redis/hget campaign "time_updated")]
-                           ))))))))))
-
+                           )))))))))))
 (defn gen-ads [redis-host]
   (redis/with-server {:host redis-host}
     (let [campaigns (redis/smembers "campaigns")
