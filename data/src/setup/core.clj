@@ -128,6 +128,7 @@
                  (line-seq kafkas)))))
 
 (comment
+;;the original function
 (defn get-stats [redis-host]
   (with-open [seen-file (clojure.java.io/writer "seen.txt")
               updated-file (clojure.java.io/writer "updated.txt")]
