@@ -320,6 +320,13 @@ run() {
 #    start_if_needed leiningen.core.main "Load Generation" 1 $LEIN run -r -t $TPS --configPath ../$CONF_FILE
         #!/bin/bash
         java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        sleep 2; ssh root@stream-node-02; sleep 1;
+        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        sleep 2; exit; ssh root@stream-node-03; sleep 1;
+        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        sleep 2;exit; ssh root@stream-node-04; sleep 1;
+        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        exit;
 
     cd ..
   elif [ "STOP_LOAD" = "$OPERATION" ];
