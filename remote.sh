@@ -29,7 +29,7 @@ PROJECT_DIR="/root/stream-benchmarking"
 CLEAN_LOAD_RESULT_CMD="rm *.load; rm -rf $PROJECT_DIR/$STORM_DIR/logs/*;rm -rf $PROJECT_DIR/$STORM_DIR/logs/*; rm -rf $PROJECT_DIR/$SPARK_DIR/work/*; rm -rf /root/kafka-logs/*;"
 REBOOT_CMD="reboot;"
 SHUTDOWN_CMD="shutdown;"
-CLEAN_RESULT_CMD="cd $PROJECT_DIR; rm data/*.txt; rm -rf data/workers; rm -rf $JSTORM_DIR/data/*; rm -rf /root/zookeeper/version-2/*; rm -rf $PROJECT_DIR/$JSTORM_DIR/data/*"
+CLEAN_RESULT_CMD="cd $PROJECT_DIR; rm data/*.txt; rm data/*.rdb; rm -rf data/workers; rm -rf $JSTORM_DIR/data/*; rm -rf /root/zookeeper/version-2/*; rm -rf $PROJECT_DIR/$JSTORM_DIR/data/*"
 
 CLEAN_BUILD_BENCHMARK="cd $PROJECT_DIR; ./stream-bench.sh SETUP_BENCHMARK"
 SETUP_KAFKA="cd $PROJECT_DIR; ./stream-bench.sh SETUP_KAFKA"
@@ -584,6 +584,7 @@ function benchmarkLoop (){
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/seen.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-seen.txt
             scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/updated.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-updated.txt
+            scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/dump.rdp ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/dump.rdp
 #            scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/result/flink/* ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             TPS=$[$TPS + $TPS_RANGE]
 
