@@ -96,20 +96,24 @@ public class StreamSqlBenchQueriesFlink3 {
         props.setProperty("bootstrap.servers", "kafka-node-01:9092,kafka-node-02:9092,kafka-node-03:9092");
         // not to be shared with another job consuming the same topic
         props.setProperty("group.id", "flink-group");
+        props.setProperty("enable.auto.commit","false");
+        FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("purchases",
+                new SimpleStringSchema(),
+                props);
+        purchasesConsumer.setStartFromEarliest();
+
+        FlinkKafkaConsumer011<String> adsConsumer=new FlinkKafkaConsumer011<String>("ads",
+                new SimpleStringSchema(),
+                props);
+        adsConsumer.setStartFromEarliest();
 
         DataStream<String> purchasesStream = env
-                .addSource(new FlinkKafkaConsumer011<String>(
-                        "purchases",
-                        new SimpleStringSchema(),
-                        props))
+                .addSource(purchasesConsumer)
                 .setParallelism(Math.min(5 * 32, k_partitions));
 
 
         DataStream<String> adsStream = env
-                .addSource(new FlinkKafkaConsumer011<String>(
-                        "ads",
-                        new SimpleStringSchema(),
-                        props))
+                .addSource(adsConsumer)
                 .setParallelism(Math.min(5 * 32, k_partitions));
 
         /*****************************
