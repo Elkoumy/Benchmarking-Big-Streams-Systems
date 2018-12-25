@@ -251,7 +251,7 @@ run() {
     sleep 5
     cd ..
     stop_if_needed redis-server Redis
-    rm -f dump.rdb
+    #rm -f dump.rdb
   elif [ "START_STORM" = "$OPERATION" ];
   then
     start_if_needed daemon.name=nimbus "Storm Nimbus" 3 "$STORM_DIR/bin/storm" nimbus
