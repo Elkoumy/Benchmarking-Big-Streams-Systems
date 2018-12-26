@@ -41,6 +41,7 @@ import static org.apache.flink.runtime.state.CheckpointStreamWithResultProvider.
 public class StreamSqlBenchQueriesFlink3 {
     public static Long throughputCounterBefore=new Long("0");
     public static Long throughputCounterAfter=new Long("0");
+    public static Long throughputAdsCounterAfter=new Long("0");
     public static Long throughputAccomulationcount=new Long("0");
     public static void main(String[] args) {
         //ParameterTool params = ParameterTool.fromArgs(args);
@@ -102,7 +103,6 @@ public class StreamSqlBenchQueriesFlink3 {
                 props);
         //purchasesConsumer.setStartFromEarliest();
 
-
         FlinkKafkaConsumer011<String> adsConsumer=new FlinkKafkaConsumer011<String>("ads",
                 new SimpleStringSchema(),
                 props);
@@ -155,6 +155,8 @@ public class StreamSqlBenchQueriesFlink3 {
         tEnv.registerTable("adsTable", adsTable);
 
 
+
+
         //Workloads
         //================================General======================
 
@@ -163,9 +165,13 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
         purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        adsWithTimestampsAndWatermarks.flatMap(new WriteAdsToRedis());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
+        Table resultAds = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from adsTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        DataStream<Tuple2<Boolean, Row>> queryAdsResultAsDataStream = tEnv.toRetractStream(resultAds, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryAdsResultAsDataStream.flatMap(new WriteAdsToRedisAfterQuery());
 
 
         /**************************************************************
@@ -904,6 +910,58 @@ public class StreamSqlBenchQueriesFlink3 {
 
             this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
+
+
+        }
+    }
+    /**
+     * write ads to redis before query
+     */
+    public static class WriteAdsToRedis extends RichFlatMapFunction<Tuple3<Integer, Integer, Long>, String> {
+        RedisReadAndWrite redisReadAndWrite;
+
+        @Override
+        public void open(Configuration parameters) {
+            //ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+            //parameterTool.getRequired("jedis_server");
+//            LOG.info("Opening connection with Jedis to {}", parameterTool.getRequired("jedis_server"));
+            LOG.info("Opening connection with Jedis to {}", "redis");
+            //this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            this.redisReadAndWrite = new RedisReadAndWrite("redis",6379);
+            //this.redisReadAndWrite.prepare();
+
+        }
+
+        @Override
+        public void flatMap(Tuple3<Integer, Integer, Long> input, Collector<String> out) throws Exception {
+
+            this.redisReadAndWrite.write(input.f0+":"+input.f2+"","time_seen", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //this.redisReadAndWrite.write("JnTPBef","Throughput", (throughputCounterBefore++)+"");
+            //this.redisReadAndWrite.execute(input.f0+":"+input.f3+"", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+        }
+    }
+
+    /**
+     * write to redis after query
+     */
+    public static class WriteAdsToRedisAfterQuery extends RichFlatMapFunction<Tuple2<Boolean, Row>, String> {
+        RedisReadAndWrite redisReadAndWrite;
+
+        @Override
+        public String toString() {
+            return "";
+        }
+        @Override
+        public void open(Configuration parameters) {
+            this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+
+        }
+
+        @Override
+        public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
+
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputAdsCounterAfter++)+"");
 
 
         }
