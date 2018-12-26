@@ -320,11 +320,11 @@ run() {
 #    start_if_needed leiningen.core.main "Load Generation" 1 $LEIN run -r -t $TPS --configPath ../$CONF_FILE
         #!/bin/bash
 
-        ssh root@stream-node-02 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
-        ssh root@stream-node-03 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
-        ssh root@stream-node-04 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
-        ssh root@stream-node-05 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
-        ssh root@stream-node-06 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        #ssh root@stream-node-02 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        #ssh root@stream-node-03 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        #ssh root@stream-node-04 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        #ssh root@stream-node-05 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
+        #ssh root@stream-node-06 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
         java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
 
 
@@ -333,11 +333,11 @@ run() {
   then
 #    stop_if_needed leiningen.core.main "Load Generation"
         pkill -f "Main" &
-        ssh root@stream-node-02 pkill -f "Main" &
-        ssh root@stream-node-03 pkill -f "Main" &
-        ssh root@stream-node-04 pkill -f "Main" &
-        ssh root@stream-node-05 pkill -f "Main" &
-        ssh root@stream-node-06 pkill -f "Main" &
+        #ssh root@stream-node-02 pkill -f "Main" &
+        #ssh root@stream-node-03 pkill -f "Main" &
+        #ssh root@stream-node-04 pkill -f "Main" &
+        #ssh root@stream-node-05 pkill -f "Main" &
+        #ssh root@stream-node-06 pkill -f "Main" &
   elif [ "START_STORM_TOPOLOGY" = "$OPERATION" ];
   then
     "$STORM_DIR/bin/storm" jar ./storm-benchmarks/target/storm-benchmarks-0.1.0.jar storm.benchmark.AdvertisingTopology test-topo -conf $CONF_FILE
