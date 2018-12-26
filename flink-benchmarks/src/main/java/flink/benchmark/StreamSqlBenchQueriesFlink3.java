@@ -165,13 +165,13 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
         purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
-        adsWithTimestampsAndWatermarks.flatMap(new WriteAdsToRedis());
+        //adsWithTimestampsAndWatermarks.flatMap(new WriteAdsToRedis());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
-        Table resultAds = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from adsTable");
+        //Table resultAds = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from adsTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        DataStream<Tuple2<Boolean, Row>> queryAdsResultAsDataStream = tEnv.toRetractStream(resultAds, Row.class);
+        //DataStream<Tuple2<Boolean, Row>> queryAdsResultAsDataStream = tEnv.toRetractStream(resultAds, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
-        queryAdsResultAsDataStream.flatMap(new WriteAdsToRedisAfterQuery());
+        //queryAdsResultAsDataStream.flatMap(new WriteAdsToRedisAfterQuery());
 
 
         /**************************************************************
