@@ -100,12 +100,12 @@ public class StreamSqlBenchQueriesFlink3 {
         FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("purchases",
                 new SimpleStringSchema(),
                 props);
-        purchasesConsumer.setStartFromEarliest();
+        //purchasesConsumer.setStartFromEarliest();
 
         FlinkKafkaConsumer011<String> adsConsumer=new FlinkKafkaConsumer011<String>("ads",
                 new SimpleStringSchema(),
                 props);
-        adsConsumer.setStartFromEarliest();
+        //adsConsumer.setStartFromEarliest();
 
         DataStream<String> purchasesStream = env
                 .addSource(purchasesConsumer)
