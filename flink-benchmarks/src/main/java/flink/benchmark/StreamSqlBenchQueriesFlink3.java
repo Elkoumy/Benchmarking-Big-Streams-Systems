@@ -102,6 +102,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 props);
         //purchasesConsumer.setStartFromEarliest();
 
+
         FlinkKafkaConsumer011<String> adsConsumer=new FlinkKafkaConsumer011<String>("ads",
                 new SimpleStringSchema(),
                 props);
