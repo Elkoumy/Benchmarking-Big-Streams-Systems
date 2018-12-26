@@ -164,14 +164,14 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         //adsWithTimestampsAndWatermarks.flatMap(new WriteAdsToRedis());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         //Table resultAds = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from adsTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         //DataStream<Tuple2<Boolean, Row>> queryAdsResultAsDataStream = tEnv.toRetractStream(resultAds, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
-        //queryAdsResultAsDataStream.flatMap(new WriteAdsToRedisAfterQuery());
+        //queryAdsResultAsDataStream.flatMap(new WriteAdsToRedisAfterQuery());*/
 
 
         /**************************************************************
@@ -357,7 +357,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });*/
         // register function
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime  " +
@@ -368,7 +368,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
 
        /* DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
