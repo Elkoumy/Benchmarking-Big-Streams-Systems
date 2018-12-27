@@ -166,10 +166,10 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        //purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
-        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        //DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        //queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
 
         /**************************************************************
