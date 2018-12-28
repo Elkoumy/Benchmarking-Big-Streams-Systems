@@ -894,8 +894,8 @@ public class StreamSqlBenchQueriesFlink3 {
      * write to redis after query
      */
     public static class WriteToRedisAfterQuery extends RichFlatMapFunction<Tuple2<Boolean, Row>, String> {
-       // RedisReadAndWrite redisReadAndWrite;
-        RedisReadAndWriteAfter redisReadAndWriteAfter;
+        RedisReadAndWrite redisReadAndWrite;
+       // RedisReadAndWriteAfter redisReadAndWriteAfter;
 
         @Override
         public String toString() {
@@ -903,18 +903,18 @@ public class StreamSqlBenchQueriesFlink3 {
         }
         @Override
         public void open(Configuration parameters) {
-            //this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
-            this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
-            this.redisReadAndWriteAfter.prepare();
+            this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            //this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
+            //this.redisReadAndWriteAfter.prepare();
 
         }
 
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
 
-            //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
-            this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+            //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
 
 
         }
