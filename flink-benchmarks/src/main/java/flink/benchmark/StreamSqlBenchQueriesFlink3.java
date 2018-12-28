@@ -169,7 +169,7 @@ public class StreamSqlBenchQueriesFlink3 {
         //purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        //queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
 
         /**************************************************************
@@ -894,7 +894,8 @@ public class StreamSqlBenchQueriesFlink3 {
      * write to redis after query
      */
     public static class WriteToRedisAfterQuery extends RichFlatMapFunction<Tuple2<Boolean, Row>, String> {
-        RedisReadAndWrite redisReadAndWrite;
+       // RedisReadAndWrite redisReadAndWrite;
+        RedisReadAndWriteAfter redisReadAndWriteAfter;
 
         @Override
         public String toString() {
@@ -902,15 +903,18 @@ public class StreamSqlBenchQueriesFlink3 {
         }
         @Override
         public void open(Configuration parameters) {
-            this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            //this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
+            this.redisReadAndWriteAfter.prepare();
 
         }
 
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
 
-            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
-            this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
+            //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
+            this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
 
 
         }
