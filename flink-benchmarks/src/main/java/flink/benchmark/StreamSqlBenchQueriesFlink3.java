@@ -36,13 +36,18 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.flink.runtime.state.CheckpointStreamWithResultProvider.LOG;
-
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 
 public class StreamSqlBenchQueriesFlink3 {
     public static Long throughputCounterBefore=new Long("0");
     public static Long throughputCounterAfter=new Long("0");
     public static Long throughputAdsCounterAfter=new Long("0");
     public static Long throughputAccomulationcount=new Long("0");
+    public static Long initialTime=System.currentTimeMillis();
+    public static Jedis flush_jedis;
+    public static Pipeline p;
     public static void main(String[] args) {
         //ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
@@ -169,7 +174,8 @@ public class StreamSqlBenchQueriesFlink3 {
         //purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        //queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
 
 
         /**************************************************************
@@ -915,6 +921,36 @@ public class StreamSqlBenchQueriesFlink3 {
             this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+
+
+        }
+    }
+
+    /**
+     * write to redis after query using process function
+     */
+    public static class WriteToRedisAfterQueryProcessFn extends ProcessFunction<Tuple2<Boolean, Row>, String> {
+        //RedisReadAndWrite redisReadAndWrite;
+        // RedisReadAndWriteAfter redisReadAndWriteAfter;
+        Long timetoFlush;
+
+        @Override
+        public void open(Configuration parameters) {
+            flush_jedis=new Jedis("redis",6379);
+            p = flush_jedis.pipelined();
+            this.timetoFlush=System.currentTimeMillis()-initialTime;
+
+        }
+
+        @Override
+        public void processElement(Tuple2<Boolean, Row> input, Context context, Collector<String> collector) throws Exception {
+            //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+
+            // "","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            p.hset(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated",TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            if(((this.timetoFlush%30000)>25000)&& ((this.timetoFlush%60000)<=29000)){
+                p.sync();
+            }
+
 
 
         }
