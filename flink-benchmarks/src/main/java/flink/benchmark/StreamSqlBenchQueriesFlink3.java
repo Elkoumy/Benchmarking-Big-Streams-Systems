@@ -178,7 +178,8 @@ public class StreamSqlBenchQueriesFlink3 {
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
         //queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
-
+//        queryResultAsDataStream.keyBy().timeWindow(1).aggregate().flatMap(new wrtetoredis)
+        //queryResultAsDataStream.timeWindowAll(TimeUnit.SECONDS(1)).aggregate()
 
         /**************************************************************
          * 2- Filtering// Get the purchases of specific user//
@@ -920,7 +921,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
             synchronized (elementsBatchBefore){
-                elementsBatchBefore.put(input.f0+":"+new Instant(input.f3).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+                elementsBatchBefore.put(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
                 if(elementsBatchBefore.size()>500){
                     this.redisReadAndWriteAfter.execute(elementsBatchBefore);
                     elementsBatchBefore.clear();
@@ -951,11 +952,14 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+            throughputCounterAfter++;
             synchronized (elementsBatch){
                 elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
                 if(elementsBatch.size()>500){
+                    elementsBatch.put("tpt"+System.currentTimeMillis()+":","throughtpt:"+throughputCounterAfter);
                     this.redisReadAndWriteAfter.execute(elementsBatch);
                     elementsBatch.clear();
+                    throughputCounterAfter=0L;
                 }
             }
 
