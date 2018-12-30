@@ -48,6 +48,7 @@ public class StreamSqlBenchQueriesFlink3 {
     public static Long initialTime=System.currentTimeMillis();
     public static Jedis flush_jedis;
     public static Pipeline p;
+    public static HashMap<String, String> elementsBatch=new HashMap<>();
     public static void main(String[] args) {
         //ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
@@ -900,8 +901,8 @@ public class StreamSqlBenchQueriesFlink3 {
      * write to redis after query
      */
     public static class WriteToRedisAfterQuery extends RichFlatMapFunction<Tuple2<Boolean, Row>, String> {
-        RedisReadAndWrite redisReadAndWrite;
-       // RedisReadAndWriteAfter redisReadAndWriteAfter;
+        //RedisReadAndWrite redisReadAndWrite;
+        RedisReadAndWriteAfter redisReadAndWriteAfter;
 
         @Override
         public String toString() {
@@ -909,19 +910,25 @@ public class StreamSqlBenchQueriesFlink3 {
         }
         @Override
         public void open(Configuration parameters) {
-            this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
-            //this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
-            //this.redisReadAndWriteAfter.prepare();
+           // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
+            this.redisReadAndWriteAfter.prepare();
 
         }
 
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
 
-            this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
-
+            synchronized (elementsBatch){
+                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+                if(elementsBatch.size()>2000){
+                    this.redisReadAndWriteAfter.execute(elementsBatch);
+                    elementsBatch.clear();
+                }
+            }
 
         }
     }

@@ -19,10 +19,18 @@ public class RedisReadAndWriteAfter {
         flush_jedis=new Jedis(redisServerName,port);
     }
 
-    public void execute(String key, String value) {
+/*    public void execute(String key, String value) {
+
 
         synchronized(elemensTowrite) {
             elemensTowrite.put(key,value);
+        }
+    }*/
+    public void execute( HashMap<String, String> elemensBatchTowrite) {
+
+        synchronized(elemensTowrite) {
+            elemensTowrite=elemensBatchTowrite;
+
         }
     }
 
