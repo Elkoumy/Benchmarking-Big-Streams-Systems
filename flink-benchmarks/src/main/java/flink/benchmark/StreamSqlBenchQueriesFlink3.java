@@ -924,7 +924,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
             synchronized (elementsBatch){
                 elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
-                if(elementsBatch.size()>4000){
+                if(elementsBatch.size()>1000){
                     this.redisReadAndWriteAfter.execute(elementsBatch);
                     elementsBatch.clear();
                 }
