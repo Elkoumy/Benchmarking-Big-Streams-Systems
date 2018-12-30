@@ -173,10 +173,12 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+
+
         //queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
 //        queryResultAsDataStream.keyBy().timeWindow(1).aggregate().flatMap(new wrtetoredis)
         //queryResultAsDataStream.timeWindowAll(TimeUnit.SECONDS(1)).aggregate()
@@ -364,18 +366,18 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });*/
         // register function
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime  " +
                 "from purchasesTable p inner join adsTable a " +
                 "on p.userID = a.userID " +
                 "and p.gemPackID = a.gemPackID " +
-                "and p.rowtime  BETWEEN a.rowtime - INTERVAL '1' SECOND AND a.rowtime+INTERVAL '1' SECOND");
+                "and p.rowtime  BETWEEN a.rowtime - INTERVAL '1' SECOND AND a.rowtime+INTERVAL '9' SECOND");
 
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
         //        queryResultAsDataStream.keyBy().timeWindow(1).aggregate().flatMap(new wrtetoredis)
 
@@ -954,7 +956,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
             throughputCounterAfter++;
             synchronized (elementsBatch){
-                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+System.currentTimeMillis());
+                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis());
                 elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter);
                 if(elementsBatch.size()>500){
                     this.redisReadAndWriteAfter.execute(elementsBatch);
