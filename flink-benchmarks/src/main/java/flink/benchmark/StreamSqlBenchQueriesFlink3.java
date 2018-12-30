@@ -48,6 +48,7 @@ public class StreamSqlBenchQueriesFlink3 {
     public static Long initialTime=System.currentTimeMillis();
     public static Jedis flush_jedis;
     public static Pipeline p;
+    public static HashMap<String, String> elementsBatchBefore=new HashMap<>();
     public static HashMap<String, String> elementsBatch=new HashMap<>();
     public static void main(String[] args) {
         //ParameterTool params = ParameterTool.fromArgs(args);
@@ -172,7 +173,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-        //purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
@@ -896,14 +897,44 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWrite.execute(input.f0+":"+input.f3+"", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
         }
     }
+    /**
+     * write to redis after query
+     */
+    public static class WriteToRedisBeforeQuery extends RichFlatMapFunction<Tuple4<Integer, Integer, Integer, Long>, String> {
+        //RedisReadAndWrite redisReadAndWrite;
+        RedisReadAndWriteAfter redisReadAndWriteAfter;
+        @Override
+        public String toString() {
+            return "";
+        }
+        @Override
+        public void open(Configuration parameters) {
+            // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
+            this.redisReadAndWriteAfter.prepare();
+        }
+        @Override
+        public void flatMap(Tuple4<Integer, Integer, Integer, Long> input, Collector<String> out) throws Exception {
 
+            //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
+            //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+            synchronized (elementsBatchBefore){
+                elementsBatchBefore.put(input.f0+":"+new Instant(input.f3).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+                if(elementsBatchBefore.size()>500){
+                    this.redisReadAndWriteAfter.execute(elementsBatchBefore);
+                    elementsBatchBefore.clear();
+                }
+            }
+
+        }
+    }
     /**
      * write to redis after query
      */
     public static class WriteToRedisAfterQuery extends RichFlatMapFunction<Tuple2<Boolean, Row>, String> {
         //RedisReadAndWrite redisReadAndWrite;
         RedisReadAndWriteAfter redisReadAndWriteAfter;
-
         @Override
         public String toString() {
             return "";
@@ -913,9 +944,7 @@ public class StreamSqlBenchQueriesFlink3 {
            // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
             this.redisReadAndWriteAfter.prepare();
-
         }
-
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
 
@@ -924,7 +953,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
             synchronized (elementsBatch){
                 elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
-                if(elementsBatch.size()>100){
+                if(elementsBatch.size()>500){
                     this.redisReadAndWriteAfter.execute(elementsBatch);
                     elementsBatch.clear();
                 }
