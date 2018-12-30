@@ -175,8 +175,8 @@ public class StreamSqlBenchQueriesFlink3 {
         //purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        //queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
-        queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        //queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
 
 
         /**************************************************************
