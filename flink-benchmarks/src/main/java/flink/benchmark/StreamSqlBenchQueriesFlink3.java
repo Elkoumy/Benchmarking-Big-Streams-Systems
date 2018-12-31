@@ -187,46 +187,25 @@ public class StreamSqlBenchQueriesFlink3 {
          * 2- Filtering// Get the purchases of specific user//
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable WHERE price>20");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
 
         /**************************************************************
          * 3- Group by & having // Getting revenue from gempack when it exceeds specified amount
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
-    /*    DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
-        DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("before "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(3)).getMillis()+" value> "+System.currentTimeMillis());
-                System.out.println( throughputCounterBefore++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
 
-            }
-        });
-*/
         // register function
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '10' SECOND),gemPackID HAVING sum(price)>400 ");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
-/*
-        DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("after "+"Key> p"+inputTuple.f1.getField(2) +" value> "+System.currentTimeMillis()); //for latency
-                throughputAccomulationcount+=Integer.parseInt(inputTuple.f1.getField(3).toString());
-                System.out.println("throughput > " + throughputAccomulationcount); //for throughput
-                return new Tuple2<>(inputTuple.f1.getField(2)+"",System.currentTimeMillis()+""); //for latency
 
-            }
-        });
-        */
         //================================WINDOWING======================
         /**************************************************************
          * 4- Tumbling Window// Getting revenue obtained  from each gem pack over fixed period of time
@@ -939,13 +918,13 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
 
 
-             throughputCounterAfter++; // open this line for non aggregate queries
+//             throughputCounterAfter++; // open this line for non aggregate queries
             synchronized (elementsBatch){
-                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
-                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
-
-//                elementsBatch.put(input.f1.getField(2).toString(),"time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
-//                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+input.f1.getField(3).toString()); // open this line for aggregate queries
+//                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
+//                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
+//
+                elementsBatch.put(input.f1.getField(2)+"","time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
+                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+input.f1.getField(3).toString()); // open this line for aggregate queries
 
                 if(elementsBatch.size()>500){
                     this.redisReadAndWriteAfter.execute(elementsBatch);
