@@ -960,7 +960,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
              throughputCounterAfter++; // open this line for non aggregate queries
             synchronized (elementsBatch){
-                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
+                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
                 elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
 
 //                elementsBatch.put(input.f1.getField(2).toString(),"time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
