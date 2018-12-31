@@ -193,19 +193,30 @@ public class StreamSqlBenchQueriesFlink3 {
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
 
         /**************************************************************
-         * 3- Group  // Getting revenue from gempack when it exceeds specified amount
+         * 3- Group by // Getting revenue from gempack when it exceeds specified amount
+         * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
+         * ************************************************************/
+
+/*        // register function
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
+        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
+        //for the metrics calculation after
+        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+
+        /**************************************************************
+         * 3- Group by and having // Getting revenue from gempack when it exceeds specified amount
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
 
         // register function
         purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
-//        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID HAVING sum(price)>20 ");
-        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
+        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID HAVING sum(price)>20 ");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
-
 
         //================================WINDOWING======================
         /**************************************************************
