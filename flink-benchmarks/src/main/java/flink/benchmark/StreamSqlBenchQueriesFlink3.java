@@ -173,10 +173,10 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
 
         //queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
@@ -227,12 +227,12 @@ public class StreamSqlBenchQueriesFlink3 {
         });
 */
         // register function
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '10' SECOND),gemPackID HAVING sum(price)>400 ");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
 
 /*
         DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
@@ -958,13 +958,13 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
 
 
-            // throughputCounterAfter++; // open this line for nin aggregate queries
+             throughputCounterAfter++; // open this line for non aggregate queries
             synchronized (elementsBatch){
-                //elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
-                //elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
+                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
+                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
 
-                elementsBatch.put(input.f1.getField(2).toString(),"time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
-                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+input.f1.getField(3).toString()); // open this line for aggregate queries
+//                elementsBatch.put(input.f1.getField(2).toString(),"time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
+//                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+input.f1.getField(3).toString()); // open this line for aggregate queries
 
                 if(elementsBatch.size()>500){
                     this.redisReadAndWriteAfter.execute(elementsBatch);
