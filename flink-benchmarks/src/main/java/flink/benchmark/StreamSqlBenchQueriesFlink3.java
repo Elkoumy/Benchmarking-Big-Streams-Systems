@@ -858,7 +858,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
             synchronized (elementsBatchBefore){
                 elementsBatchBefore.put(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+System.currentTimeMillis());
-                if(elementsBatchBefore.size()>500){
+                if(elementsBatchBefore.size()>50){
                     this.redisReadAndWriteAfter.execute(elementsBatchBefore);
                     elementsBatchBefore.clear();
                 }
@@ -898,7 +898,7 @@ public class StreamSqlBenchQueriesFlink3 {
 //                elementsBatch.put(input.f1.getField(2)+"","time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
 //                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+input.f1.getField(3)+""); // open this line for aggregate queries
 
-                if(elementsBatch.size()>500){
+                if(elementsBatch.size()>50){
                     this.redisReadAndWriteAfter.execute(elementsBatch);
                     elementsBatch.clear();
                     throughputCounterAfter=0L;
