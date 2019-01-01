@@ -233,45 +233,26 @@ public class StreamSqlBenchQueriesFlink3 {
         /**************************************************************
          * 5- Sliding Window //Getting revenue obtained from each gem pack over fixed overlapped period of time
          * ************************************************************/
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         // register function
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY HOP(rowtime, INTERVAL '1' SECOND, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
 
         /**************************************************************
          * 6- Session window //Getting Revenue obtained from each gem pack after each specific period of inactivity
          * ************************************************************/
-/*        DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
-        DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("before "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(3)).getMillis()+" value> "+System.currentTimeMillis());
-                System.out.println( throughputCounterBefore++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
-
-            }
-        });
-
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         // register function
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY SESSION(rowtime, INTERVAL '2' SECOND),gemPackID");
-
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
-        DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("after "+"Key> p"+inputTuple.f1.getField(2) +" value> "+System.currentTimeMillis()); //for latency
-                throughputAccomulationcount+=Integer.parseInt(inputTuple.f1.getField(3).toString());
-                System.out.println("throughput > " + throughputAccomulationcount); //for throughput
-                return new Tuple2<>(inputTuple.f1.getField(2)+"",System.currentTimeMillis()+""); //for latency
 
-            }
-        });*/
         //================================JOINS======================
         /**************************************************************
          * 7- Inner join // Getting revenue from each ad (which ad triggered purchase)
