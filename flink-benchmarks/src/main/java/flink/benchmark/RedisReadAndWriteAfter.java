@@ -105,7 +105,7 @@ public class RedisReadAndWriteAfter {
     private void flushThrouphput() {
 
         synchronized (throughput) {
-            writeWindow(System.currentTimeMillis()+"",throughput+"");
+            writeWindow_Throughput(System.currentTimeMillis()+"",throughput+"");
             throughput=0L;
 
         }
@@ -114,5 +114,10 @@ public class RedisReadAndWriteAfter {
         String kv []=value.split(":");
 
         flush_jedis.hset(key, kv[0], kv[1]);
+    }
+    private void writeWindow_Throughput(String key, String value) {
+
+
+        flush_jedis.hset(key, "throughput", value);
     }
 }
