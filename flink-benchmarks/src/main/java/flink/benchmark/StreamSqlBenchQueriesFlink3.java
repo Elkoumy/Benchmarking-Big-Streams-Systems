@@ -801,13 +801,15 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
-            synchronized (elementsBatchBefore){
+/*            synchronized (elementsBatchBefore){
                 elementsBatchBefore.put(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+System.currentTimeMillis());
                 if(elementsBatchBefore.size()>500){
                     this.redisReadAndWriteAfter.execute(elementsBatchBefore);
                     elementsBatchBefore.clear();
                 }
-            }
+            }*/
+            this.redisReadAndWriteAfter.execute1(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+System.currentTimeMillis());
+
 
         }
     }
@@ -837,7 +839,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
              throughputCounterAfter++; // open this line for non aggregate queries
             synchronized (elementsBatch){
-                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
+/*                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
                 elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
 
 //                elementsBatch.put(input.f1.getField(2)+"","time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
@@ -847,7 +849,8 @@ public class StreamSqlBenchQueriesFlink3 {
                     this.redisReadAndWriteAfter.execute(elementsBatch);
                     elementsBatch.clear();
                     throughputCounterAfter=0L;
-                }
+                }*/
+                this.redisReadAndWriteAfter.execute1(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis());
             }
 
         }

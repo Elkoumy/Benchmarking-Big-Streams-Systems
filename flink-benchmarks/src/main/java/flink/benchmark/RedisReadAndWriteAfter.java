@@ -33,6 +33,13 @@ public class RedisReadAndWriteAfter {
 
         }
     }
+    public void execute1(String id,String time) {
+
+        synchronized(elemensTowrite) {
+            elemensTowrite.put(id,time);
+
+        }
+    }
 
 
     public void write(String key,String field, String value) {
