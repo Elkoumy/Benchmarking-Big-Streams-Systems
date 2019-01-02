@@ -73,8 +73,6 @@ public class RedisReadAndWriteAfter {
         new Thread(flusher).start();
     }
     public void prepare_throuphput() {
-        throughput=0L;
-
 
         Runnable flusher = new Runnable() {
             public void run() {
