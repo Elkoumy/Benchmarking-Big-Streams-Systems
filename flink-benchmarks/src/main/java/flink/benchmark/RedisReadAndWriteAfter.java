@@ -93,8 +93,9 @@ public class RedisReadAndWriteAfter {
         synchronized (elemensTowrite) {
             for (String s : elemensTowrite.keySet()) {
                 writeWindow(s, elemensTowrite.get(s));
+                writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");
             }
-            writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");
+
 
 
             elemensTowrite.clear();
