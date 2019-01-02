@@ -828,6 +828,7 @@ public class StreamSqlBenchQueriesFlink3 {
            // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
             this.redisReadAndWriteAfter.prepare();
+            this.redisReadAndWriteAfter.prepare_throuphput();
         }
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {

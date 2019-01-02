@@ -14,6 +14,7 @@ public class RedisReadAndWriteAfter {
     private String keyToFlush;
     private String valueToFlush;
     HashMap<String, String> elemensTowrite;
+    Long throughput;
 
 
     public RedisReadAndWriteAfter(String redisServerName , int port) {
@@ -38,6 +39,10 @@ public class RedisReadAndWriteAfter {
 
         synchronized(elemensTowrite) {
             elemensTowrite.put(id,time);
+
+        }
+        synchronized(throughput) {
+            throughput++;
 
         }
     }
@@ -67,13 +72,41 @@ public class RedisReadAndWriteAfter {
         };
         new Thread(flusher).start();
     }
+    public void prepare_throuphput() {
+
+
+        Runnable flusher = new Runnable() {
+            public void run() {
+                try {
+                    while (true) {
+                        Thread.sleep(1000);
+                        flushThrouphput();
+                    }
+                } catch (InterruptedException e) {
+                    LOG.error("Interrupted", e);
+                }
+            }
+        };
+        new Thread(flusher).start();
+    }
 
     private void flushWindows() {
         synchronized (elemensTowrite) {
             for (String s : elemensTowrite.keySet()) {
                 writeWindow(s, elemensTowrite.get(s));
             }
+
+
             elemensTowrite.clear();
+        }
+    }
+
+    private void flushThrouphput() {
+
+        synchronized (throughput) {
+            writeWindow(System.currentTimeMillis()+"",throughput+"");
+            throughput=0L;
+
         }
     }
     private void writeWindow(String key, String value) {
