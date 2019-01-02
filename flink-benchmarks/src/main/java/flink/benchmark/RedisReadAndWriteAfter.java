@@ -15,6 +15,7 @@ public class RedisReadAndWriteAfter {
     private String valueToFlush;
     HashMap<String, String> elemensTowrite;
 
+
     public RedisReadAndWriteAfter(String redisServerName , int port) {
         flush_jedis=new Jedis(redisServerName,port);
     }
@@ -56,7 +57,7 @@ public class RedisReadAndWriteAfter {
             public void run() {
                 try {
                     while (true) {
-                        Thread.sleep(1000);
+                        Thread.sleep(30000);
                         flushWindows();
                     }
                 } catch (InterruptedException e) {
