@@ -177,6 +177,7 @@ public class StreamSqlBenchQueriesFlink3 {
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
 
         //queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
