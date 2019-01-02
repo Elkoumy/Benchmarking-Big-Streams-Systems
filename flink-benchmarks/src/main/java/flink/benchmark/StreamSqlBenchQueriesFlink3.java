@@ -177,7 +177,7 @@ public class StreamSqlBenchQueriesFlink3 {
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
-        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
+//        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
 
         //queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
@@ -829,7 +829,7 @@ public class StreamSqlBenchQueriesFlink3 {
            // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
             this.redisReadAndWriteAfter.prepare();
-            this.redisReadAndWriteAfter.prepare_throuphput();
+//            this.redisReadAndWriteAfter.prepare_throuphput();
         }
         @Override
         public void flatMap(Tuple2<Boolean, Row> input, Collector<String> out) throws Exception {
