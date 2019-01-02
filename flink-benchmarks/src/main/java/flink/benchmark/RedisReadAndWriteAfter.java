@@ -14,7 +14,7 @@ public class RedisReadAndWriteAfter {
     private String keyToFlush;
     private String valueToFlush;
     HashMap<String, String> elemensTowrite;
-    Long throughput;
+    Long throughput=0L;
 
 
     public RedisReadAndWriteAfter(String redisServerName , int port) {
