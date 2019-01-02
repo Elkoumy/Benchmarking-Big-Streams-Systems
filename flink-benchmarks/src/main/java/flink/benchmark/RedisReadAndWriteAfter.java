@@ -46,6 +46,15 @@ public class RedisReadAndWriteAfter {
 
         }
     }
+    public void executeForAgregate(String id,String time,String throughput_) {
+
+        synchronized(elemensTowrite) {
+            elemensTowrite.put(id,time);
+            elemensTowrite.put(System.currentTimeMillis()+"","throughput:"+throughput_);
+
+        }
+
+    }
 
 
     public void write(String key,String field, String value) {
@@ -62,7 +71,7 @@ public class RedisReadAndWriteAfter {
             public void run() {
                 try {
                     while (true) {
-                        Thread.sleep(30000);
+                        Thread.sleep(10000);
                         flushWindows();
                     }
                 } catch (InterruptedException e) {
@@ -93,8 +102,9 @@ public class RedisReadAndWriteAfter {
         synchronized (elemensTowrite) {
             for (String s : elemensTowrite.keySet()) {
                 writeWindow(s, elemensTowrite.get(s));
-                writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");
+                //writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+""); //for non-aggregate
             }
+
 
 
 
