@@ -325,7 +325,8 @@ run() {
         #ssh root@stream-node-04 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
         #ssh root@stream-node-05 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
         #ssh root@stream-node-06 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
-        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 $TPS RR kafka &
+        #java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 $TPS RR kafka &
+        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.TempDataGenerator &
 
 
     cd ..
