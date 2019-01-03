@@ -815,7 +815,7 @@ public class StreamSqlBenchQueriesFlink3 {
                     elementsBatchBefore.clear();
                 }
             }*/
-            this.redisReadAndWriteAfter.execute1(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+System.currentTimeMillis());
+            this.redisReadAndWriteAfter.execute1(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
 
 
         }
@@ -859,7 +859,7 @@ public class StreamSqlBenchQueriesFlink3 {
                     throughputCounterAfter=0L;
                 }
             }*/
-            this.redisReadAndWriteAfter.execute1(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+System.currentTimeMillis()); //for non aggregate
+            this.redisReadAndWriteAfter.execute1(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+""); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
 
 
