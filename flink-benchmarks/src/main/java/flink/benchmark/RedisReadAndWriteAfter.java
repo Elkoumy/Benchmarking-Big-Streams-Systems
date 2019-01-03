@@ -71,7 +71,7 @@ public class RedisReadAndWriteAfter {
             public void run() {
                 try {
                     while (true) {
-                        Thread.sleep(10000);
+                        Thread.sleep(100);
                         flushWindows();
                     }
                 } catch (InterruptedException e) {
