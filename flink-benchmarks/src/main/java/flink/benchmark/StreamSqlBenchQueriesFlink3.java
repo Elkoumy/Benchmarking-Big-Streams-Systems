@@ -173,10 +173,10 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
 
@@ -205,12 +205,12 @@ public class StreamSqlBenchQueriesFlink3 {
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND)");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
 
         /**************************************************************
          * 3- Group by and having // Getting revenue from gempack when it exceeds specified amount
@@ -859,8 +859,8 @@ public class StreamSqlBenchQueriesFlink3 {
                     throughputCounterAfter=0L;
                 }
             }*/
-            //this.redisReadAndWriteAfter.execute1(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+System.currentTimeMillis()); //for non aggregate
-            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
+            this.redisReadAndWriteAfter.execute1(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+System.currentTimeMillis()); //for non aggregate
+//            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
 
 
         }
