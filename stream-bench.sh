@@ -240,7 +240,7 @@ run() {
     #$LEIN run -g --configPath ../$CONF_FILE || true
      #!/bin/bash
     java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ee.redis.ReadFromRedis &
-    sleep 50
+    sleep 20
     cd ..
   elif [ "STOP_REDIS" = "$OPERATION" ];
   then
@@ -248,7 +248,7 @@ run() {
     #$LEIN run -g --configPath ../$CONF_FILE || true
     #!/bin/bash
     java -cp "/root/stream-benchmarking/data/ReadFromRedis.jar"  ee.redis.ReadFromRedis &
-    sleep 50
+    sleep 20
     cd ..
     stop_if_needed redis-server Redis
     #rm -f dump.rdb
@@ -325,8 +325,8 @@ run() {
         #ssh root@stream-node-04 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
         #ssh root@stream-node-05 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
         #ssh root@stream-node-06 java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 10000000 RR kafka &
-        #java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 $TPS RR kafka &
-        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.TempDataGenerator &
+        java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.Main 100 $TPS RR kafka &
+        #java -cp "/root/stream-benchmarking/data/Stream-Data-Generator.jar"  ee.ut.cs.dsg.datagenrator.TempDataGenerator & 1000 tuple test
 
 
     cd ..

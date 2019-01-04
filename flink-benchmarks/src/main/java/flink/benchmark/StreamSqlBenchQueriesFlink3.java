@@ -54,7 +54,7 @@ public class StreamSqlBenchQueriesFlink3 {
     public static void main(String[] args) {
         //ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
-        int k_partitions = 10;
+        int k_partitions = 100;
         //int port=Integer.parseInt(params.getRequired("port"));
         //String ip="localhost";
         // port=6666;

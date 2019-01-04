@@ -34,13 +34,13 @@ ZK_PORT="2181"
 ZK_CONNECTIONS="$ZK_HOST:$ZK_PORT"
     TOPIC=${TOPIC:-"ad-events"}
 #PARTITIONS=${PARTITIONS:-3}
-PARTITIONS=3
+PARTITIONS=100
 
 #CONF_FILE=./conf/localConf.yaml
 CONF_FILE=./conf/benchmarkConf.yaml
 
-TPS=${TPS:-50000}
-TEST_TIME=${TEST_TIME:-60} #seconds
+TPS=${TPS:-100000}
+TEST_TIME=${TEST_TIME:-300} #seconds
 
 SPARK_MASTER_HOST="stream-node01"
 BATCH="3000"

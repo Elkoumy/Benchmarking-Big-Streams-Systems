@@ -7,7 +7,7 @@ kafka.brokers:
     - "kafka-node-03"
 kafka.port: 9092
 kafka.topic: "ad-event"
-kafka.partitions: 3
+kafka.partitions: 100
 kafka.zookeeper.path: /
 
 akka.zookeeper.path: /akkaQuery
