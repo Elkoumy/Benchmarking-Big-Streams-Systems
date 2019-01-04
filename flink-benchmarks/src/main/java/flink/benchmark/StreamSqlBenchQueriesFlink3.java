@@ -865,7 +865,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
 
 
-            throughputCounterAfter++; // open this line for non aggregate queries
+            //throughputCounterAfter++; // open this line for non aggregate queries
  /*           synchronized (elementsBatch){
                 elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
                 elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
@@ -880,7 +880,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
             }*/
             // System.out.println("after   "+input.f1.getField(3));
-            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",throughputCounterAfter,System.currentTimeMillis()+""); //for non aggregate
+            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+""); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
 
 

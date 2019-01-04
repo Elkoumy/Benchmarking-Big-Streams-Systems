@@ -39,16 +39,16 @@ public class RedisReadAndWriteAfter {
         }
     }
 
-    public void execute1(String id,String time,Long throughput_,String throughput_Key) {
+    public void execute1(String id,String time) {
 
         synchronized(elemensTowrite) {
             elemensTowrite.put(id,time);
            // throughput++;
 
         }
-        synchronized(throughput) {
+/*        synchronized(throughput) {
             throughput=throughput_+":"+throughput_Key;
-        }
+        }*/
     }
     public void executeForAgregate(String id,String time,String throughput_) {
 
@@ -138,15 +138,15 @@ public class RedisReadAndWriteAfter {
 
             elemensTowrite.clear();
         }
-        synchronized (throughput){
+/*        synchronized (throughput){
             if (throughput.length()>2) {
                 String kv[] = throughput.split(":");
-                System.out.println(kv[0]);
+
                 if (Long.parseLong(kv[0]) > 0)
                     writeWindow_Throughput(kv[1] + "", kv[0] + ""); //for non-aggregate
             }
             throughput="";
-        }
+        }*/
     }
 
 /*    private void flushThrouphput() {
@@ -162,7 +162,6 @@ public class RedisReadAndWriteAfter {
         flush_jedis.hset(key, kv[0], kv[1]);
     }
     private void writeWindow_Throughput(String key, String value) {
-
         flush_jedis.hset(key, "throughput", value);
     }
 }
