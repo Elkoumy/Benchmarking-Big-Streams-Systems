@@ -8,6 +8,7 @@ import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -86,7 +87,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // set default parallelism for all operators (recommended value: number of available worker CPU cores in the cluster (hosts * cores))
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.setParallelism(5 * 32);
+        env.setParallelism(2);
 
 
         /////
@@ -117,12 +118,12 @@ public class StreamSqlBenchQueriesFlink3 {
 
         DataStream<String> purchasesStream = env
                 .addSource(purchasesConsumer)
-                .setParallelism(Math.min(5 * 32, k_partitions));
+                .setParallelism(2);
 
 
         DataStream<String> adsStream = env
                 .addSource(adsConsumer)
-                .setParallelism(Math.min(5 * 32, k_partitions));
+                .setParallelism(2);
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
@@ -134,7 +135,7 @@ public class StreamSqlBenchQueriesFlink3 {
         adsStream= adsStream.map(new ThroughputRecorder());
         /************************************************************/
 
-        DataStream<Tuple4<Integer, Integer, Integer, Long>> purchaseWithTimestampsAndWatermarks =
+        DataStream<Tuple5<Integer, Integer, Integer, Long,String>> purchaseWithTimestampsAndWatermarks =
                 purchasesStream
                         .flatMap(new PurchasesParser())
                         .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple4<Integer, Integer, Integer, Long>>(Time.seconds(10)) {
@@ -143,9 +144,9 @@ public class StreamSqlBenchQueriesFlink3 {
                             public long extractTimestamp(Tuple4<Integer, Integer, Integer, Long> element) {
                                 return element.getField(3);
                             }
-                        });
+                        }).flatMap(new AddPurchaseLatencyId());
 
-        DataStream<Tuple3<Integer, Integer, Long>> adsWithTimestampsAndWatermarks =
+        DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
                 adsStream
                         .flatMap( new AdsParser())
                         .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<Integer, Integer, Long>>(Time.seconds(10)) {
@@ -153,13 +154,15 @@ public class StreamSqlBenchQueriesFlink3 {
                             public long extractTimestamp(Tuple3<Integer, Integer, Long> element) {
                                 return element.getField(2);
                             }
-                        });
+                        }).flatMap(new AddAdLatencyId());
+
+
 
 
         //mapper to write key and value of each element ot redis
-       // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
-        Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime");
-        Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime");
+        // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
+        Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
         tEnv.registerTable("adsTable", adsTable);
 
@@ -174,9 +177,10 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
         purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable");
+        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
+        //queryResultAsDataStream.print();
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
 
@@ -760,6 +764,20 @@ public class StreamSqlBenchQueriesFlink3 {
         }
     }
 
+    private static class AddPurchaseLatencyId  implements FlatMapFunction<Tuple4<Integer, Integer, Integer, Long>,Tuple5<Integer, Integer, Integer, Long,String>> {
+        @Override
+        public void flatMap(Tuple4<Integer, Integer, Integer, Long> input, Collector<Tuple5<Integer, Integer, Integer, Long,String>> out) throws Exception {
+            out.collect(new Tuple5<>(input.f0,input.f1,input.f2,input.f3,input.f0+":"+input.f3));
+        }
+
+    }
+    private static class AddAdLatencyId  implements FlatMapFunction<Tuple3<Integer, Integer,  Long>,Tuple4<Integer, Integer,  Long,String>> {
+        @Override
+        public void flatMap(Tuple3<Integer, Integer,Long> input, Collector<Tuple4<Integer, Integer,  Long,String>> out) throws Exception {
+            out.collect(new Tuple4<>(input.f0,input.f1,input.f2,input.f0+":"+input.f2));
+        }
+
+    }
     /**
      * write to redis before query
      */
@@ -789,7 +807,7 @@ public class StreamSqlBenchQueriesFlink3 {
     /**
      * write to redis after query
      */
-    public static class WriteToRedisBeforeQuery extends RichFlatMapFunction<Tuple4<Integer, Integer, Integer, Long>, String> {
+    public static class WriteToRedisBeforeQuery extends RichFlatMapFunction<Tuple5<Integer, Integer, Integer, Long,String>, String> {
         //RedisReadAndWrite redisReadAndWrite;
         RedisReadAndWriteAfter redisReadAndWriteAfter;
         @Override
@@ -800,10 +818,10 @@ public class StreamSqlBenchQueriesFlink3 {
         public void open(Configuration parameters) {
             // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
-            this.redisReadAndWriteAfter.prepare();
+            this.redisReadAndWriteAfter.prepare_before();
         }
         @Override
-        public void flatMap(Tuple4<Integer, Integer, Integer, Long> input, Collector<String> out) throws Exception {
+        public void flatMap(Tuple5<Integer, Integer, Integer, Long,String> input, Collector<String> out) throws Exception {
 
             //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
@@ -815,7 +833,9 @@ public class StreamSqlBenchQueriesFlink3 {
                     elementsBatchBefore.clear();
                 }
             }*/
-            this.redisReadAndWriteAfter.execute1(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //System.out.println("Before   "+input.f4);
+
+            this.redisReadAndWriteAfter.execute_before(input.f4,"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
 
 
         }
@@ -832,7 +852,7 @@ public class StreamSqlBenchQueriesFlink3 {
         }
         @Override
         public void open(Configuration parameters) {
-           // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
             this.redisReadAndWriteAfter.prepare();
 //            this.redisReadAndWriteAfter.prepare_throuphput();
@@ -845,7 +865,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
 
 
-             throughputCounterAfter++; // open this line for non aggregate queries
+            throughputCounterAfter++; // open this line for non aggregate queries
  /*           synchronized (elementsBatch){
                 elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
                 elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
@@ -859,7 +879,8 @@ public class StreamSqlBenchQueriesFlink3 {
                     throughputCounterAfter=0L;
                 }
             }*/
-            this.redisReadAndWriteAfter.execute1(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+""); //for non aggregate
+            // System.out.println("after   "+input.f1.getField(3));
+            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",throughputCounterAfter); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
 
 
@@ -959,7 +980,7 @@ public class StreamSqlBenchQueriesFlink3 {
         flinkConfs.put("zookeeper.connect", zookeeperServers);
         flinkConfs.put("jedis_server", "redis");
 //        flinkConfs.put("jedis_server", getRedisHost(conf));
-       // flinkConfs.put("time.divisor", getTimeDivisor(conf));
+        // flinkConfs.put("time.divisor", getTimeDivisor(conf));
         flinkConfs.put("group.id", "myGroup");
 
         return flinkConfs;
@@ -1053,5 +1074,4 @@ public class StreamSqlBenchQueriesFlink3 {
             return value;
         }
     }
-
 }
