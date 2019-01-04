@@ -87,7 +87,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // set default parallelism for all operators (recommended value: number of available worker CPU cores in the cluster (hosts * cores))
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.setParallelism(2);
+        env.setParallelism(5 * 32);
 
 
         /////
@@ -118,12 +118,12 @@ public class StreamSqlBenchQueriesFlink3 {
 
         DataStream<String> purchasesStream = env
                 .addSource(purchasesConsumer)
-                .setParallelism(2);
+                .setParallelism(Math.min(5 * 32, k_partitions));
 
 
         DataStream<String> adsStream = env
                 .addSource(adsConsumer)
-                .setParallelism(2);
+                .setParallelism(Math.min(5*32,k_partitions));
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
