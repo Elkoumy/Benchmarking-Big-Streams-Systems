@@ -15,7 +15,7 @@ public class RedisReadAndWriteAfter {
     private String valueToFlush;
     HashMap<String, String> elemensTowrite;
     HashMap<String, String> elemensTowrite_before;
-    Long throughput=0L;
+    String throughput="";
     Boolean flag;
 
 
@@ -39,16 +39,16 @@ public class RedisReadAndWriteAfter {
         }
     }
 
-    public void execute1(String id,String time,Long throughput_) {
+    public void execute1(String id,String time,Long throughput_,String throughput_Key) {
 
         synchronized(elemensTowrite) {
             elemensTowrite.put(id,time);
            // throughput++;
 
         }
-/*        synchronized(throughput) {
-            throughput=throughput_;
-        }*/
+        synchronized(throughput) {
+            throughput=throughput_+":"+throughput_Key;
+        }
     }
     public void executeForAgregate(String id,String time,String throughput_) {
 
@@ -70,7 +70,7 @@ public class RedisReadAndWriteAfter {
 
     public void prepare() {
         elemensTowrite=new HashMap<>();
-        throughput=0L;
+        throughput="";
 
         Runnable flusher = new Runnable() {
             public void run() {
@@ -104,7 +104,7 @@ public class RedisReadAndWriteAfter {
         };
         new Thread(flusher).start();
     }
-    public void prepare_throuphput() {
+/*    public void prepare_throuphput() {
 
         Runnable flusher = new Runnable() {
             public void run() {
@@ -119,7 +119,7 @@ public class RedisReadAndWriteAfter {
             }
         };
         new Thread(flusher).start();
-    }
+    }*/
     private void flushWindows_before() {
         synchronized (elemensTowrite_before) {
 
@@ -131,34 +131,33 @@ public class RedisReadAndWriteAfter {
     }
     private void flushWindows() {
         synchronized (elemensTowrite) {
-            if(elemensTowrite.size()>0){writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");}
+//            if(elemensTowrite.size()>0){writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");}
             for (String s : elemensTowrite.keySet()) {
                 writeWindow(s, elemensTowrite.get(s));
             }
-/*
             synchronized (throughput){
-                if (throughput>0)
-                    writeWindow_Throughput(System.currentTimeMillis()+"",throughput+""); //for non-aggregate
+                String kv []=throughput.split(":");
+                if (Long.parseLong(kv[0])>0)
+                    writeWindow_Throughput(kv[1]+"",kv[0]+""); //for non-aggregate
             }
-*/
 
 
 
 
 
-            throughput=0L;
+            throughput="";
             elemensTowrite.clear();
         }
     }
 
-    private void flushThrouphput() {
+/*    private void flushThrouphput() {
 
         synchronized (throughput) {
             writeWindow_Throughput(System.currentTimeMillis()+"",throughput+"");
-            throughput=0L;
+            throughput="";
 
         }
-    }
+    }*/
     private void writeWindow(String key, String value) {
         String kv []=value.split(":");
         flush_jedis.hset(key, kv[0], kv[1]);

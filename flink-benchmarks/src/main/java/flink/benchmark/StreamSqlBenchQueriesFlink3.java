@@ -180,7 +180,7 @@ public class StreamSqlBenchQueriesFlink3 {
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
-        queryResultAsDataStream.print();
+        //queryResultAsDataStream.print();
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
 
@@ -880,7 +880,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
             }*/
             // System.out.println("after   "+input.f1.getField(3));
-            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",throughputCounterAfter); //for non aggregate
+            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),"time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",throughputCounterAfter,System.currentTimeMillis()+""); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
 
 
