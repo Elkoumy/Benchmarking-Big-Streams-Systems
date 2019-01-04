@@ -135,18 +135,17 @@ public class RedisReadAndWriteAfter {
             for (String s : elemensTowrite.keySet()) {
                 writeWindow(s, elemensTowrite.get(s));
             }
-            synchronized (throughput){
-                String kv []=throughput.split(":");
-                if (Long.parseLong(kv[0])>0)
-                    writeWindow_Throughput(kv[1]+"",kv[0]+""); //for non-aggregate
-            }
 
-
-
-
-
-            throughput="";
             elemensTowrite.clear();
+        }
+        synchronized (throughput){
+            if (throughput.length()>2) {
+                String kv[] = throughput.split(":");
+                System.out.println(kv[0]);
+                if (Long.parseLong(kv[0]) > 0)
+                    writeWindow_Throughput(kv[1] + "", kv[0] + ""); //for non-aggregate
+            }
+            throughput="";
         }
     }
 
