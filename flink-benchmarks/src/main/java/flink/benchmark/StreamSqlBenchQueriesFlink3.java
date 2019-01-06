@@ -1,5 +1,7 @@
 package flink.benchmark;
 
+import org.apache.flink.api.common.JobExecutionResult;
+import org.apache.flink.api.common.accumulators.IntCounter;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -106,7 +108,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // not to be shared with another job consuming the same topic
         props.setProperty("group.id", "flink-group");
         props.setProperty("enable.auto.commit","false");
-        FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("try10",
+        FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("purchases",
                 new SimpleStringSchema(),
                 props);
         purchasesConsumer.setStartFromEarliest();
@@ -550,7 +552,12 @@ public class StreamSqlBenchQueriesFlink3 {
         //tEnv.toRetractStream(result, Row.class).print();
 
         try {
-            env.execute("flink SQL Streaming Benchmarking");
+           JobExecutionResult jobResult = env.execute("flink SQL Streaming Benchmarking");
+           Integer throughput = jobResult.getAccumulatorResult("throughput");
+            System.out.println(throughput+"=================================================");
+           flush_jedis=new Jedis("redis",6379);
+            flush_jedis.hset("throughput","throughput",throughput.toString());
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -858,12 +865,15 @@ public class StreamSqlBenchQueriesFlink3 {
         public String toString() {
             return "";
         }
+        private IntCounter num_elements = new IntCounter();
         @Override
         public void open(Configuration parameters) {
             // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
             this.redisReadAndWriteAfter.prepare();
 //            this.redisReadAndWriteAfter.prepare_throuphput();
+            getRuntimeContext().addAccumulator("throughput",
+                    this.num_elements);
         }
 
         @Override
@@ -891,7 +901,7 @@ public class StreamSqlBenchQueriesFlink3 {
             // System.out.println("after   "+input.f1.getField(3));
             this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+""); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
-
+            this.num_elements.add(1);
             return input.f1.toString();
         }
     }
