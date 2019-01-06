@@ -106,7 +106,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // not to be shared with another job consuming the same topic
         props.setProperty("group.id", "flink-group");
         props.setProperty("enable.auto.commit","false");
-        FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("try1",
+        FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("try10",
                 new SimpleStringSchema(),
                 props);
         purchasesConsumer.setStartFromEarliest();
