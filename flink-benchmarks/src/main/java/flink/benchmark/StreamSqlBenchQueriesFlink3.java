@@ -54,7 +54,7 @@ public class StreamSqlBenchQueriesFlink3 {
     public static void main(String[] args) {
         //ParameterTool params = ParameterTool.fromArgs(args);
         //String ip = params.getRequired("ip");
-        int k_partitions = 10;
+        int k_partitions = 1;
         //int port=Integer.parseInt(params.getRequired("port"));
         //String ip="localhost";
         // port=6666;
@@ -106,10 +106,10 @@ public class StreamSqlBenchQueriesFlink3 {
         // not to be shared with another job consuming the same topic
         props.setProperty("group.id", "flink-group");
         props.setProperty("enable.auto.commit","false");
-        FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("purchases",
+        FlinkKafkaConsumer011<String> purchasesConsumer=new FlinkKafkaConsumer011<String>("try1",
                 new SimpleStringSchema(),
                 props);
-        //purchasesConsumer.setStartFromEarliest();
+        purchasesConsumer.setStartFromEarliest();
 
         FlinkKafkaConsumer011<String> adsConsumer=new FlinkKafkaConsumer011<String>("ads",
                 new SimpleStringSchema(),
