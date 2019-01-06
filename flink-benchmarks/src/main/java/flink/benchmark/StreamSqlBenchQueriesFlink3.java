@@ -161,7 +161,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //mapper to write key and value of each element ot redis
         // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
-        purchaseWithTimestampsAndWatermarks= purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
+        purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
