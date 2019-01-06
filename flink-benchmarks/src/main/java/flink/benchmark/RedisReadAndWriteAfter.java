@@ -127,7 +127,7 @@ public class RedisReadAndWriteAfter {
         synchronized (elemensTowrite_before) {
             for (String s : elemensTowrite_before.keySet()) {
 //                writeWindow(s, elemensTowrite_before.get(s));
-                p.hset(s, "time_seen",elemensTowrite.get(s));
+                p.hset(s, "time_seen",elemensTowrite_before.get(s));
 
             }
             p.syncAndReturnAll();
