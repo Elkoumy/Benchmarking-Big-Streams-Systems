@@ -161,6 +161,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //mapper to write key and value of each element ot redis
         // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
+        purchaseWithTimestampsAndWatermarks= purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery()).name("Write to Redis");
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
@@ -176,7 +177,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery()).name("Write to Redis");
+
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 //        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
@@ -807,7 +808,7 @@ public class StreamSqlBenchQueriesFlink3 {
     /**
      * write to redis after query
      */
-    public static class WriteToRedisBeforeQuery extends RichFlatMapFunction<Tuple5<Integer, Integer, Integer, Long,String>, String> {
+    public static class WriteToRedisBeforeQuery extends RichFlatMapFunction<Tuple5<Integer, Integer, Integer, Long,String>, Tuple5<Integer, Integer, Integer, Long,String>> {
         //RedisReadAndWrite redisReadAndWrite;
         RedisReadAndWriteAfter redisReadAndWriteAfter;
         @Override
@@ -821,7 +822,7 @@ public class StreamSqlBenchQueriesFlink3 {
             this.redisReadAndWriteAfter.prepare_before();
         }
         @Override
-        public void flatMap(Tuple5<Integer, Integer, Integer, Long,String> input, Collector<String> out) throws Exception {
+        public void flatMap(Tuple5<Integer, Integer, Integer, Long,String> input, Collector<Tuple5<Integer, Integer, Integer, Long,String>> out) throws Exception {
 
             //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
@@ -836,6 +837,7 @@ public class StreamSqlBenchQueriesFlink3 {
             //System.out.println("Before   "+input.f4);
 
             this.redisReadAndWriteAfter.execute_before(input.f4,"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            out.collect(input);
 
 
         }
