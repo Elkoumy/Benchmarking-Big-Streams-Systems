@@ -1,6 +1,7 @@
 package flink.benchmark;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import static org.apache.flink.runtime.state.CheckpointStreamWithResultProvider.
 
 public class RedisReadAndWriteAfter {
     private Jedis flush_jedis;
+
     private String keyToFlush;
     private String valueToFlush;
     HashMap<String, String> elemensTowrite;
@@ -132,9 +134,12 @@ public class RedisReadAndWriteAfter {
     private void flushWindows() {
         synchronized (elemensTowrite) {
 //            if(elemensTowrite.size()>0){writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");}
+            Pipeline p = flush_jedis.pipelined();
             for (String s : elemensTowrite.keySet()) {
-                writeWindow(s, elemensTowrite.get(s));
+                p.hset(s, "time_seen",elemensTowrite.get(s));
+                //writeWindow(s, elemensTowrite.get(s));
             }
+            p.syncAndReturnAll();
 
             elemensTowrite.clear();
         }
