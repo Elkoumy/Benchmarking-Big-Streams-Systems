@@ -16,7 +16,7 @@ public class RedisReadAndWriteAfter {
     private String keyToFlush;
     private String valueToFlush;
     HashMap<String, String> elemensTowrite;
-    HashMap<String, String> elemensTowrite_before;
+//    HashMap<String, String> elemensTowrite_before;
     String throughput="";
     Boolean flag;
 
@@ -33,13 +33,13 @@ public class RedisReadAndWriteAfter {
                 elemensTowrite.put(key,value);
             }
         }*/
-    public void execute_before( String id,String time) {
+/*    public void execute_before( String id,String time) {
 
         synchronized(elemensTowrite_before) {
             elemensTowrite_before.put(id,time);
 
         }
-    }
+    }*/
 
     public void execute1(String id,String time) {
 
@@ -89,7 +89,7 @@ public class RedisReadAndWriteAfter {
         new Thread(flusher).start();
     }
 
-    public void prepare_before() {
+ /*   public void prepare_before() {
         elemensTowrite_before=new HashMap<>();
 
         Runnable flusher = new Runnable() {
@@ -105,7 +105,7 @@ public class RedisReadAndWriteAfter {
             }
         };
         new Thread(flusher).start();
-    }
+    }*/
 /*    public void prepare_throuphput() {
 
         Runnable flusher = new Runnable() {
@@ -122,7 +122,7 @@ public class RedisReadAndWriteAfter {
         };
         new Thread(flusher).start();
     }*/
-    private void flushWindows_before() {
+/*    private void flushWindows_before() {
         Pipeline p = flush_jedis.pipelined();
         synchronized (elemensTowrite_before) {
             for (String s : elemensTowrite_before.keySet()) {
@@ -133,7 +133,7 @@ public class RedisReadAndWriteAfter {
             p.syncAndReturnAll();
             elemensTowrite_before.clear();
         }
-    }
+    }*/
     private void flushWindows() {
         Pipeline p = flush_jedis.pipelined();
         synchronized (elemensTowrite) {

@@ -810,7 +810,7 @@ public class StreamSqlBenchQueriesFlink3 {
      */
     public static class WriteToRedisBeforeQuery extends RichMapFunction<Tuple5<Integer, Integer, Integer, Long,String>, Tuple5<Integer, Integer, Integer, Long,String>> {
         //RedisReadAndWrite redisReadAndWrite;
-        RedisReadAndWriteAfter redisReadAndWriteAfter;
+        RedisReadAndWriteBefore redisReadAndWriteBefore;
         @Override
         public String toString() {
             return "";
@@ -818,8 +818,8 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public void open(Configuration parameters) {
             // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
-            this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
-            this.redisReadAndWriteAfter.prepare_before();
+            this.redisReadAndWriteBefore=new RedisReadAndWriteBefore("redis",6379);
+            this.redisReadAndWriteBefore.prepare_before();
         }
        /* @Override
         public void imap(Tuple5<Integer, Integer, Integer, Long,String> input, Collector<Tuple5<Integer, Integer, Integer, Long,String>> out) throws Exception {
@@ -844,7 +844,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         @Override
         public Tuple5<Integer, Integer, Integer, Long, String> map(Tuple5<Integer, Integer, Integer, Long, String> input) throws Exception {
-            this.redisReadAndWriteAfter.execute_before(input.f4,"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            this.redisReadAndWriteBefore.execute_before(input.f4,"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             return input;
         }
     }
