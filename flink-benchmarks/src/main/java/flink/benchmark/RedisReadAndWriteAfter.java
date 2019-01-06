@@ -123,8 +123,8 @@ public class RedisReadAndWriteAfter {
         new Thread(flusher).start();
     }*/
     private void flushWindows_before() {
+        Pipeline p = flush_jedis.pipelined();
         synchronized (elemensTowrite_before) {
-            Pipeline p = flush_jedis.pipelined();
             for (String s : elemensTowrite_before.keySet()) {
 //                writeWindow(s, elemensTowrite_before.get(s));
                 p.hset(s, "time_seen",elemensTowrite.get(s));
