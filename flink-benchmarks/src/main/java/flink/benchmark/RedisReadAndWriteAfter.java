@@ -135,15 +135,17 @@ public class RedisReadAndWriteAfter {
         }
     }*/
     private void flushWindows() {
-        Pipeline p = flush_jedis.pipelined();
+
         synchronized (elemensTowrite) {
+            Pipeline p = flush_jedis.pipelined();
 //            if(elemensTowrite.size()>0){writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");}
 
             for (String s : elemensTowrite.keySet()) {
                 p.hset(s, "time_updated",elemensTowrite.get(s));
                 //writeWindow(s, elemensTowrite.get(s));
             }
-            p.syncAndReturnAll();
+            p.hset("","","");
+            p.sync();
 
             elemensTowrite.clear();
         }
