@@ -161,7 +161,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         //mapper to write key and value of each element ot redis
         // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
-        purchaseWithTimestampsAndWatermarks= purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery()).name("Write to Redis");
+        purchaseWithTimestampsAndWatermarks= purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
@@ -808,7 +808,7 @@ public class StreamSqlBenchQueriesFlink3 {
     /**
      * write to redis after query
      */
-    public static class WriteToRedisBeforeQuery extends RichFlatMapFunction<Tuple5<Integer, Integer, Integer, Long,String>, Tuple5<Integer, Integer, Integer, Long,String>> {
+    public static class WriteToRedisBeforeQuery extends RichMapFunction<Tuple5<Integer, Integer, Integer, Long,String>, Tuple5<Integer, Integer, Integer, Long,String>> {
         //RedisReadAndWrite redisReadAndWrite;
         RedisReadAndWriteAfter redisReadAndWriteAfter;
         @Override
@@ -821,25 +821,31 @@ public class StreamSqlBenchQueriesFlink3 {
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
             this.redisReadAndWriteAfter.prepare_before();
         }
-        @Override
-        public void flatMap(Tuple5<Integer, Integer, Integer, Long,String> input, Collector<Tuple5<Integer, Integer, Integer, Long,String>> out) throws Exception {
+       /* @Override
+        public void imap(Tuple5<Integer, Integer, Integer, Long,String> input, Collector<Tuple5<Integer, Integer, Integer, Long,String>> out) throws Exception {
 
             //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
             //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
-/*            synchronized (elementsBatchBefore){
+*//*            synchronized (elementsBatchBefore){
                 elementsBatchBefore.put(input.f0+":"+new Instant(input.f3).getMillis(),"time_seen:"+System.currentTimeMillis());
                 if(elementsBatchBefore.size()>500){
                     this.redisReadAndWriteAfter.execute(elementsBatchBefore);
                     elementsBatchBefore.clear();
                 }
-            }*/
+            }*//*
             //System.out.println("Before   "+input.f4);
 
             this.redisReadAndWriteAfter.execute_before(input.f4,"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
             out.collect(input);
 
 
+        }*/
+
+        @Override
+        public Tuple5<Integer, Integer, Integer, Long, String> map(Tuple5<Integer, Integer, Integer, Long, String> input) throws Exception {
+            this.redisReadAndWriteAfter.execute_before(input.f4,"time_seen:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            return input;
         }
     }
     /**
