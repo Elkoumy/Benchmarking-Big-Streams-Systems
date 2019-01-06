@@ -129,10 +129,10 @@ public class StreamSqlBenchQueriesFlink3 {
          *  adding metrics for the log (I need to know what are these actually)
          *****************************/
 
-        purchasesStream= purchasesStream.map(new MyMapper());
+/*        purchasesStream= purchasesStream.map(new MyMapper());
         purchasesStream= purchasesStream.map(new ThroughputRecorder());
         adsStream= adsStream.map(new MyMapper());
-        adsStream= adsStream.map(new ThroughputRecorder());
+        adsStream= adsStream.map(new ThroughputRecorder());*/
         /************************************************************/
 
         DataStream<Tuple5<Integer, Integer, Integer, Long,String>> purchaseWithTimestampsAndWatermarks =
