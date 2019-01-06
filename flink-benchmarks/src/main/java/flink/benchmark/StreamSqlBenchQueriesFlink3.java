@@ -866,6 +866,7 @@ public class StreamSqlBenchQueriesFlink3 {
             return "";
         }
         private IntCounter num_elements = new IntCounter();
+        private long totElements = 0;
         @Override
         public void open(Configuration parameters) {
             // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
@@ -899,9 +900,11 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
             }*/
             // System.out.println("after   "+input.f1.getField(3));
-            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+""); //for non aggregate
+            totElements++;
+            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",totElements); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
             this.num_elements.add(1);
+
             return input.f1.toString();
         }
     }

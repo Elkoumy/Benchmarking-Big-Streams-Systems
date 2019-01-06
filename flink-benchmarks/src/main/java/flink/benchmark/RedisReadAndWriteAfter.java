@@ -18,6 +18,7 @@ public class RedisReadAndWriteAfter {
     HashMap<String, String> elemensTowrite;
 //    HashMap<String, String> elemensTowrite_before;
     String throughput="";
+    Long totElements;
     Boolean flag;
 
 
@@ -41,13 +42,20 @@ public class RedisReadAndWriteAfter {
         }
     }*/
 
-    public void execute1(String id,String time) {
+    public void execute1(String id,String time,long totlaElement) {
 
         synchronized(elemensTowrite) {
             elemensTowrite.put(id,time);
            // throughput++;
 
         }
+        synchronized(totElements) {
+            totElements=totlaElement;
+            // throughput++;
+
+        }
+
+
 /*        synchronized(throughput) {
             throughput=throughput_+":"+throughput_Key;
         }*/
@@ -73,6 +81,7 @@ public class RedisReadAndWriteAfter {
     public void prepare() {
         elemensTowrite=new HashMap<>();
         throughput="";
+        totElements=0L;
 
         Runnable flusher = new Runnable() {
             public void run() {
@@ -136,6 +145,11 @@ public class RedisReadAndWriteAfter {
     }*/
     private void flushWindows() {
 
+
+        synchronized (totElements) {
+            System.out.println(totElements);
+            flush_jedis.hset("tpt"+System.currentTimeMillis(),"throughput",totElements.toString());
+        }
         synchronized (elemensTowrite) {
             Pipeline p = flush_jedis.pipelined();
 //            if(elemensTowrite.size()>0){writeWindow_Throughput(System.currentTimeMillis()+"",elemensTowrite.size()+"");}
