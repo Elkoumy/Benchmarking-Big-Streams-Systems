@@ -334,6 +334,7 @@ run() {
   then
 #    stop_if_needed leiningen.core.main "Load Generation"
         pkill -f "Main" &
+        pkill -f "TempDataGenerator" &
         #ssh root@stream-node-02 pkill -f "Main" &
         #ssh root@stream-node-03 pkill -f "Main" &
         #ssh root@stream-node-04 pkill -f "Main" &
