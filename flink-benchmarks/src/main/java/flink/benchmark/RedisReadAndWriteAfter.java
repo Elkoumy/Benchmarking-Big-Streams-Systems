@@ -18,7 +18,7 @@ public class RedisReadAndWriteAfter {
     HashMap<String, String> elemensTowrite;
 //    HashMap<String, String> elemensTowrite_before;
     String throughput="";
-    Long totElements;
+    String totElements;
     Boolean flag;
 
 
@@ -42,7 +42,7 @@ public class RedisReadAndWriteAfter {
         }
     }*/
 
-    public void execute1(String id,String time,long totlaElement) {
+    public void execute1(String id,String time,String totlaElement) {
 
         synchronized(elemensTowrite) {
             elemensTowrite.put(id,time);
@@ -81,7 +81,7 @@ public class RedisReadAndWriteAfter {
     public void prepare() {
         elemensTowrite=new HashMap<>();
         throughput="";
-        totElements=0L;
+        totElements="";
 
         Runnable flusher = new Runnable() {
             public void run() {

@@ -901,7 +901,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }*/
             // System.out.println("after   "+input.f1.getField(3));
             totElements++;
-            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",totElements); //for non aggregate
+            this.redisReadAndWriteAfter.execute1(input.f1.getField(3).toString(),TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",input.f1.getField(0).toString()); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
             this.num_elements.add(1);
 
