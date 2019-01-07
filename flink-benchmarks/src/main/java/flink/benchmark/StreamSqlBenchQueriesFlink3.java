@@ -164,19 +164,20 @@ public class StreamSqlBenchQueriesFlink3 {
         //mapper to write key and value of each element ot redis
         // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
-        purchaseWithTimestampsAndWatermarks.map(new MapFunction<Tuple5<Integer, Integer, Integer, Long, String>, Tuple4<Integer, Integer, Integer, String>>() {
+
+        //mapper instead of query
+/*        purchaseWithTimestampsAndWatermarks.map(new MapFunction<Tuple5<Integer, Integer, Integer, Long, String>, Tuple4<Integer, Integer, Integer, String>>() {
 
             @Override
             public Tuple4<Integer, Integer,Integer, String> map(Tuple5<Integer, Integer, Integer, Long, String> input) throws Exception {
                 return new Tuple4<>(input.f0,input.f1, input.f2, input.f4);
             }
-        }).map(new WriteToRedisAfterQueryForMapper());
-/*
+        }).map(new WriteToRedisAfterQueryForMapper());*/
+
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
         tEnv.registerTable("adsTable", adsTable);
-*/
 
 
 
@@ -189,9 +190,9 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
 
-      /*  Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
+        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.map(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.map(new WriteToRedisAfterQuery());
         //queryResultAsDataStream.print();
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
