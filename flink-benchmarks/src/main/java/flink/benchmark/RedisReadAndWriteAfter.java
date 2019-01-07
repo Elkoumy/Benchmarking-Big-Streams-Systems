@@ -147,8 +147,12 @@ public class RedisReadAndWriteAfter {
 
 
         synchronized (totElements) {
-            System.out.println(totElements);
-            flush_jedis.hset("tpt"+System.currentTimeMillis(),"throughput",totElements.toString());
+            if(!totElements.equals("")){
+                System.out.println(totElements);
+                flush_jedis.hset("tpt"+System.currentTimeMillis(),"throughput",totElements.toString());
+            }
+
+            totElements="";
         }
         synchronized (elemensTowrite) {
             Pipeline p = flush_jedis.pipelined();
