@@ -18,6 +18,7 @@ public class RedisReadAndWriteBefore {
     HashMap<String, String> elemensTowrite_before;
     String throughput="";
     Boolean flag;
+    String totElements="";
 
 
     public RedisReadAndWriteBefore(String redisServerName , int port) {
@@ -26,10 +27,14 @@ public class RedisReadAndWriteBefore {
     }
 
 
-    public void execute_before( String id,String time) {
+    public void execute_before( String id,String time,String totlaElement) {
 
         synchronized(elemensTowrite_before) {
             elemensTowrite_before.put(id,time);
+
+        }
+        synchronized(totElements) {
+            totElements=totlaElement;
 
         }
     }
@@ -39,6 +44,7 @@ public class RedisReadAndWriteBefore {
 
     public void prepare_before() {
         elemensTowrite_before=new HashMap<>();
+        totElements="";
 
         Runnable flusher = new Runnable() {
             public void run() {
@@ -56,6 +62,14 @@ public class RedisReadAndWriteBefore {
     }
 
     private void flushWindows_before() {
+        synchronized (totElements) {
+            if(!totElements.equals("")){
+                System.out.println(totElements+"*");
+                flush_jedis.hset("tpt*"+System.currentTimeMillis(),"throughput*",totElements.toString());
+            }
+
+            totElements="";
+        }
 
         synchronized (elemensTowrite_before) {
             Pipeline p = flush_jedis.pipelined();
