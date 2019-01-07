@@ -139,24 +139,24 @@ public class StreamSqlBenchQueriesFlink3 {
 
         DataStream<Tuple5<Integer, Integer, Integer, Long,String>> purchaseWithTimestampsAndWatermarks =
                 purchasesStream
-                        .flatMap(new PurchasesParser())
+                        .map(new PurchasesParser())
                         .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple4<Integer, Integer, Integer, Long>>(Time.seconds(10)) {
 
                             @Override
                             public long extractTimestamp(Tuple4<Integer, Integer, Integer, Long> element) {
                                 return element.getField(3);
                             }
-                        }).flatMap(new AddPurchaseLatencyId());
+                        }).map(new AddPurchaseLatencyId());
 
         DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
                 adsStream
-                        .flatMap( new AdsParser())
+                        .map( new AdsParser())
                         .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<Integer, Integer, Long>>(Time.seconds(10)) {
                             @Override
                             public long extractTimestamp(Tuple3<Integer, Integer, Long> element) {
                                 return element.getField(2);
                             }
-                        }).flatMap(new AddAdLatencyId());
+                        }).map(new AddAdLatencyId());
 
 
 
@@ -164,10 +164,19 @@ public class StreamSqlBenchQueriesFlink3 {
         //mapper to write key and value of each element ot redis
         // purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedis());
         purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
+        purchaseWithTimestampsAndWatermarks.map(new MapFunction<Tuple5<Integer, Integer, Integer, Long, String>, Tuple4<Integer, Integer, Integer, String>>() {
+
+            @Override
+            public Tuple4<Integer, Integer,Integer, String> map(Tuple5<Integer, Integer, Integer, Long, String> input) throws Exception {
+                return new Tuple4<>(input.f0,input.f1, input.f2, input.f4);
+            }
+        }).map(new WriteToRedisAfterQueryForMapper());
+/*
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
         Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
         tEnv.registerTable("adsTable", adsTable);
+*/
 
 
 
@@ -180,9 +189,9 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
 
-        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
+      /*  Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.map(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.map(new WriteToRedisAfterQuery());*/
         //queryResultAsDataStream.print();
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
@@ -739,9 +748,9 @@ public class StreamSqlBenchQueriesFlink3 {
     // *************************************************************************.
 
 
-    private static class PurchasesParser  implements FlatMapFunction<String,Tuple4<Integer, Integer, Integer, Long>> {
+    private static class PurchasesParser  implements MapFunction<String,Tuple4<Integer, Integer, Integer, Long>> {
         @Override
-        public void flatMap(String input, Collector<Tuple4<Integer, Integer, Integer, Long>> out) throws Exception {
+        public Tuple4<Integer, Integer, Integer, Long> map(String input) throws Exception {
             JSONObject obj = new JSONObject(input);
             Tuple4<Integer,Integer,Integer,Long> tuple =
                     new Tuple4<Integer,Integer,Integer,Long> (
@@ -751,15 +760,15 @@ public class StreamSqlBenchQueriesFlink3 {
                             obj.getLong("timeStamp")
                     );
 
-            out.collect(tuple);
+            return tuple;
         }
 
     }
 
-    private static class AdsParser implements  FlatMapFunction<String,Tuple3<Integer, Integer,  Long>>{
+    private static class AdsParser implements  MapFunction<String,Tuple3<Integer, Integer,  Long>>{
 
         @Override
-        public void flatMap(String input, Collector<Tuple3<Integer, Integer, Long>> out) throws Exception {
+        public Tuple3<Integer, Integer, Long> map(String input) throws Exception {
             JSONObject obj = new JSONObject(input);
             Tuple3<Integer,Integer,Long> tuple =
                     new Tuple3<Integer,Integer,Long> (
@@ -768,21 +777,21 @@ public class StreamSqlBenchQueriesFlink3 {
                             obj.getLong("timeStamp")
                     );
 
-            out.collect(tuple);
+            return tuple;
         }
     }
 
-    private static class AddPurchaseLatencyId  implements FlatMapFunction<Tuple4<Integer, Integer, Integer, Long>,Tuple5<Integer, Integer, Integer, Long,String>> {
+    private static class AddPurchaseLatencyId  implements MapFunction<Tuple4<Integer, Integer, Integer, Long>,Tuple5<Integer, Integer, Integer, Long,String>> {
         @Override
-        public void flatMap(Tuple4<Integer, Integer, Integer, Long> input, Collector<Tuple5<Integer, Integer, Integer, Long,String>> out) throws Exception {
-            out.collect(new Tuple5<>(input.f0,input.f1,input.f2,input.f3,input.f0+":"+input.f3));
+        public Tuple5<Integer, Integer, Integer, Long,String> map(Tuple4<Integer, Integer, Integer, Long> input) throws Exception {
+            return  new Tuple5<>(input.f0,input.f1,input.f2,input.f3,input.f0+":"+input.f3);
         }
 
     }
-    private static class AddAdLatencyId  implements FlatMapFunction<Tuple3<Integer, Integer,  Long>,Tuple4<Integer, Integer,  Long,String>> {
+    private static class AddAdLatencyId  implements MapFunction<Tuple3<Integer, Integer,  Long>,Tuple4<Integer, Integer,  Long,String>> {
         @Override
-        public void flatMap(Tuple3<Integer, Integer,Long> input, Collector<Tuple4<Integer, Integer,  Long,String>> out) throws Exception {
-            out.collect(new Tuple4<>(input.f0,input.f1,input.f2,input.f0+":"+input.f2));
+        public Tuple4<Integer, Integer,  Long,String> map(Tuple3<Integer, Integer,Long> input) throws Exception {
+           return new Tuple4<>(input.f0,input.f1,input.f2,input.f0+":"+input.f2);
         }
 
     }
@@ -909,7 +918,59 @@ public class StreamSqlBenchQueriesFlink3 {
             return input.f1.toString();
         }
     }
+    /**
+     * write to redis after query
+     */
+    public static class WriteToRedisAfterQueryForMapper extends RichMapFunction<Tuple4<Integer, Integer,Integer, String>, String> {
+        //RedisReadAndWrite redisReadAndWrite;
+        RedisReadAndWriteAfter redisReadAndWriteAfter;
+        @Override
+        public String toString() {
+            return "";
+        }
+        private IntCounter num_elements = new IntCounter();
+        private long totElements = 0;
+        @Override
+        public void open(Configuration parameters) {
+            // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
+            this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
+            this.redisReadAndWriteAfter.prepare();
+//            this.redisReadAndWriteAfter.prepare_throuphput();
+            getRuntimeContext().addAccumulator("throughput",
+                    this.num_elements);
+        }
 
+        @Override
+        public String map(Tuple4<Integer, Integer,Integer, String> input) throws Exception {
+
+            //this.redisReadAndWrite.write(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated", TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            //this.redisReadAndWrite.write("JnTPAft","Throughput", (throughputCounterAfter++)+"");
+            //this.redisReadAndWriteAfter.execute(input.f1.getField(0)+":"+new Instant(input.f1.getField(2)).getMillis()+"","time_updated:"+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()));
+
+
+            //throughputCounterAfter++; // open this line for non aggregate queries
+ /*           synchronized (elementsBatch){
+                elementsBatch.put(input.f1.getField(0)+":"+new Instant(input.f1.getField(3)).getMillis(),"time_updated:"+System.currentTimeMillis()); // open this line for nin aggregate queries
+                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+throughputCounterAfter); // open this line for nin aggregate queries
+
+//                elementsBatch.put(input.f1.getField(2)+"","time_updated:"+System.currentTimeMillis()); // open this line for  aggregate queries
+//                elementsBatch.put("tpt:"+System.currentTimeMillis(),"throughput:"+input.f1.getField(3)+""); // open this line for aggregate queries
+
+                if(elementsBatch.size()>500){
+                    this.redisReadAndWriteAfter.execute(elementsBatch);
+                    elementsBatch.clear();
+                    throughputCounterAfter=0L;
+                }
+            }*/
+            // System.out.println("after   "+input.f1.getField(3));
+            totElements++;
+            this.redisReadAndWriteAfter.execute1(input.f3,TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",input.f0.toString()); //for non aggregate
+//            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
+            this.num_elements.add(1);
+
+            return input.f1.toString();
+        }
+    }
     /**
      * write to redis after query using process function
      */
