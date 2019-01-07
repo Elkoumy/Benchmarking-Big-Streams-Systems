@@ -62,27 +62,28 @@ public class RedisReadAndWriteBefore {
     }
 
     private void flushWindows_before() {
-        synchronized (totElements) {
+/*        synchronized (totElements) {
             if(!totElements.equals("")){
                 System.out.println(totElements+"*");
                // flush_jedis.hset("tpt*"+System.currentTimeMillis(),"throughput*",totElements.toString());
             }
 
             totElements="";
-        }
+        }*/
 
-/*        synchronized (elemensTowrite_before) {
-            Pipeline p = flush_jedis.pipelined();
+        synchronized (elemensTowrite_before) {
+            //Pipeline p = flush_jedis.pipelined();
             for (String s : elemensTowrite_before.keySet()) {
 //                writeWindow(s, elemensTowrite_before.get(s));
-                p.hset(s, "time_seen",elemensTowrite_before.get(s));
+                //p.hset(s, "time_seen",elemensTowrite_before.get(s));
+                System.out.println(s+"*");
 
             }
-            p.hset("","","");
-            p.sync();
+           // p.hset("","","");
+           // p.sync();
 
             elemensTowrite_before.clear();
-        }*/
+        }
     }
 
 }
