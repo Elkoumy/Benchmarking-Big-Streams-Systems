@@ -89,7 +89,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // set default parallelism for all operators (recommended value: number of available worker CPU cores in the cluster (hosts * cores))
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.setParallelism(5 );
+        env.setParallelism(5 * 32);
 
 
         /////
@@ -120,12 +120,12 @@ public class StreamSqlBenchQueriesFlink3 {
 
         DataStream<String> purchasesStream = env
                 .addSource(purchasesConsumer)
-                .setParallelism(5);
+                .setParallelism(Math.min(5 * 32, k_partitions));
 
 
         DataStream<String> adsStream = env
                 .addSource(adsConsumer)
-                .setParallelism(5);
+                .setParallelism(Math.min(5 * 32, k_partitions));
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
@@ -861,7 +861,7 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public Tuple5<Integer, Integer, Integer, Long, String> map(Tuple5<Integer, Integer, Integer, Long, String> input) throws Exception {
 //            this.redisReadAndWriteBefore.execute_before(input.f4,TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
-            System.out.println(input.f0+"*");
+           // System.out.println(input.f0+"*");
             this.redisReadAndWriteBefore.execute_before(input.f4,TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",input.f0+"*");
             return input;
         }
@@ -965,7 +965,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }*/
             // System.out.println("after   "+input.f1.getField(3));
             totElements++;
-            System.out.println(input.f0.toString());
+//            System.out.println(input.f0.toString());
             this.redisReadAndWriteAfter.execute1(input.f3,TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",input.f0.toString()); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
             this.num_elements.add(1);
