@@ -835,7 +835,7 @@ public class StreamSqlBenchQueriesFlink3 {
         public void open(Configuration parameters) {
             // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteBefore=new RedisReadAndWriteBefore("redis",6379);
-            this.redisReadAndWriteBefore.prepare_before();
+//            this.redisReadAndWriteBefore.prepare_before();
         }
        /* @Override
         public void imap(Tuple5<Integer, Integer, Integer, Long,String> input, Collector<Tuple5<Integer, Integer, Integer, Long,String>> out) throws Exception {
@@ -861,6 +861,7 @@ public class StreamSqlBenchQueriesFlink3 {
         @Override
         public Tuple5<Integer, Integer, Integer, Long, String> map(Tuple5<Integer, Integer, Integer, Long, String> input) throws Exception {
 //            this.redisReadAndWriteBefore.execute_before(input.f4,TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"");
+            System.out.println(input.f0+"*");
             this.redisReadAndWriteBefore.execute_before(input.f4,TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",input.f0+"*");
             return input;
         }
@@ -934,7 +935,7 @@ public class StreamSqlBenchQueriesFlink3 {
         public void open(Configuration parameters) {
             // this.redisReadAndWrite=new RedisReadAndWrite("redis",6379);
             this.redisReadAndWriteAfter=new RedisReadAndWriteAfter("redis",6379);
-            this.redisReadAndWriteAfter.prepare();
+//            this.redisReadAndWriteAfter.prepare();
 //            this.redisReadAndWriteAfter.prepare_throuphput();
             getRuntimeContext().addAccumulator("throughput",
                     this.num_elements);
@@ -964,6 +965,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }*/
             // System.out.println("after   "+input.f1.getField(3));
             totElements++;
+            System.out.println(input.f0.toString());
             this.redisReadAndWriteAfter.execute1(input.f3,TimeUnit.NANOSECONDS.toMillis(System.nanoTime())+"",input.f0.toString()); //for non aggregate
 //            this.redisReadAndWriteAfter.executeForAgregate(input.f1.getField(1)+"","time_updated:"+System.currentTimeMillis(),input.f1.getField(2)+"");
             this.num_elements.add(1);
