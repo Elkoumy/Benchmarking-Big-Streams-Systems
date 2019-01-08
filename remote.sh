@@ -40,7 +40,11 @@ LOAD_START_CMD="cd $PROJECT_DIR; ./stream-bench.sh START_LOAD;"
 LOAD_STOP_CMD="cd $PROJECT_DIR; ./stream-bench.sh STOP_LOAD;"
 
 DELETE_TOPIC="cd $PROJECT_DIR/$KAFKA_FOLDER; ./bin/kafka-topics.sh --delete --zookeeper zookeeper-node01:2181 --topic $TOPIC;"
+DELETE_TOPICPURCHASES="cd $PROJECT_DIR/$KAFKA_FOLDER; ./bin/kafka-topics.sh --delete --zookeeper zookeeper-node01:2181 --topic purchases;"
+DELETE_TOPICADS="cd $PROJECT_DIR/$KAFKA_FOLDER; ./bin/kafka-topics.sh --delete --zookeeper zookeeper-node01:2181 --topic ads;"
 CREATE_TOPIC="cd $PROJECT_DIR/$KAFKA_FOLDER; ./bin/kafka-topics.sh --create --zookeeper zookeeper-node01:2181 --replication-factor 1 --partitions $PARTITIONS --topic $TOPIC;"
+CREATE_TOPICPURCHASES="cd $PROJECT_DIR/$KAFKA_FOLDER; ./bin/kafka-topics.sh --create --zookeeper zookeeper-node01:2181 --replication-factor 1 --partitions 1 --topic purchases;"
+CREATE_TOPICADS="cd $PROJECT_DIR/$KAFKA_FOLDER; ./bin/kafka-topics.sh --create --zookeeper zookeeper-node01:2181 --replication-factor 1 --partitions 1 --topic ads;"
 
 START_MONITOR_CPU="top -b -d 1 | grep --line-buffered Cpu > cpu.load;"
 START_MONITOR_MEM="top -b -d 1 | grep --line-buffered 'KiB Mem' > mem.load;"
@@ -144,8 +148,18 @@ function cleanKafka {
     echo "Deleted kafka topic"
     runCommandRedisServer "${DELETE_TOPIC}"
     sleep ${SHORT_SLEEP}
+    runCommandRedisServer "${DELETE_TOPICPURCHASES}"
+    sleep ${SHORT_SLEEP}
+    runCommandRedisServer "${DELETE_TOPICADS}"
+    sleep ${SHORT_SLEEP}
+    sleep ${SHORT_SLEEP}
     echo "Created kafka topic"
     runCommandRedisServer "${CREATE_TOPIC}"
+    sleep ${SHORT_SLEEP}
+    runCommandRedisServer "${CREATE_TOPICPURCHASES}"
+    sleep ${SHORT_SLEEP}
+    runCommandRedisServer "${CREATE_TOPICADS}"
+    sleep ${SHORT_SLEEP}
 }
 
 function startZK {
