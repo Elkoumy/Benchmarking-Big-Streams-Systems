@@ -94,7 +94,7 @@ create_kafka_topic() {
     if [[ "$count" = "0" ]];
     then
         #$KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ${TOPIC}
-        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 3 --partitions 10 --topic ${TOPIC}
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 3 --partitions 3 --topic ${TOPIC}
     else
         echo "Kafka topic $TOPIC already exists"
     fi
@@ -103,7 +103,7 @@ create_kafka_topic() {
     if [[ "$countPurchases" = "0" ]];
     then
         #$KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic purchases
-        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 3 --partitions 10 --topic purchases
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 3 --partitions 3 --topic purchases
     else
         echo "Kafka topic $TOPIC already exists"
     fi
@@ -111,7 +111,7 @@ create_kafka_topic() {
     if [[ "$countAds" = "0" ]];
     then
         #$KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 1 --partitions ${PARTITIONS} --topic ads
-        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 3 --partitions 10 --topic ads
+        $KAFKA_DIR/bin/kafka-topics.sh --create --zookeeper "$ZK_CONNECTIONS" --replication-factor 3 --partitions 3 --topic ads
     else
         echo "Kafka topic $TOPIC already exists"
     fi
