@@ -162,7 +162,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
 
         //mapper to write key and value of each element ot redis
-//        purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
+        purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
 
         //mapper instead of query
 /*        purchaseWithTimestampsAndWatermarks.map(new MapFunction<Tuple5<Integer, Integer, Integer, Long, String>, Tuple4<Integer, Integer, Integer, String>>() {
@@ -191,7 +191,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-//        queryResultAsDataStream.map(new WriteToRedisAfterQuery());
+        queryResultAsDataStream.map(new WriteToRedisAfterQuery());
 
 
 
