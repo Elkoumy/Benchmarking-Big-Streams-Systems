@@ -17,7 +17,10 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
+import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
@@ -162,7 +165,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
 
         //mapper to write key and value of each element ot redis
-        purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
+//        purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
 
         //mapper instead of query
 /*        purchaseWithTimestampsAndWatermarks.map(new MapFunction<Tuple5<Integer, Integer, Integer, Long, String>, Tuple4<Integer, Integer, Integer, String>>() {
@@ -191,7 +194,31 @@ public class StreamSqlBenchQueriesFlink3 {
 
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.map(new WriteToRedisAfterQuery());
+        DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
+            @Override
+            public Tuple2<String, Long> map(Tuple2<Boolean, Row> input) throws Exception {
+                String latencyAttr[]=(input.f1.getField(3)).toString().split("|");
+                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
+                return new Tuple2<>(latencyAttr[0],timeDifference);
+            }
+        });
+        DataStream<Tuple4<Long, Long,Long,Long>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessAllWindowFunction<Tuple2<String, Long>, Tuple4<Long, Long,Long,Long>, TimeWindow>() {
+                    @Override
+                    public void process(Context context, Iterable<Tuple2<String, Long>> iterable, Collector<Tuple4<Long, Long,Long,Long>> collector) throws Exception {
+                        long count=0L,sum=0L;
+                        for (Tuple2<String, Long> item : iterable) {
+                            count++;
+                            sum+=item.f1;
+                        }
+                        collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
+
+                    }
+                });
+
+        windoedSumAndCountDifferences.print();
+
+       // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
 
 
 
@@ -787,14 +814,14 @@ public class StreamSqlBenchQueriesFlink3 {
     private static class AddPurchaseLatencyId  implements MapFunction<Tuple4<Integer, Integer, Integer, Long>,Tuple5<Integer, Integer, Integer, Long,String>> {
         @Override
         public Tuple5<Integer, Integer, Integer, Long,String> map(Tuple4<Integer, Integer, Integer, Long> input) throws Exception {
-            return  new Tuple5<>(input.f0,input.f1,input.f2,input.f3,input.f0+":"+input.f3);
+            return  new Tuple5<>(input.f0,input.f1,input.f2,input.f3,input.f0+":"+input.f3+"|"+System.currentTimeMillis());
         }
 
     }
     private static class AddAdLatencyId  implements MapFunction<Tuple3<Integer, Integer,  Long>,Tuple4<Integer, Integer,  Long,String>> {
         @Override
         public Tuple4<Integer, Integer,  Long,String> map(Tuple3<Integer, Integer,Long> input) throws Exception {
-           return new Tuple4<>(input.f0,input.f1,input.f2,input.f0+":"+input.f2);
+           return new Tuple4<>(input.f0,input.f1,input.f2,input.f0+":"+input.f2+"|"+System.currentTimeMillis());
         }
 
     }
