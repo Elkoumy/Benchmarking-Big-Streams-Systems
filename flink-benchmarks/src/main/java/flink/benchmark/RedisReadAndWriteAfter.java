@@ -49,11 +49,11 @@ public class RedisReadAndWriteAfter {
            // throughput++;
 
         }
-        synchronized(totElements) {
+/*        synchronized(totElements) {
             totElements=totlaElement;
             // throughput++;
 
-        }
+        }*/
 
 
 /*        synchronized(throughput) {
@@ -161,7 +161,7 @@ public class RedisReadAndWriteAfter {
             for (String s : elemensTowrite.keySet()) {
                 p.hset(s, "time_updated",elemensTowrite.get(s));
                 //writeWindow(s, elemensTowrite.get(s));
-                System.out.println(s);
+
             }
             p.hset("","","");
             p.sync();

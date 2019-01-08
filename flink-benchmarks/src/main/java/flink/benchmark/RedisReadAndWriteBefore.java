@@ -33,10 +33,10 @@ public class RedisReadAndWriteBefore {
             elemensTowrite_before.put(id,time);
 
         }
-        synchronized(totElements) {
+/*        synchronized(totElements) {
             totElements=totlaElement;
 
-        }
+        }*/
     }
 
 
@@ -76,7 +76,7 @@ public class RedisReadAndWriteBefore {
             for (String s : elemensTowrite_before.keySet()) {
 //                writeWindow(s, elemensTowrite_before.get(s));
                 p.hset(s, "time_seen",elemensTowrite_before.get(s));
-                System.out.println(s+"*");
+
 
             }
             p.hset("","","");
