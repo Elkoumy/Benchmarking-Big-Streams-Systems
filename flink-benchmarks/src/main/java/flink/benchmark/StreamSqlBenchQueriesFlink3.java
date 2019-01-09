@@ -263,10 +263,10 @@ public class StreamSqlBenchQueriesFlink3 {
 
         // register function
 //        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
+/*        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
-        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);*/
 
 
 //        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
@@ -332,18 +332,42 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register function
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+//        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
-        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime  " +
+        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime,ltcID  " +
                 "from purchasesTable p inner join adsTable a " +
                 "on p.userID = a.userID " +
                 "and p.gemPackID = a.gemPackID " +
-                "and p.rowtime  BETWEEN a.rowtime - INTERVAL '1' SECOND AND a.rowtime+INTERVAL '9' SECOND");
+                "and p.rowtime  BETWEEN a.rowtime - INTERVAL '1' SECOND AND a.rowtime+INTERVAL '4' SECOND");
 
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+
+        DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
+            @Override
+            public Tuple2<String, Long> map(Tuple2<Boolean, Row> input) throws Exception {
+                String latencyAttr[]=(input.f1.getField(4)).toString().split(" ");
+                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
+                return new Tuple2<>(latencyAttr[0],timeDifference);
+            }
+        });
+        DataStream<Tuple4<Long, Long,Long,Long>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessAllWindowFunction<Tuple2<String, Long>, Tuple4<Long, Long,Long,Long>, TimeWindow>() {
+                    @Override
+                    public void process(Context context, Iterable<Tuple2<String, Long>> iterable, Collector<Tuple4<Long, Long,Long,Long>> collector) throws Exception {
+                        long count=0L,sum=0L;
+                        for (Tuple2<String, Long> item : iterable) {
+                            count++;
+                            sum+=item.f1;
+                        }
+                        collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
+                    }
+                });
+
+        windoedSumAndCountDifferences.print();
+
+//        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
         /**************************************************************
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase)
