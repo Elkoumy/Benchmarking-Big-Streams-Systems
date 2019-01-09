@@ -42,5 +42,6 @@ CONF_FILE=./conf/benchmarkConf.yaml
 TPS=${TPS:-300000}
 TEST_TIME=${TEST_TIME:-300} #seconds
 
+
 SPARK_MASTER_HOST="stream-node01"
 BATCH="3000"
