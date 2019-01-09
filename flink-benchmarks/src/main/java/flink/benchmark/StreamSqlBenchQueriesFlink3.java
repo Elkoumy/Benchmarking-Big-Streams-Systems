@@ -192,7 +192,46 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
 
-        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
+/*        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
+        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
+            @Override
+            public Tuple2<String, Long> map(Tuple2<Boolean, Row> input) throws Exception {
+                String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
+                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
+                return new Tuple2<>(latencyAttr[0],timeDifference);
+            }
+        });
+        DataStream<Tuple4<Long, Long,Long,Long>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessAllWindowFunction<Tuple2<String, Long>, Tuple4<Long, Long,Long,Long>, TimeWindow>() {
+                    @Override
+                    public void process(Context context, Iterable<Tuple2<String, Long>> iterable, Collector<Tuple4<Long, Long,Long,Long>> collector) throws Exception {
+                        long count=0L,sum=0L;
+                        for (Tuple2<String, Long> item : iterable) {
+                            count++;
+                            sum+=item.f1;
+                        }
+                        collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
+                    }
+                });
+
+        windoedSumAndCountDifferences.print();*/
+
+       // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
+
+
+
+
+//        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
+
+
+        /**************************************************************
+         * 2- Filtering// Get the purchases of specific user//
+         * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
+         * ************************************************************/
+//       purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+
+        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable WHERE price>20");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
             @Override
@@ -216,27 +255,6 @@ public class StreamSqlBenchQueriesFlink3 {
                 });
 
         windoedSumAndCountDifferences.print();
-
-       // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
-
-
-
-
-//        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
-
-
-        //queryResultAsDataStream.process(new WriteToRedisAfterQueryProcessFn());
-//        queryResultAsDataStream.keyBy().timeWindow(1).aggregate().flatMap(new wrtetoredis)
-        //queryResultAsDataStream.timeWindowAll(TimeUnit.SECONDS(1)).aggregate()
-
-        /**************************************************************
-         * 2- Filtering// Get the purchases of specific user//
-         * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
-         * ************************************************************/
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime from purchasesTable WHERE price>20");
-        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
 
         /**************************************************************
          * 3- Group by // Getting revenue from gempack when it exceeds specified amount
