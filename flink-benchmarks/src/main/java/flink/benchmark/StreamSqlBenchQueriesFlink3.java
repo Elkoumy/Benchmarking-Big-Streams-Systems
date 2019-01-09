@@ -192,7 +192,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
 
-/*        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
+        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
             @Override
@@ -215,7 +215,7 @@ public class StreamSqlBenchQueriesFlink3 {
                     }
                 });
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
 
        // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
 
@@ -333,7 +333,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         // register function
 //        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
+ /*       tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime,ltcID  " +
                 "from purchasesTable p inner join adsTable a " +
@@ -365,7 +365,7 @@ public class StreamSqlBenchQueriesFlink3 {
                     }
                 });
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
 //        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 
