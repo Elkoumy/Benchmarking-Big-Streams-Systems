@@ -214,6 +214,15 @@ public class StreamSqlBenchQueriesFlink3 {
                         collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
                     }
                 });
+        windoedSumAndCountDifferences.map(new MapFunction<Tuple4<Long, Long, Long, Long>, Object>() {
+            @Override
+            public Object map(Tuple4<Long, Long, Long, Long> input) throws Exception {
+                if (input.f0==1900000){
+                    System.exit(0);
+                }
+                return null;
+            }
+        });
 
         windoedSumAndCountDifferences.print();
 
