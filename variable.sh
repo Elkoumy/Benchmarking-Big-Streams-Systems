@@ -39,7 +39,7 @@ PARTITIONS=3
 #CONF_FILE=./conf/localConf.yaml
 CONF_FILE=./conf/benchmarkConf.yaml
 
-TPS=${TPS:-300000}
+TPS=${TPS:-500000}
 TEST_TIME=${TEST_TIME:-300} #seconds
 
 

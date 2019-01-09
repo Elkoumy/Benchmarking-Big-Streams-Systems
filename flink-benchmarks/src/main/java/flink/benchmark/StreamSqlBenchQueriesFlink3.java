@@ -231,7 +231,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 //       purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
 
-        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable WHERE price>20");
+/*        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable WHERE price>20");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
             @Override
@@ -254,7 +254,7 @@ public class StreamSqlBenchQueriesFlink3 {
                     }
                 });
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
         /**************************************************************
          * 3- Group by // Getting revenue from gempack when it exceeds specified amount
@@ -262,12 +262,14 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register function
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
+//        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+
+
+//        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
 /*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
         Table result = tEnv.sqlQuery("SELECT  sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND)");
