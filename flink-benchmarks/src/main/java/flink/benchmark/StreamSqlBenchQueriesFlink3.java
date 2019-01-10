@@ -217,7 +217,7 @@ public class StreamSqlBenchQueriesFlink3 {
         windoedSumAndCountDifferences.map(new MapFunction<Tuple4<Long, Long, Long, Long>, Object>() {
             @Override
             public Object map(Tuple4<Long, Long, Long, Long> input) throws Exception {
-                if (input.f0==1900000){
+                if (input.f0==-1000000){
                     System.exit(0);
                 }
                 return null;
