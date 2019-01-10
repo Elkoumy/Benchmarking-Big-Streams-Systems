@@ -864,6 +864,10 @@ public class StreamSqlBenchQueriesFlink3 {
             acc.sum+=timeDifference;
 
 
+
+        }
+        public void retract (DifferenceAcc acc, long iValue) {
+            acc.sum -= iValue;
         }
         public void merge(DifferenceAcc acc, Iterable<DifferenceAcc> it) {
             Iterator<DifferenceAcc> iter = it.iterator();
