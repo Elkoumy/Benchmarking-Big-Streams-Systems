@@ -214,7 +214,8 @@ public class StreamSqlBenchQueriesFlink3 {
                         collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
                     }
                 });
-        queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
+
+/*        queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
             @Override
             public Object map(Tuple2<Boolean, Row> input) throws Exception {
                 if(input.f1.getField(0).toString().equals("-1000000")){
@@ -224,7 +225,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
 
-        }).name("check the the last record");
+        }).name("check the the last record");*/
 
 
         windoedSumAndCountDifferences.print();
