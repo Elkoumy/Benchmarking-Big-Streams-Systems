@@ -44,9 +44,9 @@ time.divisor: 1000
 #Benchmark Specific
 test.time: 60
 
-tps.tps: 50000
-tps.range: 50000
-tps.limit: 50000
+tps.tps: 100000
+tps.range: 100000
+tps.limit: 100000
 
 time.short: 5
 time.long: 10
