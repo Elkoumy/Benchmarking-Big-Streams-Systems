@@ -224,6 +224,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });
 
+
         windoedSumAndCountDifferences.print();
 
        // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
