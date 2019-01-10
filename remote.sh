@@ -128,7 +128,7 @@ function runAllServers {
     runCommandZKServers "${1}" "nohup"
     runCommandKafkaServers "${1}" "nohup"
     runCommandLoadServers "${1}" "nohup"
-    runCommandRedisServer "${1}" "nohup"
+#    runCommandRedisServer "${1}" "nohup"
 }
 
 function stopLoadData {
