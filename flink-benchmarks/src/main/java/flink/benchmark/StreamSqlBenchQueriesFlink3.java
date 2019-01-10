@@ -296,6 +296,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 if (input.f1.getField(3).toString().equals("-1000000")){
                     System.exit(0);
 
+
                 }
                 return null;
 
