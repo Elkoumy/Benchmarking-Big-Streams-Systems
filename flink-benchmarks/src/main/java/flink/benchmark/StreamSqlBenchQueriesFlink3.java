@@ -823,8 +823,9 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         }
         public void accumulate(KeyValueContainer kv, int iKey, Timestamp iValue) {
-            kv.userID=iKey;
-            kv.timestmp=iValue;
+            if (iKey == -1000000)
+                kv.userID=iKey;
+//            kv.timestmp=iValue;
         }
         public void merge(KeyValueContainer kv, Iterable<KeyValueContainer> it) {
             Iterator<KeyValueContainer> iter = it.iterator();
