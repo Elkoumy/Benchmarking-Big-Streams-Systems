@@ -424,7 +424,7 @@ function prepareEnvironment(){
 
 function destroyEnvironment(){
     sleep ${SHORT_SLEEP}
-    stopRedis
+#    stopRedis
     stopKafka
     sleep ${SHORT_SLEEP}
 
