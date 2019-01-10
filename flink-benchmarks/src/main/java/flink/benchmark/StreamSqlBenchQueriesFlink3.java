@@ -214,14 +214,16 @@ public class StreamSqlBenchQueriesFlink3 {
                         collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
                     }
                 });
-        windoedSumAndCountDifferences.map(new MapFunction<Tuple4<Long, Long, Long, Long>, Object>() {
+        queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
             @Override
-            public Object map(Tuple4<Long, Long, Long, Long> input) throws Exception {
-                if (input.f0==-1000000){
+            public Object map(Tuple2<Boolean, Row> input) throws Exception {
+                if(input.f1.getField(0).toString().equals("-1000000")){
                     System.exit(0);
                 }
                 return null;
             }
+
+
         });
 
 
