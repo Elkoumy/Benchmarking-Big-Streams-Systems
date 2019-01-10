@@ -194,38 +194,50 @@ public class StreamSqlBenchQueriesFlink3 {
 
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
+
+        DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
-            public Tuple2<String, Long> map(Tuple2<Boolean, Row> input) throws Exception {
+            public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
                 String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
+                String endOfStream="";
                 Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
-                return new Tuple2<>(latencyAttr[0],timeDifference);
+                if(input.f1.getField(0).toString().equals("-1000000")){
+                    endOfStream="-1000000";
+                }
+
+                return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
             }
         });
-        DataStream<Tuple4<Long, Long,Long,Long>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-                .process(new ProcessAllWindowFunction<Tuple2<String, Long>, Tuple4<Long, Long,Long,Long>, TimeWindow>() {
+        DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessAllWindowFunction<Tuple3<String, Long,String>, Tuple5<Long, Long,Long,Long,String>, TimeWindow>() {
                     @Override
-                    public void process(Context context, Iterable<Tuple2<String, Long>> iterable, Collector<Tuple4<Long, Long,Long,Long>> collector) throws Exception {
+                    public void process(Context context, Iterable<Tuple3<String, Long,String>> iterable, Collector<Tuple5<Long, Long,Long,Long,String>> collector) throws Exception {
                         long count=0L,sum=0L;
-                        for (Tuple2<String, Long> item : iterable) {
+                        String endOfStream="";
+                        for (Tuple3<String, Long,String> item : iterable) {
                             count++;
                             sum+=item.f1;
+                            if (item.f2.equals("-1000000")){
+                                endOfStream="-1000000";
+                            }
+
                         }
-                        collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
+
+                        collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
                     }
                 });
 
-        queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
+        windoedSumAndCountDifferences.map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
+
             @Override
-            public Object map(Tuple2<Boolean, Row> input) throws Exception {
-                if(input.f1.getField(0).toString().equals("-1000000")){
+            public Object map(Tuple5<Long, Long, Long, Long, String> input) throws Exception {
+                if (input.f4.equals("-1000000")){
                     System.exit(0);
                 }
                 return null;
             }
-
-
-        }).name("check the the last record");
+        })
+                .name("check the the last record");
 
 
         windoedSumAndCountDifferences.print();
