@@ -224,7 +224,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
 
-        });
+        }).name("check the the last record");
 
 
         windoedSumAndCountDifferences.print();
