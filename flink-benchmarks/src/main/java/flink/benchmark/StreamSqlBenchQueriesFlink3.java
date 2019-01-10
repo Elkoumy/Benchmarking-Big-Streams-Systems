@@ -191,7 +191,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-
+/*
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
@@ -240,13 +240,10 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
+
 
        // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
-
-
-
-
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
 
 
@@ -288,10 +285,23 @@ public class StreamSqlBenchQueriesFlink3 {
 
         // register function
 //        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-/*        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
-        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
+        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+        tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
+        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
-        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);*/
+        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
+            @Override
+            public Object map(Tuple2<Boolean, Row> input) throws Exception {
+                if (input.f1.getField(3).toString().equals("-1000000")){
+                    System.exit(0);
+
+                }
+                return null;
+
+            }
+        }).name("check the the last record");
+        queryResultAsDataStream.print();
 
 
 //        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
@@ -751,6 +761,10 @@ public class StreamSqlBenchQueriesFlink3 {
         public int userID = 0;
     }
 
+    public static class DifferenceAcc {
+        public Long sum=0L;
+    }
+
     /**
      *
      */
@@ -765,7 +779,8 @@ public class StreamSqlBenchQueriesFlink3 {
         public String getValue(KeyValueContainer kv) {
             if (kv.userID == 0) {
                 return "0000000000000";
-            } else {
+            }
+            else {
                 //System.out.println("in getValue "+"  "+kv.timestmp+""+kv.userID);
                 //System.out.println(new Instant(kv.timestmp).getMillis()+"===============================");
                 return kv.userID+":"+new Instant(kv.timestmp).getMillis();
@@ -786,6 +801,78 @@ public class StreamSqlBenchQueriesFlink3 {
 
     }
 
+    /**
+     *
+     */
+    public static class SpecialValueGetter extends AggregateFunction<String, KeyValueContainer> {
+
+        @Override
+        public KeyValueContainer createAccumulator() {
+            return new KeyValueContainer();
+        }
+
+        @Override
+        public String getValue(KeyValueContainer kv) {
+            if (kv.userID != -1000000) {
+                return "0000000000000";
+            }
+            else {
+                //System.out.println("in getValue "+"  "+kv.timestmp+""+kv.userID);
+                //System.out.println(new Instant(kv.timestmp).getMillis()+"===============================");
+                return kv.userID+"";
+            }
+        }
+        public void accumulate(KeyValueContainer kv, int iKey, Timestamp iValue) {
+            kv.userID=iKey;
+            kv.timestmp=iValue;
+        }
+        public void merge(KeyValueContainer kv, Iterable<KeyValueContainer> it) {
+            Iterator<KeyValueContainer> iter = it.iterator();
+            while (iter.hasNext()) {
+                KeyValueContainer a = iter.next();
+                kv.userID= a.userID;
+                kv.timestmp = a.timestmp;
+            }
+        }
+
+    }
+    /**
+     *
+     */
+    public static class DifferencesGetter extends AggregateFunction<Long, DifferenceAcc> {
+
+        @Override
+        public DifferenceAcc createAccumulator() {
+            return new DifferenceAcc();
+        }
+
+        @Override
+        public Long getValue(DifferenceAcc acc) {
+            if (acc.sum == 0) {
+                return null;
+            } else {
+                return acc.sum;
+            }
+
+        }
+        public void accumulate(DifferenceAcc acc, String latency) {
+            String latencyAttr[]=latency.split(" ");
+            String endOfStream="";
+            Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
+            acc.sum+=timeDifference;
+
+
+        }
+        public void merge(DifferenceAcc acc, Iterable<DifferenceAcc> it) {
+            Iterator<DifferenceAcc> iter = it.iterator();
+            while (iter.hasNext()) {
+                DifferenceAcc a = iter.next();
+                a.sum+=iter.next().sum;
+
+            }
+        }
+
+    }
     /**
      * Accumulator for WeightedAvg.
      */
