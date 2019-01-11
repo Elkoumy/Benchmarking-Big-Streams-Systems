@@ -126,9 +126,9 @@ public class StreamSqlBenchQueriesFlink3 {
                 .setParallelism(Math.min(5 * 32, k_partitions));
 
 
-        DataStream<String> adsStream = env
+       /* DataStream<String> adsStream = env
                 .addSource(adsConsumer)
-                .setParallelism(Math.min(5 * 32, k_partitions));
+                .setParallelism(Math.min(5 * 32, k_partitions));*/
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
@@ -151,7 +151,7 @@ public class StreamSqlBenchQueriesFlink3 {
                             }
                         }).map(new AddPurchaseLatencyId());
 
-        DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
+/*        DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
                 adsStream
                         .map( new AdsParser())
                         .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<Integer, Integer, Long>>(Time.seconds(10)) {
@@ -159,27 +159,14 @@ public class StreamSqlBenchQueriesFlink3 {
                             public long extractTimestamp(Tuple3<Integer, Integer, Long> element) {
                                 return element.getField(2);
                             }
-                        }).map(new AddAdLatencyId());
+                        }).map(new AddAdLatencyId());*/
 
 
-
-
-        //mapper to write key and value of each element ot redis
-//        purchaseWithTimestampsAndWatermarks=  purchaseWithTimestampsAndWatermarks.map(new WriteToRedisBeforeQuery()).name("Write to Redis");
-
-        //mapper instead of query
-/*        purchaseWithTimestampsAndWatermarks.map(new MapFunction<Tuple5<Integer, Integer, Integer, Long, String>, Tuple4<Integer, Integer, Integer, String>>() {
-
-            @Override
-            public Tuple4<Integer, Integer,Integer, String> map(Tuple5<Integer, Integer, Integer, Long, String> input) throws Exception {
-                return new Tuple4<>(input.f0,input.f1, input.f2, input.f4);
-            }
-        }).map(new WriteToRedisAfterQueryForMapper());*/
 
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
-        Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
+       // Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
-        tEnv.registerTable("adsTable", adsTable);
+       // tEnv.registerTable("adsTable", adsTable);
 
 
 
@@ -191,7 +178,6 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack work on new throughput metric
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-/*
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
@@ -240,7 +226,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
 
 
        // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
@@ -609,7 +595,7 @@ public class StreamSqlBenchQueriesFlink3 {
         /**************************************************************
          * 11- UNION //Get all gem packs either purchased or shown as ad
          * ************************************************************/
-
+/*
         tEnv.registerFunction("addPChar", new AddCharToUserID ("p"));
         tEnv.registerFunction("addAChar", new AddCharToUserID ("a"));
 
@@ -663,7 +649,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
         /**************************************************************
          * 12- Intersect // not yet supported in flink
@@ -673,7 +659,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 13-Nested Queries //Get purchased gem pack with price exceeds average price for the purchased items in some time frame.
          * TODO> still not working.
          * ************************************************************/
-/*        DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
+  /*      DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
         DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
             @Override
             public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
