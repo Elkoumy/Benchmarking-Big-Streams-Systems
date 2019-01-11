@@ -664,6 +664,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
 
         windoedSumAndCountDifferences.print();
+
         /**************************************************************
          * 12- Intersect // not yet supported in flink
          * ************************************************************/
