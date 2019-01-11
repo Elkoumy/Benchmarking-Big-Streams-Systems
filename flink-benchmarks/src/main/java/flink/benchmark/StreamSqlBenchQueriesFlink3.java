@@ -233,7 +233,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 2- Filtering// Get the purchases of specific user//
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
-       Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable where price >20");
+  /*     Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable where price >20");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
@@ -279,7 +279,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         }).name("check the the last record");
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
         /**************************************************************
          * 3- Group by // Getting revenue from gempack when it exceeds specified amount. work on new throughput metric
@@ -288,7 +288,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         // register function
 //        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-/*        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+        tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
@@ -305,7 +305,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
             }
         }).name("check the the last record");
-        queryResultAsDataStream.print();*/
+        queryResultAsDataStream.print();
 
 
 //        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());
