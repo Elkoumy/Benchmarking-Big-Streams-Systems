@@ -178,7 +178,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack work on new throughput metric
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
-        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
+ /*       Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
@@ -224,7 +224,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         }).name("check the the last record");
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
        // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
@@ -352,7 +352,6 @@ public class StreamSqlBenchQueriesFlink3 {
 
         // register function
 //        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-/*
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID  " +
@@ -410,7 +409,6 @@ public class StreamSqlBenchQueriesFlink3 {
 
 
         windoedSumAndCountDifferences.print();
-*/
 
         /**************************************************************
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase)
