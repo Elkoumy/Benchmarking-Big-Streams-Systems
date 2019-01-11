@@ -310,7 +310,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 3- Group by and having // Getting revenue from gempack when it exceeds specified amount
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
-        // register functions
+/*        // register functions
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID having sum(price)>400");
@@ -328,7 +328,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
             }
         }).name("check the the last record");
-        queryResultAsDataStream.print();
+        queryResultAsDataStream.print();*/
 
         //================================WINDOWING======================
         /**************************************************************
@@ -345,13 +345,25 @@ public class StreamSqlBenchQueriesFlink3 {
         /**************************************************************
          * 5- Sliding Window //Getting revenue obtained from each gem pack over fixed overlapped period of time
          * ************************************************************/
-/*        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-        // register function
-        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
-        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getKeyAndValue(userID, rowtime),count(*)   from purchasesTable GROUP BY HOP(rowtime, INTERVAL '1' SECOND, INTERVAL '2' SECOND),gemPackID");
+        // register functions
+        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+        tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
+        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY HOP(rowtime, INTERVAL '1' SECOND, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        queryResultAsDataStream.flatMap(new WriteToRedisAfterQuery());*/
+        queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
+            @Override
+            public Object map(Tuple2<Boolean, Row> input) throws Exception {
+                if (input.f1.getField(3).toString().equals("-1000000")){
+                    System.exit(0);
+
+
+                }
+                return null;
+
+            }
+        }).name("check the the last record");
+        queryResultAsDataStream.print();
 
         /**************************************************************
          * 6- Session window //Getting Revenue obtained from each gem pack after each specific period of inactivity
