@@ -222,12 +222,9 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
                 return null;
             }
-        })
-                .name("check the the last record");
-
+        }).name("check the the last record");
 
         windoedSumAndCountDifferences.print();
-
 
        // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
 //        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
