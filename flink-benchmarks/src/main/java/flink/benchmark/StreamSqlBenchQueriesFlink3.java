@@ -313,7 +313,7 @@ public class StreamSqlBenchQueriesFlink3 {
 /*        // register functions
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
-        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID having sum(price)>400");
+        Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
         queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
@@ -736,7 +736,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register function
-        tEnv.registerFunction("convertPriceCurrency", new CurrencyCoverter (0.7));
+/*        tEnv.registerFunction("convertPriceCurrency", new CurrencyCoverter (0.7));
         Table result = tEnv.sqlQuery("select userID, convertPriceCurrency(price),rowtime,ltcID from purchasesTable ");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
@@ -783,45 +783,34 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         }).name("check the the last record");
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
 
 
         /**************************************************************
          * 14- Aggregate UDF
          * ************************************************************/
-  /*      DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
-        DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("before "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(3)).getMillis()+" value> "+System.currentTimeMillis());
-                //System.out.println( throughputCounterBefore++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
-
-            }
-        });
 
         // register function
         tEnv.registerFunction("wAvg", new WeightedAvg());
-        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
-
-        Table result = tEnv.sqlQuery("select  wAvg(price, price),getKeyAndValue(userID,rowtime),count(*) from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '10' SECOND)");
-
+        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+        tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
+        Table result = tEnv.sqlQuery("SELECT  gemPackID, wAvg(price, price)as WTDAVGPrice, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-
-        DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
+        queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
             @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("after "+"Key> p"+inputTuple.f1.getField(1) +" value> "+System.currentTimeMillis()); //for latency
-                throughputAccomulationcount+=Integer.parseInt(inputTuple.f1.getField(2).toString());
-                System.out.println("throughput > " + throughputAccomulationcount); //for throughput
-                return new Tuple2<>(inputTuple.f1.getField(1)+"",System.currentTimeMillis()+""); //for latency
+            public Object map(Tuple2<Boolean, Row> input) throws Exception {
+                if (input.f1.getField(3).toString().equals("-1000000")){
+                    System.exit(0);
+
+
+                }
+                return null;
 
             }
-        });*/
-
-
+        }).name("check the the last record");
+        queryResultAsDataStream.print();
 
 
 
