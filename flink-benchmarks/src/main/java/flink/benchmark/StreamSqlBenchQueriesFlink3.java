@@ -126,9 +126,9 @@ public class StreamSqlBenchQueriesFlink3 {
                 .setParallelism(Math.min(5 * 32, k_partitions));
 
 
-        DataStream<String> adsStream = env
+/*        DataStream<String> adsStream = env
                 .addSource(adsConsumer)
-                .setParallelism(Math.min(5 * 32, k_partitions));
+                .setParallelism(Math.min(5 * 32, k_partitions));*/
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
@@ -151,7 +151,7 @@ public class StreamSqlBenchQueriesFlink3 {
                             }
                         }).map(new AddPurchaseLatencyId());
 
-        DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
+/*        DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
                 adsStream
                         .map( new AdsParser())
                         .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<Integer, Integer, Long>>(Time.seconds(10)) {
@@ -159,14 +159,14 @@ public class StreamSqlBenchQueriesFlink3 {
                             public long extractTimestamp(Tuple3<Integer, Integer, Long> element) {
                                 return element.getField(2);
                             }
-                        }).map(new AddAdLatencyId());
+                        }).map(new AddAdLatencyId());*/
 
 
 
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
-        Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
+//        Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
-        tEnv.registerTable("adsTable", adsTable);
+//        tEnv.registerTable("adsTable", adsTable);
 
 
 
@@ -226,40 +226,60 @@ public class StreamSqlBenchQueriesFlink3 {
 
         windoedSumAndCountDifferences.print();*/
 
-       // queryResultAsDataStream.map(new WriteToRedisAfterQuery());
-//        queryResultAsDataStream.writeAsCsv("/root/stream-benchmarking/data/testSink").setParallelism(1);
+
 
 
         /**************************************************************
          * 2- Filtering// Get the purchases of specific user//
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
-//       purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-
-/*        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable WHERE price>20");
+       Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable where price >20");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
-        DataStream<Tuple2<String, Long>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String, Long>>() {
+
+        DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
-            public Tuple2<String, Long> map(Tuple2<Boolean, Row> input) throws Exception {
+            public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
                 String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
+                String endOfStream="";
                 Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
-                return new Tuple2<>(latencyAttr[0],timeDifference);
+                if(input.f1.getField(0).toString().equals("-1000000")){
+                    endOfStream="-1000000";
+                }
+
+                return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
             }
         });
-        DataStream<Tuple4<Long, Long,Long,Long>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-                .process(new ProcessAllWindowFunction<Tuple2<String, Long>, Tuple4<Long, Long,Long,Long>, TimeWindow>() {
+        DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessAllWindowFunction<Tuple3<String, Long,String>, Tuple5<Long, Long,Long,Long,String>, TimeWindow>() {
                     @Override
-                    public void process(Context context, Iterable<Tuple2<String, Long>> iterable, Collector<Tuple4<Long, Long,Long,Long>> collector) throws Exception {
+                    public void process(Context context, Iterable<Tuple3<String, Long,String>> iterable, Collector<Tuple5<Long, Long,Long,Long,String>> collector) throws Exception {
                         long count=0L,sum=0L;
-                        for (Tuple2<String, Long> item : iterable) {
+                        String endOfStream="";
+                        for (Tuple3<String, Long,String> item : iterable) {
                             count++;
                             sum+=item.f1;
+                            if (item.f2.equals("-1000000")){
+                                endOfStream="-1000000";
+                            }
+
                         }
-                        collector.collect(new Tuple4<>(context.window().getStart(),context.window().getEnd(),count,sum));
+
+                        collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
                     }
                 });
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
+
+            @Override
+            public Object map(Tuple5<Long, Long, Long, Long, String> input) throws Exception {
+                if (input.f4.equals("-1000000")){
+                    System.exit(0);
+                }
+                return null;
+            }
+        }).name("check the the last record");
+
+        windoedSumAndCountDifferences.print();
 
         /**************************************************************
          * 3- Group by // Getting revenue from gempack when it exceeds specified amount. work on new throughput metric
@@ -352,7 +372,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         // register function
 //        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
-        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
+ /*       tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID  " +
                 "from purchasesTable p inner join adsTable a " +
@@ -408,7 +428,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
         /**************************************************************
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase)
