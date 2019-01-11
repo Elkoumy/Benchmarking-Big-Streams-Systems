@@ -613,15 +613,15 @@ public class StreamSqlBenchQueriesFlink3 {
         tEnv.registerFunction("addPChar", new AddCharToUserID ("p"));
         tEnv.registerFunction("addAChar", new AddCharToUserID ("a"));
 
-        Table result = tEnv.sqlQuery("SELECT  gemPackID,addPChar(userID), rowtime, ltcID from purchasesTable " +
-                "UNION SELECT  gemPackID,addAChar(userID), rowtime, ltcID from adsTable");
+        Table result = tEnv.sqlQuery("SELECT  userID,gemPackID,addPChar(userID), rowtime, ltcID from purchasesTable " +
+                "UNION SELECT  userID,gemPackID,addAChar(userID), rowtime, ltcID from adsTable");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
             public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
-                String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
+                String latencyAttr[]=(input.f1.getField(4)).toString().split(" ");
                 String endOfStream="";
                 Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
                 if(input.f1.getField(0).toString().equals("-1000000")){
