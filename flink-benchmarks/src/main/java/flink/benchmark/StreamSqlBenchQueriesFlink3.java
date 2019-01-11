@@ -551,7 +551,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 10- right outer// Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID    " +
+/*        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID    " +
                 "from purchasesTable p RIGHT OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
                 "and p.gemPackID = a.gemPackID " +
@@ -604,49 +604,66 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
         //================================Set operations======================
         /**************************************************************
          * 11- UNION //Get all gem packs either purchased or shown as ad
          * ************************************************************/
- /*       DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
-        DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("before "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(3)).getMillis()+" value> "+System.currentTimeMillis());
-                System.out.println( throughputCounterBefore++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
 
-            }
-        });
-        DataStream<Tuple2<Boolean, Row>> adDataStreamTable = tEnv.toRetractStream(adsTable, Row.class);
-        DataStream<Tuple2<String,String>> writeAdToRedisBefore = adDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("before "+"Key> a"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(2)).getMillis()+" value> "+System.currentTimeMillis());
-                System.out.println( throughputCounterBefore++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
-
-            }
-        });
         tEnv.registerFunction("addPChar", new AddCharToUserID ("p"));
         tEnv.registerFunction("addAChar", new AddCharToUserID ("a"));
 
-        Table result = tEnv.sqlQuery("SELECT  gemPackID,addPChar(userID), rowtime from purchasesTable " +
-                "UNION SELECT  gemPackID,addAChar(userID), rowtime from adsTable");
+        Table result = tEnv.sqlQuery("SELECT  gemPackID,addPChar(userID), rowtime, ltcID from purchasesTable " +
+                "UNION SELECT  gemPackID,addAChar(userID), rowtime, ltcID from adsTable");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
-        DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
+        DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("after "+"Key> "+inputTuple.f1.getField(1)+""+new Instant(inputTuple.f1.getField(2)).getMillis()+" value> "+System.currentTimeMillis());
-                //System.out.println("check this"+inputTuple.f1.getField(1));
-                System.out.println( "throughput> " +throughputCounterAfter++); //for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+""); //for latency
+            public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
+                String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
+                String endOfStream="";
+                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
+                if(input.f1.getField(0).toString().equals("-1000000")){
+                    endOfStream="-1000000";
+                }
 
+                return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
             }
-        });*/
+        });
+        DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessAllWindowFunction<Tuple3<String, Long,String>, Tuple5<Long, Long,Long,Long,String>, TimeWindow>() {
+                    @Override
+                    public void process(Context context, Iterable<Tuple3<String, Long,String>> iterable, Collector<Tuple5<Long, Long,Long,Long,String>> collector) throws Exception {
+                        long count=0L,sum=0L;
+                        String endOfStream="";
+                        for (Tuple3<String, Long,String> item : iterable) {
+                            count++;
+                            sum+=item.f1;
+                            if (item.f2.equals("-1000000")){
+                                endOfStream="-1000000";
+                            }
+
+                        }
+
+                        collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
+                    }
+                });
+
+        windoedSumAndCountDifferences.map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
+
+            @Override
+            public Object map(Tuple5<Long, Long, Long, Long, String> input) throws Exception {
+                if (input.f4.equals("-1000000")){
+                    System.exit(0);
+                }
+                return null;
+            }
+        })
+                .name("check the the last record");
+
+
+        windoedSumAndCountDifferences.print();
         /**************************************************************
          * 12- Intersect // not yet supported in flink
          * ************************************************************/
