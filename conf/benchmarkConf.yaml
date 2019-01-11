@@ -3,8 +3,8 @@
 
 kafka.brokers:
     - "kafka-node01"
-#    - "kafka-node02"
-#    - "kafka-node03"
+    - "kafka-node02"
+    - "kafka-node03"
    # - "kafka-node04"
    # - "kafka-node05"
 

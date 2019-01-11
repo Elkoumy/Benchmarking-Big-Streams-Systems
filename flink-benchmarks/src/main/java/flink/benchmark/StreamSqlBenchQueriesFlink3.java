@@ -107,8 +107,7 @@ public class StreamSqlBenchQueriesFlink3 {
 */
         Properties props = new Properties();
         props.setProperty("zookeeper.connect", "zookeeper-node-01:2181");
-//        props.setProperty("bootstrap.servers", "kafka-node-01:9092,kafka-node-02:9092,kafka-node-03:9092");
-        props.setProperty("bootstrap.servers", "kafka-node-01:9092");
+        props.setProperty("bootstrap.servers", "kafka-node-01:9092,kafka-node-02:9092,kafka-node-03:9092");
         // not to be shared with another job consuming the same topic
         props.setProperty("group.id", "flink-group");
         props.setProperty("enable.auto.commit","false");
