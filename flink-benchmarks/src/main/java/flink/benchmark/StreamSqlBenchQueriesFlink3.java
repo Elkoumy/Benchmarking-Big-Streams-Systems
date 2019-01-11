@@ -371,7 +371,7 @@ public class StreamSqlBenchQueriesFlink3 {
 //        purchaseWithTimestampsAndWatermarks.flatMap(new WriteToRedisBeforeQuery());
         tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
 
-        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime,ltcID  " +
+        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID  " +
                 "from purchasesTable p inner join adsTable a " +
                 "on p.userID = a.userID " +
                 "and p.gemPackID = a.gemPackID " +
