@@ -608,7 +608,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 10- right outer// Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-  /*    tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+      tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, getTSDiff(p.ltcID)    " +
                 "from purchasesTable p RIGHT OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
@@ -662,12 +662,12 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
         //================================Set operations======================
         /**************************************************************
          * 11- UNION //Get all gem packs either purchased or shown as ad
          * ************************************************************/
-        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+  /*      tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         tEnv.registerFunction("addPChar", new AddCharToUserID ("p"));
         tEnv.registerFunction("addAChar", new AddCharToUserID ("a"));
 
@@ -719,7 +719,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
         /**************************************************************
          * 12- Intersect // not yet supported in flink
