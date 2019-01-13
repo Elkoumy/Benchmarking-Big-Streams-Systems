@@ -458,7 +458,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID    " +
+        /*Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID    " +
                 "from purchasesTable p FULL OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
                 "and p.gemPackID = a.gemPackID " +
@@ -477,6 +477,61 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
 
                 return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
+            }
+        });
+        DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessAllWindowFunction<Tuple3<String, Long,String>, Tuple5<Long, Long,Long,Long,String>, TimeWindow>() {
+                    @Override
+                    public void process(Context context, Iterable<Tuple3<String, Long,String>> iterable, Collector<Tuple5<Long, Long,Long,Long,String>> collector) throws Exception {
+                        long count=0L,sum=0L;
+                        String endOfStream="";
+                        for (Tuple3<String, Long,String> item : iterable) {
+                            count++;
+                            sum+=item.f1;
+                            if (item.f2.equals("-1000000")){
+                                endOfStream="-1000000";
+                            }
+
+                        }
+
+                        collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
+                    }
+                });
+
+        windoedSumAndCountDifferences.map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
+
+            @Override
+            public Object map(Tuple5<Long, Long, Long, Long, String> input) throws Exception {
+                if (input.f4.equals("-1000000")){
+                    System.exit(0);
+                }
+                return null;
+            }
+        })
+                .name("check the the last record");
+
+
+        windoedSumAndCountDifferences.print();*/
+        tEnv.registerFunction("convertPriceCurrency", new SingleDifferencesGetter ());
+        Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, convertPriceCurrency(p.ltcID)    " +
+                "from purchasesTable p FULL OUTER JOIN adsTable a " +
+                "on p.userID = a.userID " +
+                "and p.gemPackID = a.gemPackID " +
+                "and p.rowtime  BETWEEN a.rowtime - INTERVAL '1' SECOND AND a.rowtime+INTERVAL '4' SECOND");
+
+        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+
+        DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
+            @Override
+            public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
+                String latencyAttr[]=(input.f1.getField(4)).toString().split(" ");
+                String endOfStream="";
+                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(input.f1.getField(4).toString()));
+                if(input.f1.getField(0).toString().equals("-1000000")){
+                    endOfStream="-1000000";
+                }
+
+                return new Tuple3<>(input.f1.getField(0).toString(),timeDifference,endOfStream);
             }
         });
         DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
@@ -983,6 +1038,20 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         }
 
+    }
+    /**
+     *
+     */
+    public static class SingleDifferencesGetter extends ScalarFunction {
+
+
+        public SingleDifferencesGetter() {
+        }
+
+        public Long eval(String ltcID) {
+            String latencyAttr[]=ltcID.split(" ");
+            return Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
+        }
     }
     /**
      *
