@@ -178,7 +178,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack work on new throughput metric
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
- /*        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+         tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, price,rowtime,getTSDiff(ltcID) from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
@@ -225,7 +225,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
 
 
 
@@ -608,7 +608,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 10- right outer// Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-      tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+  /*    tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, getTSDiff(p.ltcID)    " +
                 "from purchasesTable p RIGHT OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
@@ -662,7 +662,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
         //================================Set operations======================
         /**************************************************************
          * 11- UNION //Get all gem packs either purchased or shown as ad
