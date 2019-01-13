@@ -524,14 +524,14 @@ public class StreamSqlBenchQueriesFlink3 {
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
             public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
-                String latencyAttr[]=(input.f1.getField(4)).toString().split(" ");
+                //String latencyAttr[]=(input.f1.getField(4)).toString().split(" ");
                 String endOfStream="";
-                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(input.f1.getField(4).toString()));
+                //Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(input.f1.getField(4).toString()));
                 if(input.f1.getField(0).toString().equals("-1000000")){
                     endOfStream="-1000000";
                 }
 
-                return new Tuple3<>(input.f1.getField(0).toString(),timeDifference,endOfStream);
+                return new Tuple3<>(input.f1.getField(0).toString(),Long.parseLong(input.f1.getField(4).toString()),endOfStream);
             }
         });
         DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
