@@ -408,7 +408,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 5- Sliding Window //Getting revenue obtained from each gem pack over fixed overlapped period of time
          * ************************************************************/
         // register functions
-        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+  /*      tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,HOP_START(rowtime, INTERVAL '1' SECOND, INTERVAL '2' SECOND) as wStart,HOP_END(rowtime, INTERVAL '1' SECOND, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY HOP(rowtime, INTERVAL '1' SECOND, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
@@ -441,12 +441,12 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();
+        processedQueryResultAsDataStream.print();*/
 
         /**************************************************************
          * 6- Session window //Getting Revenue obtained from each gem pack after each specific period of inactivity
          * ************************************************************/
-/*        // register functions
+        // register functions
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,SESSION_START(rowtime, INTERVAL '2' SECOND) as wStart,SESSION_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY SESSION(rowtime, INTERVAL '2' SECOND),gemPackID");
@@ -480,7 +480,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();*/
+        processedQueryResultAsDataStream.print();
 
         //================================JOINS======================
         /**************************************************************
