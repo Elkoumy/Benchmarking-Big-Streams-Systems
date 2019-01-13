@@ -608,7 +608,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 10- right outer// Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-      tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+  /*    tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, getTSDiff(p.ltcID)    " +
                 "from purchasesTable p RIGHT OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
@@ -662,31 +662,29 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
         //================================Set operations======================
         /**************************************************************
          * 11- UNION //Get all gem packs either purchased or shown as ad
          * ************************************************************/
-/*
+        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         tEnv.registerFunction("addPChar", new AddCharToUserID ("p"));
         tEnv.registerFunction("addAChar", new AddCharToUserID ("a"));
 
-        Table result = tEnv.sqlQuery("SELECT  userID,gemPackID,addPChar(userID), rowtime, ltcID from purchasesTable " +
-                "UNION SELECT  userID,gemPackID,addAChar(userID), rowtime, ltcID from adsTable");
+        Table result = tEnv.sqlQuery("SELECT  userID,gemPackID,addPChar(userID), rowtime, getTSDiff(ltcID) from purchasesTable " +
+                "UNION SELECT  userID,gemPackID,addAChar(userID), rowtime, getTSDiff(ltcID) from adsTable");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
             public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
-                String latencyAttr[]=(input.f1.getField(4)).toString().split(" ");
                 String endOfStream="";
-                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
                 if(input.f1.getField(0).toString().equals("-1000000")){
                     endOfStream="-1000000";
                 }
 
-                return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
+                return new Tuple3<>(input.f1.getField(0).toString(),Long.parseLong(input.f1.getField(4).toString()),endOfStream);
             }
         });
         DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
@@ -721,7 +719,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
 
         /**************************************************************
          * 12- Intersect // not yet supported in flink
