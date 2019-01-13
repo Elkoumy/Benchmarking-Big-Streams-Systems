@@ -458,7 +458,6 @@ public class StreamSqlBenchQueriesFlink3 {
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-/*
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, p.ltcID    " +
                 "from purchasesTable p FULL OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
@@ -512,7 +511,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
         /**************************************************************
          * 9- Left outer// Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
@@ -792,7 +791,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register function
-        tEnv.registerFunction("wAvg", new WeightedAvg());
+/*        tEnv.registerFunction("wAvg", new WeightedAvg());
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID, wAvg(price, price)as WTDAVGPrice, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
@@ -810,7 +809,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
             }
         }).name("check the the last record");
-        queryResultAsDataStream.print();
+        queryResultAsDataStream.print();*/
 
 
 
