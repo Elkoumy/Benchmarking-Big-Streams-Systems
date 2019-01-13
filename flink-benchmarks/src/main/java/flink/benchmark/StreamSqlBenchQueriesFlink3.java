@@ -234,7 +234,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 2- Filtering// Get the purchases of specific user//
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
-          tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+/*          tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, price,rowtime,getTSDiff(ltcID) from purchasesTable where price >20");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
@@ -281,7 +281,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
         /**************************************************************
          * 3- Group by // Getting revenue from gempack when it exceeds specified amount. work on new throughput metric
@@ -289,7 +289,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register functions
-/*        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+        tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
@@ -322,7 +322,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();*/
+        processedQueryResultAsDataStream.print();
 
         /**************************************************************
          * 3- Group by and having // Getting revenue from gempack when it exceeds specified amount
