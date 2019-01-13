@@ -178,20 +178,19 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack work on new throughput metric
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
- /*       Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable");
+ /*        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, price,rowtime,getTSDiff(ltcID) from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
             public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
-                String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
                 String endOfStream="";
-                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
                 if(input.f1.getField(0).toString().equals("-1000000")){
                     endOfStream="-1000000";
                 }
 
-                return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
+                return new Tuple3<>(input.f1.getField(0).toString(),Long.parseLong(input.f1.getField(4).toString()),endOfStream);
             }
         });
         DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
@@ -222,7 +221,9 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
                 return null;
             }
-        }).name("check the the last record");
+        })
+                .name("check the the last record");
+
 
         windoedSumAndCountDifferences.print();*/
 
@@ -233,20 +234,19 @@ public class StreamSqlBenchQueriesFlink3 {
          * 2- Filtering// Get the purchases of specific user//
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
-  /*     Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, rowtime,ltcID from purchasesTable where price >20");
+  /*        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+        Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, price,rowtime,getTSDiff(ltcID) from purchasesTable where price >20");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
             public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
-                String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
                 String endOfStream="";
-                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
                 if(input.f1.getField(0).toString().equals("-1000000")){
                     endOfStream="-1000000";
                 }
 
-                return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
+                return new Tuple3<>(input.f1.getField(0).toString(),Long.parseLong(input.f1.getField(4).toString()),endOfStream);
             }
         });
         DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
@@ -277,7 +277,9 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
                 return null;
             }
-        }).name("check the the last record");
+        })
+                .name("check the the last record");
+
 
         windoedSumAndCountDifferences.print();*/
 
@@ -547,7 +549,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
 
-        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+   /*     tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, getTSDiff(p.ltcID)    " +
                 "from purchasesTable p LEFT OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
@@ -601,12 +603,12 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
         /**************************************************************
          * 10- right outer// Getting revenue from each ad (which ad triggered purchase)
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
-/*      tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+      tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, getTSDiff(p.ltcID)    " +
                 "from purchasesTable p RIGHT OUTER JOIN adsTable a " +
                 "on p.userID = a.userID " +
@@ -660,7 +662,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
         //================================Set operations======================
         /**************************************************************
          * 11- UNION //Get all gem packs either purchased or shown as ad
@@ -767,21 +769,20 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register function
-/*        tEnv.registerFunction("convertPriceCurrency", new CurrencyCoverter (0.7));
-        Table result = tEnv.sqlQuery("select userID, convertPriceCurrency(price),rowtime,ltcID from purchasesTable ");
-        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+ /*       tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+        tEnv.registerFunction("convertPriceCurrency", new CurrencyCoverter (0.7));
+        Table result = tEnv.sqlQuery("select userID, gemPackID, convertPriceCurrency(price),rowtime,getTSDiff(ltcID) from purchasesTable ");
+       DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
         DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
             public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
-                String latencyAttr[]=(input.f1.getField(3)).toString().split(" ");
                 String endOfStream="";
-                Long timeDifference=Math.abs(System.currentTimeMillis()-Long.parseLong(latencyAttr[1]));
                 if(input.f1.getField(0).toString().equals("-1000000")){
                     endOfStream="-1000000";
                 }
 
-                return new Tuple3<>(latencyAttr[0],timeDifference,endOfStream);
+                return new Tuple3<>(input.f1.getField(0).toString(),Long.parseLong(input.f1.getField(4).toString()),endOfStream);
             }
         });
         DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
@@ -812,7 +813,9 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
                 return null;
             }
-        }).name("check the the last record");
+        })
+                .name("check the the last record");
+
 
         windoedSumAndCountDifferences.print();*/
 
@@ -821,18 +824,19 @@ public class StreamSqlBenchQueriesFlink3 {
         /**************************************************************
          * 14- Aggregate UDF
          * ************************************************************/
-
         // register function
 /*        tEnv.registerFunction("wAvg", new WeightedAvg());
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
-        Table result = tEnv.sqlQuery("SELECT  gemPackID, wAvg(price, price)as WTDAVGPrice, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
+        Table result = tEnv.sqlQuery("SELECT  gemPackID, wAvg(price, price)as WTDAVGPrice,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+
+
         queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Object>() {
             @Override
             public Object map(Tuple2<Boolean, Row> input) throws Exception {
-                if (input.f1.getField(3).toString().equals("-1000000")){
+                if (input.f1.getField(5).toString().equals("-1000000")){
                     System.exit(0);
 
 
@@ -841,11 +845,24 @@ public class StreamSqlBenchQueriesFlink3 {
 
             }
         }).name("check the the last record");
-        queryResultAsDataStream.print();*/
+
+        DataStream<Tuple5<String, String, Long, Long, String>> processedQueryResultAsDataStream=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple5<String, String, Long, Long, String>>() {
+            @Override
+            public Tuple5<String, String, Long, Long, String> map(Tuple2<Boolean, Row> input) throws Exception {
+                if (input.f1.getField(3).toString().equals("-1000000")){
+                    System.exit(0);
+
+
+                }
+                return new Tuple5<>(input.f1.getField(2).toString(),input.f1.getField(3).toString(),Long.parseLong(input.f1.getField(4).toString()),Long.parseLong(input.f1.getField(6).toString()),"");
+
+            }
+
+        });
+        processedQueryResultAsDataStream.print();*/
 
 
 
-        //tEnv.toRetractStream(result, Row.class).print();
 
         try {
            JobExecutionResult jobResult = env.execute("flink SQL Streaming Benchmarking");
