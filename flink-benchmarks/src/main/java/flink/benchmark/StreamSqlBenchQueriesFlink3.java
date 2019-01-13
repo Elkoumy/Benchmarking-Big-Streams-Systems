@@ -827,7 +827,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register function
-        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+/*        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         tEnv.registerFunction("convertPriceCurrency", new CurrencyCoverter (0.7));
         Table result = tEnv.sqlQuery("select userID, gemPackID, convertPriceCurrency(price),rowtime,getTSDiff(ltcID) from purchasesTable ");
        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
@@ -875,7 +875,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();
+        windoedSumAndCountDifferences.print();*/
 
 
 
@@ -883,7 +883,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 14- Aggregate UDF
          * ************************************************************/
         // register function
-/*        tEnv.registerFunction("wAvg", new WeightedAvg());
+        tEnv.registerFunction("wAvg", new WeightedAvg());
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID, wAvg(price, price)as WTDAVGPrice,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
@@ -917,7 +917,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();*/
+        processedQueryResultAsDataStream.print();
 
 
 
