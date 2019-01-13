@@ -447,7 +447,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 6- Session window //Getting Revenue obtained from each gem pack after each specific period of inactivity
          * ************************************************************/
         // register functions
-        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+  /*      tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,SESSION_START(rowtime, INTERVAL '2' SECOND) as wStart,SESSION_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY SESSION(rowtime, INTERVAL '2' SECOND),gemPackID");
         //for the metrics calculation after
@@ -480,7 +480,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();
+        processedQueryResultAsDataStream.print();*/
 
         //================================JOINS======================
         /**************************************************************
@@ -827,7 +827,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * ************************************************************/
 
         // register function
- /*       tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         tEnv.registerFunction("convertPriceCurrency", new CurrencyCoverter (0.7));
         Table result = tEnv.sqlQuery("select userID, gemPackID, convertPriceCurrency(price),rowtime,getTSDiff(ltcID) from purchasesTable ");
        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
@@ -875,7 +875,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
 
 
 
