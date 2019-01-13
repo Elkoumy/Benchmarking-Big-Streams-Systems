@@ -288,7 +288,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
 
-        // register functions
+  /*      // register functions
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
@@ -322,14 +322,14 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();
+        processedQueryResultAsDataStream.print();*/
 
         /**************************************************************
          * 3- Group by and having // Getting revenue from gempack when it exceeds specified amount
          * TODO> I think in this kind of queries we should not calculate throughput. because we will not be able to count the filtered out tuples
          * ************************************************************/
         // register functions
-/*        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+        tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID,sum(price)as revenue,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID having price>400");
         //for the metrics calculation after
@@ -362,7 +362,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();*/
+        processedQueryResultAsDataStream.print();
 
         //================================WINDOWING======================
         /**************************************************************
