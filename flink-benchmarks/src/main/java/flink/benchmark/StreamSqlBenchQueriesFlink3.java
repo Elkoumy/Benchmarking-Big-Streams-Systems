@@ -119,16 +119,16 @@ public class StreamSqlBenchQueriesFlink3 {
         FlinkKafkaConsumer011<String> adsConsumer=new FlinkKafkaConsumer011<String>("ads",
                 new SimpleStringSchema(),
                 props);
-        //adsConsumer.setStartFromEarliest();
+        adsConsumer.setStartFromEarliest();
 
         DataStream<String> purchasesStream = env
                 .addSource(purchasesConsumer)
                 .setParallelism(Math.min(5 * 32, k_partitions));
 
 
-/*        DataStream<String> adsStream = env
+        DataStream<String> adsStream = env
                 .addSource(adsConsumer)
-                .setParallelism(Math.min(5 * 32, k_partitions));*/
+                .setParallelism(Math.min(5 * 32, k_partitions));
 
         /*****************************
          *  adding metrics for the log (I need to know what are these actually)
@@ -151,7 +151,7 @@ public class StreamSqlBenchQueriesFlink3 {
                             }
                         }).map(new AddPurchaseLatencyId());
 
-/*        DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
+        DataStream<Tuple4<Integer, Integer, Long,String>> adsWithTimestampsAndWatermarks =
                 adsStream
                         .map( new AdsParser())
                         .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<Integer, Integer, Long>>(Time.seconds(10)) {
@@ -159,14 +159,14 @@ public class StreamSqlBenchQueriesFlink3 {
                             public long extractTimestamp(Tuple3<Integer, Integer, Long> element) {
                                 return element.getField(2);
                             }
-                        }).map(new AddAdLatencyId());*/
+                        }).map(new AddAdLatencyId());
 
 
 
         Table purchasesTable = tEnv.fromDataStream(purchaseWithTimestampsAndWatermarks, "userID, gemPackID,price, rowtime.rowtime, ltcID");
-//        Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
+        Table adsTable = tEnv.fromDataStream(adsWithTimestampsAndWatermarks, "userID, gemPackID, rowtime.rowtime,ltcID");
         tEnv.registerTable("purchasesTable", purchasesTable);
-//        tEnv.registerTable("adsTable", adsTable);
+        tEnv.registerTable("adsTable", adsTable);
 
 
 
