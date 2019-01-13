@@ -1140,7 +1140,7 @@ public class StreamSqlBenchQueriesFlink3 {
             Iterator<DifferenceAcc> iter = it.iterator();
             while (iter.hasNext()) {
                 DifferenceAcc a = iter.next();
-                a.sum+=iter.next().sum;
+                a.sum+=a.sum;
 
             }
         }
