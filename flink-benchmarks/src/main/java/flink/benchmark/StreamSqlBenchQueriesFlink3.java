@@ -789,37 +789,32 @@ public class StreamSqlBenchQueriesFlink3 {
          * 13-Nested Queries //Get purchased gem pack with price exceeds average price for the purchased items in some time frame.
          * TODO> still not working.
          * ************************************************************/
-  /*      DataStream<Tuple2<Boolean, Row>> PurchaseDataStreamTable = tEnv.toRetractStream(purchasesTable, Row.class);
-        DataStream<Tuple2<String,String>> writeToRedisBefore = PurchaseDataStreamTable.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
-            @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("before "+"Key> p"+inputTuple.f1.getField(0)+""+new Instant(inputTuple.f1.getField(3)).getMillis()+" value> "+System.currentTimeMillis());
-                System.out.println( throughputCounterBefore++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+"");//for latency
 
-            }
-        });
-
-        // register function
-        tEnv.registerFunction("getKeyAndValue", new KeyValueGetter());
-        tEnv.registerFunction("concatUIDAndTime", new ConcatTowCulomnTo ());
-
-        //Table result = tEnv.sqlQuery("with SubQ As (select  gemPackID,getKeyAndValue(userID, rowtime) as userIDWithTime,count(*) as throughput,avg(price) as avgPrice from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '10' SECOND), gemPackID)  select userIDWithTime,gemPackID,throughput from SubQ where ");
-        //Table result = tEnv.sqlQuery("with SubQ As (select  gemPackID,getKeyAndValue(userID, rowtime) as userIDWithTime,count(*) as throughput,avg(price) as avgPrice from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '10' SECOND), gemPackID)  select gemPackID, price from purchasesTable where price> select avgPrice from subQ");
-        Table result = tEnv.sqlQuery("select concatUIDAndTime(userID,rowtime) price from purchasesTable where price in (select avg(price) from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '10' SECOND)) ");
-
+        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+        tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
+        Table result = tEnv.sqlQuery("with SubQ As (SELECT  gemPackID,sum(price)as revenue,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID) as sumOfDIff,getTheSpecialValue(userID, rowtime) as spValue,count(*) as throughput   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID) SELECT wStart,wEnd,sumOfDIff, throughput,spValue from SubQ");
         //for the metrics calculation after
-       DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
+        DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
-        DataStream<Tuple2<String,String>> writeToRedisAfter = queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple2<String,String>>() {
+
+
+
+        DataStream<Tuple5<String, String, String, String, String>> processedQueryResultAsDataStream=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple5<String, String, String, String, String>>() {
             @Override
-            public Tuple2<String,String> map(Tuple2<Boolean, Row> inputTuple) {
-                System.out.println("after "+"Key> p"+inputTuple.f1.getField(0) +new Instant(inputTuple.f1.getField(2)).getMillis()+" value> "+System.currentTimeMillis()); //for latency
-                System.out.println( throughputCounterAfter++);//for throughput
-                return new Tuple2<>(inputTuple.f1.getField(0)+"",System.currentTimeMillis()+""); //for latency
+            public Tuple5<String, String, String, String, String> map(Tuple2<Boolean, Row> input) throws Exception {
+                if (input.f1.getField(4).toString().equals("-1000000")){
+                    System.exit(0);
+
+
+                }
+//                return new Tuple5<>(input.f1.getField(0).toString(),input.f1.getField(1).toString(),input.f1.getField(2).toString(),input.f1.getField(3).toString(),"");
+                return null;
 
             }
-        });*/
+
+        });
+//        processedQueryResultAsDataStream.print();
+                queryResultAsDataStream.print();
 
         //================================User-defined functions======================
         /**************************************************************
@@ -883,7 +878,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 14- Aggregate UDF
          * ************************************************************/
         // register function
-        tEnv.registerFunction("wAvg", new WeightedAvg());
+  /*      tEnv.registerFunction("wAvg", new WeightedAvg());
         tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("SELECT  gemPackID, wAvg(price, price)as WTDAVGPrice,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID),getTheSpecialValue(userID, rowtime),count(*)   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID");
@@ -917,7 +912,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
 
         });
-        processedQueryResultAsDataStream.print();
+        processedQueryResultAsDataStream.print();*/
 
 
 
