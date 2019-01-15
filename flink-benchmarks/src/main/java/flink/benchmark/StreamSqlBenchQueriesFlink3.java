@@ -510,6 +510,12 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });
 
+        DataStream <Tuple5<Long, Long,Long,Long,String>> windowed1=prepareDifferences.keyBy(t -> t.f0).window(TumblingProcessingTimeWindows.of(Time.seconds(1))).process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long, Long, Long, String>, String, TimeWindow>() {
+            @Override
+            public void process(String tuple, Context context, Iterable<Tuple3<String, Long, String>> iterable, Collector<Tuple5<Long, Long, Long, Long, String>> collector) throws Exception {
+
+            }
+        });
         DataStream <Tuple5<Long, Long,Long,Long,String>> windowed=prepareDifferences.keyBy(0).window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
                 .process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long,Long,Long,String>, Tuple, TimeWindow>() {
                     @Override
