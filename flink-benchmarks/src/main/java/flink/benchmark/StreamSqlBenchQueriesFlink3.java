@@ -496,7 +496,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
-       /* DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
+        DataStream<Tuple3<String, Long,String>> prepareDifferences=queryResultAsDataStream.map(new MapFunction<Tuple2<Boolean, Row>, Tuple3<String, Long,String>>() {
             @Override
             public Tuple3<String, Long,String> map(Tuple2<Boolean, Row> input) throws Exception {
                 //String latencyAttr[]=(input.f1.getField(4)).toString().split(" ");
@@ -538,7 +538,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 return null;
             }
         }).name("check the the last record");
-        windowed.print();*/
+        windowed.print();
 
         /**************************************************************
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase) ready
