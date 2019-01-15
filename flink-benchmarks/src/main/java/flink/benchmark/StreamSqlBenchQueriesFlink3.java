@@ -510,30 +510,25 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });
 
-        DataStream <Tuple5<Long, Long,Long,Long,String>> windowed1=prepareDifferences.keyBy(t -> t.f0).window(TumblingProcessingTimeWindows.of(Time.seconds(1))).process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long, Long, Long, String>, String, TimeWindow>() {
+        DataStream <Tuple5<Long, Long,Long,Long,String>> windowed=prepareDifferences.keyBy(t -> t.f0).window(TumblingProcessingTimeWindows.of(Time.seconds(1))).process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long, Long, Long, String>, String, TimeWindow>() {
             @Override
-            public void process(String tuple, Context context, Iterable<Tuple3<String, Long, String>> iterable, Collector<Tuple5<Long, Long, Long, Long, String>> collector) throws Exception {
+            public void process(String s, Context context, Iterable<Tuple3<String, Long, String>> iterable, Collector<Tuple5<Long, Long, Long, Long, String>> collector) throws Exception {
+                long count=0L,sum=0L;
+                String endOfStream="";
+                for (Tuple3<String, Long,String> item : iterable) {
+                    count++;
+                    sum+=item.f1;
+                    if (item.f2.equals("-1000000")){
+                        endOfStream="-1000000";
+                    }
+
+                }
+
+                collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
 
             }
         });
-        DataStream <Tuple5<Long, Long,Long,Long,String>> windowed=prepareDifferences.keyBy(0).window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-                .process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long,Long,Long,String>, Tuple, TimeWindow>() {
-                    @Override
-                    public void process(Tuple tuple, Context context, Iterable<Tuple3<String, Long, String>> iterable, Collector<Tuple5<Long, Long, Long, Long, String>> collector) throws Exception {
-                        long count=0L,sum=0L;
-                        String endOfStream="";
-                        for (Tuple3<String, Long,String> item : iterable) {
-                            count++;
-                            sum+=item.f1;
-                            if (item.f2.equals("-1000000")){
-                                endOfStream="-1000000";
-                            }
 
-                        }
-
-                        collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
-                    }
-                });
         windowed.map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
 
             @Override
