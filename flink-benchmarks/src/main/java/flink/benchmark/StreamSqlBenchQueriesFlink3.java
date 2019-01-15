@@ -486,6 +486,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO>Throughput in joins is not representative (look at previous papers amd discuss with the geeks)
          * ************************************************************/
 
+
         // register function
         tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  p.userID,p.gemPackID,p.price, p.rowtime, getTSDiff(p.ltcID)  " +
