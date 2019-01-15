@@ -178,7 +178,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * 1- Projection//Get all purchased gem pack work on new throughput metric
          * TODO> return value of writeToRedisAfter is not correct
          * ************************************************************/
- /*        tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
+         tEnv.registerFunction("getTSDiff", new SingleDifferencesGetter ());
         Table result = tEnv.sqlQuery("SELECT  userID, gemPackID, price,rowtime,getTSDiff(ltcID) from purchasesTable");
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
@@ -225,7 +225,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 .name("check the the last record");
 
 
-        windoedSumAndCountDifferences.print();*/
+        windoedSumAndCountDifferences.print();
 
 
 
@@ -790,7 +790,7 @@ public class StreamSqlBenchQueriesFlink3 {
          * TODO> still not working.
          * ************************************************************/
 
-        tEnv.registerFunction("getDifferences", new DifferencesGetter());
+ /*       tEnv.registerFunction("getDifferences", new DifferencesGetter());
         tEnv.registerFunction("getTheSpecialValue", new SpecialValueGetter());
         Table result = tEnv.sqlQuery("with SubQ As (SELECT  gemPackID,sum(price)as revenue,TUMBLE_START(rowtime, INTERVAL '2' SECOND) as wStart,TUMBLE_END(rowtime, INTERVAL '2' SECOND) as wEnd, getDifferences(ltcID) as sumOfDIff,getTheSpecialValue(userID, rowtime) as spValue,count(*) as throughput   from purchasesTable GROUP BY TUMBLE(rowtime, INTERVAL '2' SECOND),gemPackID) SELECT wStart,wEnd,sumOfDIff, throughput,spValue from SubQ");
         //for the metrics calculation after
@@ -814,7 +814,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
         });
 //        processedQueryResultAsDataStream.print();
-                queryResultAsDataStream.print();
+                queryResultAsDataStream.print();*/
 
         //================================User-defined functions======================
         /**************************************************************
