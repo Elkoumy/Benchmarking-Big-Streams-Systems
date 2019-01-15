@@ -7,10 +7,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.api.java.tuple.Tuple4;
-import org.apache.flink.api.java.tuple.Tuple5;
+import org.apache.flink.api.java.tuple.*;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -18,6 +15,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
@@ -511,10 +509,10 @@ public class StreamSqlBenchQueriesFlink3 {
                 return new Tuple3<>(input.f1.getField(0).toString(),Long.parseLong(input.f1.getField(4).toString()),endOfStream);
             }
         });
-        DataStream<Tuple5<Long, Long,Long,Long,String>> windoedSumAndCountDifferences=prepareDifferences.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-                .process(new ProcessAllWindowFunction<Tuple3<String, Long,String>, Tuple5<Long, Long,Long,Long,String>, TimeWindow>() {
+        prepareDifferences.keyBy(0).window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long,Long,Long,String>, Tuple, TimeWindow>() {
                     @Override
-                    public void process(Context context, Iterable<Tuple3<String, Long,String>> iterable, Collector<Tuple5<Long, Long,Long,Long,String>> collector) throws Exception {
+                    public void process(Tuple tuple, Context context, Iterable<Tuple3<String, Long, String>> iterable, Collector<Tuple5<Long, Long, Long, Long, String>> collector) throws Exception {
                         long count=0L,sum=0L;
                         String endOfStream="";
                         for (Tuple3<String, Long,String> item : iterable) {
@@ -528,9 +526,7 @@ public class StreamSqlBenchQueriesFlink3 {
 
                         collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
                     }
-                });
-
-        windoedSumAndCountDifferences.map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
+                }).map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
 
             @Override
             public Object map(Tuple5<Long, Long, Long, Long, String> input) throws Exception {
@@ -539,11 +535,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
                 return null;
             }
-        })
-                .name("check the the last record");
-
-
-        windoedSumAndCountDifferences.print();
+        }).name("check the the last record").print();
 
         /**************************************************************
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase) ready
