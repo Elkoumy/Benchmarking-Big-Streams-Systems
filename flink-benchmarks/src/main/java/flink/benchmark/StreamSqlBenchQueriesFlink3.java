@@ -492,7 +492,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 "from purchasesTable p inner join adsTable a " +
                 "on p.userID = a.userID " +
                 "and p.gemPackID = a.gemPackID " +
-                "and p.rowtime  BETWEEN a.rowtime - INTERVAL '1' SECOND AND a.rowtime+INTERVAL '4' SECOND");
+                "and p.rowtime  BETWEEN a.rowtime - INTERVAL '1' SECOND AND a.rowtime+INTERVAL '1' SECOND");
 
         DataStream<Tuple2<Boolean, Row>> queryResultAsDataStream = tEnv.toRetractStream(result, Row.class);
 
@@ -510,7 +510,7 @@ public class StreamSqlBenchQueriesFlink3 {
             }
         });
 
-        prepareDifferences.keyBy(0).window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+        DataStream <Tuple5<Long, Long,Long,Long,String>> windowed=prepareDifferences.keyBy(0).window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
                 .process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long,Long,Long,String>, Tuple, TimeWindow>() {
                     @Override
                     public void process(Tuple tuple, Context context, Iterable<Tuple3<String, Long, String>> iterable, Collector<Tuple5<Long, Long, Long, Long, String>> collector) throws Exception {
@@ -527,7 +527,8 @@ public class StreamSqlBenchQueriesFlink3 {
 
                         collector.collect(new Tuple5<>(context.window().getStart(),context.window().getEnd(),count,sum,endOfStream));
                     }
-                }).map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
+                });
+        windowed.map(new MapFunction<Tuple5<Long, Long, Long, Long, String>, Object>() {
 
             @Override
             public Object map(Tuple5<Long, Long, Long, Long, String> input) throws Exception {
@@ -536,7 +537,8 @@ public class StreamSqlBenchQueriesFlink3 {
                 }
                 return null;
             }
-        }).name("check the the last record").print();
+        }).name("check the the last record");
+        windowed.print();
 
         /**************************************************************
          * 8- Full outer // Getting revenue from each ad (which ad triggered purchase) ready
