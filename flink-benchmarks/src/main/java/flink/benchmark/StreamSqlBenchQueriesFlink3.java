@@ -509,6 +509,7 @@ public class StreamSqlBenchQueriesFlink3 {
                 return new Tuple3<>(input.f1.getField(0).toString(),Long.parseLong(input.f1.getField(4).toString()),endOfStream);
             }
         });
+
         prepareDifferences.keyBy(0).window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
                 .process(new ProcessWindowFunction<Tuple3<String, Long, String>, Tuple5<Long, Long,Long,Long,String>, Tuple, TimeWindow>() {
                     @Override
