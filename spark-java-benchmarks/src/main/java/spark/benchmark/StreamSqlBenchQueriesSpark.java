@@ -128,7 +128,7 @@ public class StreamSqlBenchQueriesSpark {
 
 
         StreamingQuery query = QueryToClacLatecy.writeStream()
-                .outputMode("append")
+                .outputMode("update")
                 //.format("console")
                 .format("csv")
                 .option("header", "false").option("path","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
