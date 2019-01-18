@@ -35,7 +35,9 @@ public class StreamSqlBenchQueriesSpark {
 /*        SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
         JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
         JavaDStream<String> customReceiverStream = jssc.receiverStream(new JavaCustomReceiver("localhost", 6666));*/
-        SparkSession spark = SparkSession.builder().master("local[3]")
+
+//        SparkSession spark = SparkSession.builder().master("local[3]")
+        SparkSession spark = SparkSession.builder().master(" http://172.17.77.47:7077")
                 .appName("sparkStreamingSqlBenchmark")
                 .getOrCreate();
 //        StructType purchasesSchema = new StructType().add("userID", "integer").add("gemPackID", "Integer").add("price", "integer").add("timeStamp", "long");
@@ -126,7 +128,7 @@ public class StreamSqlBenchQueriesSpark {
 
 
         StreamingQuery query = QueryToClacLatecy.writeStream()
-                .outputMode("append")
+                .outputMode("update")
                 .format("console")
 //                .trigger(Trigger.Continuous("1 second"))
                 .trigger(Trigger.ProcessingTime("0 second"))
