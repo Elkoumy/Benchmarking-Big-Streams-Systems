@@ -129,17 +129,17 @@ public class StreamSqlBenchQueriesSpark {
 
         StreamingQuery query = QueryToClacLatecy.writeStream()
                 .outputMode("update")
-                .format("console")
+                //.format("console")
+                .format("csv")
+                .option("header", "false").option("path","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
+
+
 //                .trigger(Trigger.Continuous("1 second"))
                 .trigger(Trigger.ProcessingTime("0 second"))
                 .start();
         query.awaitTermination();
 
-/*        StreamingQuery query2 = QueryToClacLatecy.writeStream()
-                .outputMode("update")
-                .format("console")
-                .start();
-        query2.awaitTermination();*/
+
 
 
         StreamingQuery spv= Query.map(new CheckSpecialValue(),Encoders.INT()).writeStream().outputMode("update")
