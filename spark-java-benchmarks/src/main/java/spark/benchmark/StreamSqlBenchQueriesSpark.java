@@ -89,9 +89,9 @@ public class StreamSqlBenchQueriesSpark {
         /**************************************************************
          * 1- Projection //Get all purchased gem packs work
          * ************************************************************/
-        Dataset<Row> Query = spark.sql("SELECT  userID, gemPackID, timeStamp,getTSDiff(ltcID) as ltc from ads");
+        Dataset<Row> Query = spark.sql("SELECT  userID, gemPackID, timeStamp,getTSDiff(ltcID) as ltc from ads").withWatermark("timeStamp","1 millisecond");
         Query.createOrReplaceTempView("purchasesQuery");
-        Dataset<Row> QueryToClacLatecy=spark.sql("SELECT  window.start, window.end, count(userID), sum(ltc) from purchasesQuery GROUP BY window(timeStamp, '1 seconds' , '1 seconds')").withWatermark("start","1 second");
+        Dataset<Row> QueryToClacLatecy=spark.sql("SELECT  window.start, window.end, count(userID), sum(ltc) from purchasesQuery GROUP BY window(timeStamp, '1 seconds' , '1 seconds')").withWatermark("start","1 milliseconds");
         /**************************************************************
          * 1- 2- Filtering// Get the purchases of specific user
          * ************************************************************/
@@ -129,14 +129,16 @@ public class StreamSqlBenchQueriesSpark {
 
         StreamingQuery query = QueryToClacLatecy.writeStream()
                 .outputMode("update")
-                //.format("console")
-                .format("csv")
-                .option("header", "false").option("path","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
-                .option("checkpointLocation","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
+                .format("console")
+//                .format("csv")
+//                .option("header", "false").option("path","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
+//                .option("header", "false").option("path","C:\\Users\\Pealik\\Desktop\\SparkLogsBackup\\temp\\")
+//                .option("checkpointLocation","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
+//                .option("checkpointLocation","C:\\Users\\Pealik\\Desktop\\SparkLogsBackup\\temp\\")
 
 
 //                .trigger(Trigger.Continuous("1 second"))
-                .trigger(Trigger.ProcessingTime("0 second"))
+                .trigger(Trigger.ProcessingTime("1 second"))
                 .start();
         query.awaitTermination();
 
