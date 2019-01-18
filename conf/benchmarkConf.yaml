@@ -29,7 +29,7 @@ storm.ack: "enabled"
 
 
 #Spark Specific
-spark.batchtime: 3000
+spark.batchtime: 100
 spark.master: "spark://stream-node01:7077"
 spark.app.name: "KafkaRedisAdvertisingStream"
 
