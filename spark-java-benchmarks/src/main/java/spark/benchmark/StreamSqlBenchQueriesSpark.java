@@ -132,6 +132,7 @@ public class StreamSqlBenchQueriesSpark {
                 //.format("console")
                 .format("csv")
                 .option("header", "false").option("path","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
+                .option("checkpointLocation","/root/stream-benchmarking/spark-2.3.0-bin-hadoop2.6/logs/")
 
 
 //                .trigger(Trigger.Continuous("1 second"))
