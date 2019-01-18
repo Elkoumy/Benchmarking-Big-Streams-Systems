@@ -91,7 +91,7 @@ public class StreamSqlBenchQueriesSpark {
          * ************************************************************/
         Dataset<Row> Query = spark.sql("SELECT  userID, gemPackID, timeStamp,getTSDiff(ltcID) as ltc from ads");
         Query.createOrReplaceTempView("purchasesQuery");
-        Dataset<Row> QueryToClacLatecy=spark.sql("SELECT  window.start, window.end, count(userID), sum(ltc) from purchasesQuery GROUP BY window(timeStamp, '1 seconds' , '1 seconds')");
+        Dataset<Row> QueryToClacLatecy=spark.sql("SELECT  window.start, window.end, count(userID), sum(ltc) from purchasesQuery GROUP BY window(timeStamp, '1 seconds' , '1 seconds')").withWatermark("start","1 second");
         /**************************************************************
          * 1- 2- Filtering// Get the purchases of specific user
          * ************************************************************/
