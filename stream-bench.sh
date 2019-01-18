@@ -360,18 +360,22 @@ run() {
     sleep 15
   elif [ "START_SPARK_PROCESSING" = "$OPERATION" ];
   then
-    "$SPARK_DIR/bin/spark-submit" --master spark://${SPARK_MASTER_HOST}:7077 --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
+#    "$SPARK_DIR/bin/spark-submit" --master spark://${SPARK_MASTER_HOST}:7077 --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
+    "$SPARK_DIR/bin/spark-submit" --master spark://${SPARK_MASTER_HOST}:7077 --class spark.benchmark.StreamSqlBenchQueriesSpark ./spark-java-benchmarks/target/spark-java-benchmarks-0.1.0.jar "$CONF_FILE" &
     sleep 5
   elif [ "STOP_SPARK_PROCESSING" = "$OPERATION" ];
   then
-    stop_if_needed spark.benchmark.KafkaRedisAdvertisingStream "Spark Client Process"
+#    stop_if_needed spark.benchmark.KafkaRedisAdvertisingStream "Spark Client Process"
+    stop_if_needed spark.benchmark.StreamSqlBenchQueriesSpark "Spark Client Process"
    elif [ "START_SPARK_CP_PROCESSING" = "$OPERATION" ];
   then
-    "$SPARK_DIR/bin/spark-submit" --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-cp-benchmarks/target/spark-cp-benchmarks-0.1.0.jar "$CONF_FILE" &
+#    "$SPARK_DIR/bin/spark-submit" --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-cp-benchmarks/target/spark-cp-benchmarks-0.1.0.jar "$CONF_FILE" &
+    "$SPARK_DIR/bin/spark-submit" --class spark.benchmark.StreamSqlBenchQueriesSpark ./spark-java-benchmarks/target/spark-java-benchmarks-0.1.0.jar "$CONF_FILE" &
     sleep 5
   elif [ "STOP_SPARK_CP_PROCESSING" = "$OPERATION" ];
   then
-    stop_if_needed spark.benchmark.KafkaRedisAdvertisingStream "Spark Client Process"
+#    stop_if_needed spark.benchmark.KafkaRedisAdvertisingStream "Spark Client Process"
+    stop_if_needed spark.benchmark.StreamSqlBenchQueriesSpark "Spark Client Process"
   elif [ "START_KAFKA_PROCESSING" = "$OPERATION" ];
   then
     java -Xms3G -Xmx30G -jar ./kafka-benchmarks/target/kafka-benchmarks-0.1.0.jar -conf $CONF_FILE &
