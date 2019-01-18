@@ -140,6 +140,7 @@ Licensed under the terms of the Apache License 2.0. Please see LICENSE file in t
         <module>spark-benchmarks</module>
         <module>spark-cp-benchmarks</module>
         <module>heron-benchmarks</module>
+        <module>spark-java-benchmarks</module>
     </modules>
 
     <build>

@@ -576,24 +576,32 @@ function benchmarkLoop (){
             runAllServers "find $PROJECT_DIR -type f -exec chmod 777 {} \;"
 
             runCommandStreamServers "rm -rf ${PROJECT_DIR}/$FLINK_DIR/log/*" "nohub"
+            runCommandStreamServers "rm -rf ${PROJECT_DIR}/$SPARK_DIR/logs/*" "nohub"
             sleep ${SHORT_SLEEP}
             if (("$TPS" > "$TPS_LIMIT")); then
                 break
             fi
             changeTps "${TPS}"
             runSystem $1 $2
+            if [ "$1" == "spark" ]; then
+                SYSTEMDIR=${SPARK_DIR}
+                LOGDIR="logs"
+            elif [ "$1" == "flink" ]; then
+                SYSTEMDIR=${FLINK_DIR}
+                LOGDIR="log"
+            fi
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-            scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
+            scp -r ${SSH_USER}@stream-node-01:${PROJECT_DIR}/${SYSTEMDIR}/${LOGDIR} ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-01/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-            scp -r ${SSH_USER}@stream-node-02:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
+            scp -r ${SSH_USER}@stream-node-02:${PROJECT_DIR}/${SYSTEMDIR}/${LOGDIR} ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-02/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-            scp -r ${SSH_USER}@stream-node-03:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
+            scp -r ${SSH_USER}@stream-node-03:${PROJECT_DIR}/${SYSTEMDIR}/${LOGDIR} ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-03/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-            scp -r ${SSH_USER}@stream-node-04:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
+            scp -r ${SSH_USER}@stream-node-04:${PROJECT_DIR}/${SYSTEMDIR}/${LOGDIR} ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-04/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-            scp -r ${SSH_USER}@stream-node-05:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
+            scp -r ${SSH_USER}@stream-node-05:${PROJECT_DIR}/${SYSTEMDIR}/${LOGDIR} ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-05/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
-            scp -r ${SSH_USER}@stream-node-06:${PROJECT_DIR}/${FLINK_DIR}/log ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
+            scp -r ${SSH_USER}@stream-node-06:${PROJECT_DIR}/${SYSTEMDIR}/${LOGDIR} ${PROJECT_DIR}/resultLogs/${ALGORITHM}/logs/stream-node-06/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
 
             mkdir -p ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}
             scp ${SSH_USER}@redisdo:~/stream-benchmarking/data/seen.txt ${PROJECT_DIR}/resultLogs/${ALGORITHM}/result/$(date +%Y-%m-%d_%H%M%S)_TPS_${TPS}/redis-seen.txt
@@ -717,6 +725,8 @@ case $1 in
 
     ;;
     spark)
+        ALGORITHM="sparkSS"
+        rm -rf /root/stream-benchmarking/resultLogs/${ALGORITHM}/*
         benchmarkLoop "spark" $2
     ;;
     jet)
