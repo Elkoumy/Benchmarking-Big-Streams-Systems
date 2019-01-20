@@ -90,7 +90,7 @@ public class StreamSqlBenchQueriesFlink3 {
         // set default parallelism for all operators (recommended value: number of available worker CPU cores in the cluster (hosts * cores))
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.setParallelism(5 * 32);
+        env.setParallelism(2 * 32);
 
 
         /////
