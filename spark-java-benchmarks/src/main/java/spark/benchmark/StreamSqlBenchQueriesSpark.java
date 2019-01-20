@@ -153,7 +153,7 @@ public class StreamSqlBenchQueriesSpark {
     }
 
     public static void main(String[] args) throws Exception{
-        System.setProperty("hadoop.home.dir", "c:\\winutil\\");
+        //System.setProperty("hadoop.home.dir", "c:\\winutil\\");
     /*    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         System.out.println(dtf.format(now));*/
