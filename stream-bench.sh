@@ -362,7 +362,7 @@ run() {
   then
 #    "$SPARK_DIR/bin/spark-submit" --master spark://${SPARK_MASTER_HOST}:7077 --class spark.benchmark.KafkaRedisAdvertisingStream ./spark-benchmarks/target/spark-benchmarks-0.1.0.jar "$CONF_FILE" &
 #    "$SPARK_DIR/bin/spark-submit" --master spark://${SPARK_MASTER_HOST}:7077 --class spark.benchmark.StreamSqlBenchQueriesSpark /root/stream-benchmarking/spark-java-benchmarks/target/spark-java-benchmarks-0.1.0.jar "$CONF_FILE" &
-     "./$SPARK_DIR/bin/spark-submit"  --class spark.benchmark.StreamSqlBenchQueriesSpark /root/stream-benchmarking/spark-java-benchmarks/target/spark-java-benchmarks-0.1.0.ja &
+     "./$SPARK_DIR/bin/spark-submit"  --class spark.benchmark.StreamSqlBenchQueriesSpark /root/stream-benchmarking/spark-java-benchmarks/target/spark-java-benchmarks-0.1.0.ja "$CONF_FILE" &
     sleep 5
   elif [ "STOP_SPARK_PROCESSING" = "$OPERATION" ];
   then
