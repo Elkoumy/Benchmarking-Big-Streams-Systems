@@ -37,8 +37,8 @@ public class StreamSqlBenchQueriesSpark {
         JavaDStream<String> customReceiverStream = jssc.receiverStream(new JavaCustomReceiver("localhost", 6666));*/
 
 //        SparkSession spark = SparkSession.builder().master("local[3]")
-        SparkSession spark = SparkSession.builder()//.master("spark://172.17.77.47:7077")
-                //.appName("sparkStreamingSqlBenchmark")
+        SparkSession spark = SparkSession.builder().master("spark://172.17.77.47:7077")
+                .appName("sparkStreamingSqlBenchmark")
                 .getOrCreate();
 //        StructType purchasesSchema = new StructType().add("userID", "integer").add("gemPackID", "Integer").add("price", "integer").add("timeStamp", "long");
         Dataset<Row> purchasesStream = spark
